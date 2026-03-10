@@ -1356,59 +1356,72 @@
 
     .info-tabs {
       display: flex;
-      gap: .5rem;
-      margin-bottom: 1rem;
+      gap: .75rem;
+      margin-bottom: 1.5rem;
       background: #fff;
       border: 1.5px solid var(--fog);
-      border-radius: 14px;
-      padding: .35rem;
-      box-shadow: 0 2px 10px rgba(59, 42, 26, .05);
+      border-radius: 18px;
+      padding: .5rem;
+      box-shadow: 0 4px 15px rgba(59, 42, 26, .06);
     }
 
     .info-tab {
       flex: 1;
-      padding: .7rem .5rem;
+      padding: .85rem .5rem;
       text-align: center;
       border: none;
       background: none;
-      border-radius: 10px;
+      border-radius: 14px;
       font-family: 'DM Sans', sans-serif;
-      font-size: .82rem;
-      font-weight: 500;
-      color: #8a7a6a;
+      font-size: .9rem;
+      font-weight: 700;
+      color: #6a5a4a;
       cursor: pointer;
-      transition: all .25s ease;
+      transition: all .3s cubic-bezier(0.34, 1.56, 0.64, 1);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: .4rem;
+      gap: .6rem;
+      position: relative;
+      overflow: hidden;
     }
 
     .info-tab:hover {
-      background: var(--cream);
+      background: #faf8f5;
       color: var(--bark);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(59, 42, 26, .08);
+    }
+
+    .info-tab:active {
+      transform: translateY(-1px) scale(0.98);
     }
 
     .info-tab.active-food {
-      background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
-      color: #2e7d32;
-      box-shadow: 0 3px 12px rgba(46, 125, 50, .15);
+      background: linear-gradient(135deg, #4caf50, #81c784);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(76, 175, 80, .3);
     }
 
     .info-tab.active-vaccine {
-      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-      color: #1565c0;
-      box-shadow: 0 3px 12px rgba(21, 101, 192, .15);
+      background: linear-gradient(135deg, #2196f3, #64b5f6);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(33, 150, 243, .3);
     }
 
     .info-tab.active-behavior {
-      background: linear-gradient(135deg, #fff3e0, #ffe0b2);
-      color: #e65100;
-      box-shadow: 0 3px 12px rgba(230, 81, 0, .15);
+      background: linear-gradient(135deg, #ff9800, #ffb74d);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(255, 152, 0, .3);
     }
 
     .info-tab-icon {
-      font-size: 1.1rem;
+      font-size: 1.25rem;
+      transition: transform .3s ease;
+    }
+
+    .info-tab:hover .info-tab-icon {
+      transform: rotate(12deg) scale(1.1);
     }
 
     .info-panel {
