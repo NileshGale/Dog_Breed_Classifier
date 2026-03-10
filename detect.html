@@ -1,0 +1,2586 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PawDetect — Identify Your Dog</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --cream: #f5f0e8;
+      --bark: #3b2a1a;
+      --moss: #4a6741;
+      --sand: #c9a96e;
+      --rust: #b55a2a;
+      --fog: #e8e0d4;
+      --leaf: #7a9e6e;
+    }
+
+    body {
+      background-color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--bark);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(245, 240, 232, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1.5px solid var(--fog);
+      padding: 0 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      box-shadow: 0 2px 12px rgba(59, 42, 26, .07);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      text-decoration: none;
+      color: var(--bark);
+    }
+
+    .logo-paw {
+      width: 36px;
+      height: 36px;
+      background: var(--bark);
+      border-radius: 50% 50% 50% 20%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cream);
+      font-size: 1.1rem;
+    }
+
+    .logo-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.45rem;
+      font-weight: 700;
+      letter-spacing: -.02em;
+    }
+
+    .logo-text span {
+      color: var(--rust);
+    }
+
+    .nav-right {
+      position: relative;
+    }
+
+    .profile-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--rust), var(--sand));
+      border: none;
+      cursor: pointer;
+      color: #fff;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: box-shadow .2s, transform .2s;
+      box-shadow: 0 2px 8px rgba(181, 90, 42, .3);
+    }
+
+    .profile-btn:hover {
+      transform: scale(1.07);
+      box-shadow: 0 4px 14px rgba(181, 90, 42, .4);
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      background: #fff;
+      border: 1.5px solid var(--fog);
+      border-radius: 16px;
+      min-width: 200px;
+      box-shadow: 0 12px 40px rgba(59, 42, 26, .14);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+
+    .profile-dropdown.open {
+      display: block;
+      animation: dropIn .2s ease;
+    }
+
+    @keyframes dropIn {
+      from {
+        opacity: 0;
+        transform: translateY(-8px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .dropdown-header {
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid var(--fog);
+    }
+
+    .dropdown-header .uname {
+      font-weight: 500;
+      font-size: .9rem;
+      color: var(--bark);
+    }
+
+    .dropdown-header .uemail {
+      font-size: .75rem;
+      color: #9a8878;
+      margin-top: 2px;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      font-size: .88rem;
+      color: var(--bark);
+      cursor: pointer;
+      transition: background .15s;
+      width: 100%;
+      border: none;
+      background: none;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+    }
+
+    .dropdown-item:hover {
+      background: var(--cream);
+    }
+
+    .dropdown-item.logout {
+      color: #c0392b;
+    }
+
+    .dropdown-item.logout:hover {
+      background: #fdf0ee;
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background: var(--fog);
+    }
+
+    /* TOAST */
+    #toastContainer {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .toast {
+      padding: 13px 18px;
+      border-radius: 14px;
+      font-size: .86rem;
+      font-weight: 500;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .15);
+      max-width: 300px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: toastIn .35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    .toast.hide {
+      animation: toastOut .3s ease forwards;
+    }
+
+    .toast.success {
+      background: #1e8449;
+      color: #fff;
+    }
+
+    .toast.error {
+      background: #c0392b;
+      color: #fff;
+    }
+
+    .toast.info {
+      background: var(--bark);
+      color: var(--cream);
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateX(60px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0)
+      }
+    }
+
+    @keyframes toastOut {
+      from {
+        opacity: 1;
+        transform: translateX(0)
+      }
+
+      to {
+        opacity: 0;
+        transform: translateX(60px)
+      }
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 3rem 1rem 1rem;
+      animation: fadeUp .8s ease both;
+    }
+
+    .hero-eyebrow {
+      display: inline-block;
+      background: var(--moss);
+      color: var(--cream);
+      font-size: .72rem;
+      font-weight: 500;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      padding: .35rem 1rem;
+      border-radius: 100px;
+      margin-bottom: 1.2rem;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 6vw, 3.8rem);
+      line-height: 1.1;
+      letter-spacing: -.03em;
+      color: var(--bark);
+      max-width: 680px;
+      margin: 0 auto 1rem;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--rust);
+    }
+
+    .hero p {
+      font-size: 1rem;
+      color: #7a6a58;
+      font-weight: 300;
+      max-width: 420px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* RESULT BANNER */
+    .result-banner {
+      display: none;
+      position: relative;
+      z-index: 1;
+      max-width: 760px;
+      margin: 0 auto 1rem;
+      padding: 0 2rem;
+      animation: fadeUp .5s ease both;
+    }
+
+    .result-banner.show {
+      display: block;
+    }
+
+    .result-card {
+      background: #fff;
+      border: 1.5px solid var(--fog);
+      border-radius: 20px;
+      padding: 1.4rem 1.6rem;
+      display: flex;
+      gap: 1.2rem;
+      align-items: flex-start;
+      box-shadow: 0 8px 30px rgba(59, 42, 26, .1);
+      position: relative;
+    }
+
+    .result-thumb {
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 2px solid var(--fog);
+    }
+
+    .result-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .result-label {
+      font-size: .68rem;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--moss);
+      margin-bottom: .3rem;
+    }
+
+    .result-breed {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--bark);
+      margin-bottom: .35rem;
+    }
+
+    .result-conf {
+      font-size: .8rem;
+      color: #7a6a58;
+      margin-bottom: .6rem;
+    }
+
+    .conf-bar {
+      height: 6px;
+      background: var(--fog);
+      border-radius: 100px;
+      overflow: hidden;
+      width: 180px;
+      max-width: 100%;
+    }
+
+    .conf-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--moss), var(--leaf));
+      transition: width .8s ease;
+    }
+
+    .result-source {
+      font-size: .7rem;
+      color: #b0a090;
+      margin-top: .4rem;
+    }
+
+    .result-saving {
+      font-size: .72rem;
+      color: #b0a090;
+      margin-top: .4rem;
+      display: none;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .result-top3 {
+      margin-top: .7rem;
+    }
+
+    .top3-item {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      margin-bottom: .35rem;
+      font-size: .78rem;
+      color: #7a6a58;
+    }
+
+    .top3-rank {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--fog);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .65rem;
+      font-weight: 700;
+      color: var(--bark);
+      flex-shrink: 0;
+    }
+
+    .top3-bar-bg {
+      flex: 1;
+      height: 5px;
+      background: var(--fog);
+      border-radius: 100px;
+      overflow: hidden;
+      max-width: 120px;
+    }
+
+    .top3-bar-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--sand), var(--rust));
+      transition: width .8s ease;
+    }
+
+    .top3-pct {
+      font-size: .72rem;
+      font-weight: 500;
+      color: var(--bark);
+      min-width: 40px;
+      text-align: right;
+    }
+
+    .result-not-dog {
+      background: #fdf0ee;
+      border: 1px solid #f5c6cb;
+      border-radius: 10px;
+      padding: .6rem .8rem;
+      margin-top: .5rem;
+      font-size: .8rem;
+      color: #c0392b;
+    }
+
+    .result-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--fog);
+      border: none;
+      cursor: pointer;
+      font-size: .8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .result-close:hover {
+      background: #ddd;
+    }
+
+    .spinner {
+      width: 11px;
+      height: 11px;
+      border: 2px solid var(--fog);
+      border-top-color: var(--sand);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* CARDS */
+    .cards {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 2rem 2rem 4rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card {
+      background: #fff;
+      border: 1.5px solid var(--fog);
+      border-radius: 24px;
+      width: 340px;
+      padding: 2.5rem 2rem 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform .35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow .35s, border-color .3s;
+      animation: fadeUp .8s ease both;
+    }
+
+    .card:nth-child(3) {
+      animation-delay: .12s;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity .3s;
+      border-radius: inherit;
+    }
+
+    .card-scan::before {
+      background: radial-gradient(ellipse at top left, #e8f0e5 0%, transparent 70%);
+    }
+
+    .card-upload::before {
+      background: radial-gradient(ellipse at top right, #fdf0e4 0%, transparent 70%);
+    }
+
+    .card:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 0 24px 60px rgba(59, 42, 26, .13);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card-scan:hover {
+      border-color: var(--leaf);
+    }
+
+    .card-upload:hover {
+      border-color: var(--sand);
+    }
+
+    .card-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-scan .card-icon {
+      background: #e8f0e5;
+    }
+
+    .card-upload .card-icon {
+      background: #fdf0e4;
+    }
+
+    .card-tag {
+      position: absolute;
+      top: 1.4rem;
+      right: 1.4rem;
+      font-size: .65rem;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: .25rem .65rem;
+      border-radius: 100px;
+      z-index: 1;
+    }
+
+    .card-scan .card-tag {
+      background: #e8f0e5;
+      color: var(--moss);
+    }
+
+    .card-upload .card-tag {
+      background: #fdf0e4;
+      color: var(--rust);
+    }
+
+    .card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      margin-bottom: .6rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card>p {
+      font-size: .88rem;
+      color: #8a7a6a;
+      line-height: 1.65;
+      font-weight: 300;
+      margin-bottom: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Scan area */
+    .scan-area {
+      border: 2px dashed #c5d4be;
+      border-radius: 16px;
+      padding: 2rem 1rem;
+      text-align: center;
+      background: #f6faf5;
+      transition: background .2s, border-color .2s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .scan-area:hover {
+      background: #edf5eb;
+      border-color: var(--leaf);
+    }
+
+    .scan-ring {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 3px solid var(--leaf);
+      margin: 0 auto .75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse-ring 2.4s ease-in-out infinite;
+      position: relative;
+    }
+
+    .scan-ring::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 2px solid var(--leaf);
+      opacity: .3;
+      animation: pulse-ring 2.4s ease-in-out infinite .4s;
+    }
+
+    .scan-line {
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--leaf), transparent);
+      animation: scan-sweep 2.4s ease-in-out infinite;
+      border-radius: 2px;
+    }
+
+    @keyframes scan-sweep {
+      0% {
+        top: 10px;
+        opacity: 0
+      }
+
+      20% {
+        opacity: 1
+      }
+
+      80% {
+        opacity: 1
+      }
+
+      100% {
+        top: calc(100% - 10px);
+        opacity: 0
+      }
+    }
+
+    .btn-start {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      width: 100%;
+      margin-top: 1.5rem;
+      padding: .9rem 1rem;
+      border: none;
+      border-radius: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: filter .2s, transform .15s, box-shadow .2s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-start:hover {
+      filter: brightness(1.07);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(59, 42, 26, .14);
+    }
+
+    .btn-start:active {
+      transform: scale(.97);
+    }
+
+    .btn-start:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+      transform: none;
+      filter: none;
+    }
+
+    .btn-scan {
+      background: var(--moss);
+      color: var(--cream);
+    }
+
+    .btn-upload {
+      background: var(--rust);
+      color: var(--cream);
+    }
+
+    /* Upload zone */
+    .upload-zone {
+      border: 2px dashed #d8c8b4;
+      border-radius: 16px;
+      padding: 2rem 1rem;
+      text-align: center;
+      background: #fdf8f3;
+      transition: background .2s, border-color .2s;
+      position: relative;
+      z-index: 1;
+      cursor: pointer;
+    }
+
+    .upload-zone:hover,
+    .upload-zone.drag-over {
+      background: #fdf0e0;
+      border-color: var(--sand);
+    }
+
+    .upload-icon {
+      font-size: 2.2rem;
+      margin-bottom: .5rem;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .preview-box {
+      display: none;
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      z-index: 1;
+      border: 1.5px solid var(--fog);
+    }
+
+    .preview-box img {
+      width: 100%;
+      display: block;
+      max-height: 200px;
+      object-fit: cover;
+    }
+
+    .clear-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, .55);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      width: 24px;
+      flex-direction: column;
+      justify-content: center;
+      color: #c0b0a0;
+      font-size: .75rem;
+      letter-spacing: .1em;
+      opacity: .6;
+      padding-top: 6rem;
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+      content: '';
+      display: block;
+      width: 1px;
+      flex: 1;
+      background: var(--fog);
+    }
+
+    .formats {
+      text-align: center;
+      font-size: .75rem;
+      color: #b0a090;
+      padding-bottom: 3rem;
+      position: relative;
+      z-index: 1;
+      letter-spacing: .04em;
+    }
+
+    /* CAMERA MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(59, 42, 26, .55);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 500;
+      padding: 1rem;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+      animation: fadeIn .2s;
+    }
+
+    .modal {
+      background: #fff;
+      border-radius: 24px;
+      padding: 1.8rem;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 32px 80px rgba(59, 42, 26, .25);
+      animation: slideUp .3s ease;
+      position: relative;
+    }
+
+    .modal h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      margin-bottom: .8rem;
+      color: var(--bark);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--fog);
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      background: #ddd;
+    }
+
+    .cam-select-row {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      margin-bottom: .6rem;
+    }
+
+    .cam-select-row label {
+      font-size: .76rem;
+      color: #7a6a58;
+      white-space: nowrap;
+    }
+
+    .cam-select-row select {
+      flex: 1;
+      padding: .4rem .6rem;
+      border: 1.5px solid var(--fog);
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .78rem;
+      background: #fff;
+    }
+
+    .video-wrapper {
+      position: relative;
+    }
+
+    video#cameraFeed {
+      width: 100%;
+      border-radius: 12px;
+      background: #111;
+      display: block;
+      min-height: 200px;
+    }
+
+    .cam-error {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      color: #ddd;
+      font-size: .86rem;
+      min-height: 200px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+    }
+
+    .scan-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .corner {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-color: rgba(255, 255, 255, .75);
+      border-style: solid;
+    }
+
+    .corner.tl {
+      top: 8px;
+      left: 8px;
+      border-width: 3px 0 0 3px;
+      border-radius: 3px 0 0 0;
+    }
+
+    .corner.tr {
+      top: 8px;
+      right: 8px;
+      border-width: 3px 3px 0 0;
+      border-radius: 0 3px 0 0;
+    }
+
+    .corner.bl {
+      bottom: 8px;
+      left: 8px;
+      border-width: 0 0 3px 3px;
+      border-radius: 0 0 0 3px;
+    }
+
+    .corner.br {
+      bottom: 8px;
+      right: 8px;
+      border-width: 0 3px 3px 0;
+      border-radius: 0 0 3px 0;
+    }
+
+    .captured-box {
+      display: none;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid var(--leaf);
+      margin-top: .5rem;
+    }
+
+    .captured-box img {
+      width: 100%;
+      display: block;
+      max-height: 240px;
+      object-fit: cover;
+    }
+
+    .retake-btn {
+      width: 100%;
+      margin-top: .5rem;
+      padding: .65rem;
+      background: var(--fog);
+      color: var(--bark);
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .84rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .retake-btn:hover {
+      background: #ddd;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: .75rem;
+      margin-top: .8rem;
+    }
+
+    .modal-actions button {
+      flex: 1;
+      padding: .8rem;
+      border-radius: 12px;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .86rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: filter .2s, transform .15s;
+    }
+
+    .modal-actions button:hover {
+      filter: brightness(1.08);
+      transform: scale(1.02);
+    }
+
+    .modal-actions button:active {
+      transform: scale(.97);
+    }
+
+    .modal-actions button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+      transform: none;
+      filter: none;
+    }
+
+    #captureBtn {
+      background: var(--moss);
+      color: var(--cream);
+    }
+
+    #cancelBtn {
+      background: var(--fog);
+      color: var(--bark);
+    }
+
+    /* PROFILE MODAL */
+    .profile-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(59, 42, 26, .55);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 600;
+      padding: 1rem;
+    }
+
+    .profile-modal.open {
+      display: flex;
+    }
+
+    .pm-box {
+      background: #fff;
+      border-radius: 24px;
+      padding: 2rem;
+      max-width: 480px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 32px 80px rgba(59, 42, 26, .25);
+      animation: slideUp .3s ease;
+      position: relative;
+    }
+
+    .pm-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--fog);
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pm-close:hover {
+      background: #ddd;
+    }
+
+    .pm-tabs {
+      display: flex;
+      margin-bottom: 1.5rem;
+      border: 1.5px solid var(--fog);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .pm-tab {
+      flex: 1;
+      padding: .65rem;
+      text-align: center;
+      font-size: .82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+      color: #8a7a6a;
+      background: #fafafa;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .pm-tab.active {
+      background: var(--bark);
+      color: var(--cream);
+    }
+
+    .pm-panel {
+      display: none;
+    }
+
+    .pm-panel.active {
+      display: block;
+    }
+
+    .pm-field {
+      margin-bottom: 14px;
+    }
+
+    .pm-field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: #7a6a58;
+      margin-bottom: 5px;
+    }
+
+    .pm-field input,
+    .pm-field select {
+      width: 100%;
+      padding: 11px 13px;
+      border: 1.5px solid var(--fog);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      background: #fff;
+      transition: border .2s;
+    }
+
+    .pm-field input:focus,
+    .pm-field select:focus {
+      outline: none;
+      border-color: var(--rust);
+    }
+
+    .pm-btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      font-weight: 500;
+      transition: filter .2s, transform .15s;
+      background: var(--rust);
+      color: var(--cream);
+      margin-top: 6px;
+    }
+
+    .pm-btn:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+
+    .pm-btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .pm-btn.secondary {
+      background: var(--fog);
+      color: var(--bark);
+      margin-top: 8px;
+    }
+
+    .pm-alert {
+      border-radius: 8px;
+      padding: 10px 13px;
+      font-size: 12.5px;
+      margin: 10px 0;
+      display: none;
+    }
+
+    .pm-alert.show {
+      display: block;
+    }
+
+    .pm-alert.error {
+      background: #ffeaea;
+      color: #c0392b;
+      border: 1px solid #f5c6cb;
+    }
+
+    .pm-alert.success {
+      background: #eafaf1;
+      color: #1e8449;
+      border: 1px solid #b2dfdb;
+    }
+
+    .pm-alert.info {
+      background: #eaf3ff;
+      color: #1a5276;
+      border: 1px solid #b8d4f8;
+    }
+
+    .pm-otp-inputs {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      margin: 12px 0;
+    }
+
+    .pm-otp-inputs input {
+      width: 40px;
+      height: 46px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+      border: 1.5px solid var(--fog);
+      border-radius: 8px;
+      transition: all .2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .pm-otp-inputs input:focus {
+      outline: none;
+      border-color: var(--rust);
+    }
+
+    .email-step {
+      display: none;
+    }
+
+    .email-step.active {
+      display: block;
+    }
+
+    /* KEYFRAMES */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(28px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    @keyframes pulse-ring {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 1
+      }
+
+      50% {
+        transform: scale(1.08);
+        opacity: .7
+      }
+    }
+
+    /* ═══ BREED INFO SECTION ═══════════════════════════════════════ */
+    .breed-info-section {
+      display: none;
+      max-width: 760px;
+      margin: 0 auto 2rem;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp .6s ease both;
+    }
+
+    .breed-info-section.show {
+      display: block;
+    }
+
+    .breed-info-header {
+      text-align: center;
+      margin-bottom: 1.2rem;
+    }
+
+    .breed-info-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--bark);
+      margin-bottom: .3rem;
+    }
+
+    .breed-info-header p {
+      font-size: .82rem;
+      color: #8a7a6a;
+    }
+
+    .info-tabs {
+      display: flex;
+      gap: .5rem;
+      margin-bottom: 1rem;
+      background: #fff;
+      border: 1.5px solid var(--fog);
+      border-radius: 14px;
+      padding: .35rem;
+      box-shadow: 0 2px 10px rgba(59, 42, 26, .05);
+    }
+
+    .info-tab {
+      flex: 1;
+      padding: .7rem .5rem;
+      text-align: center;
+      border: none;
+      background: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .82rem;
+      font-weight: 500;
+      color: #8a7a6a;
+      cursor: pointer;
+      transition: all .25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .4rem;
+    }
+
+    .info-tab:hover {
+      background: var(--cream);
+      color: var(--bark);
+    }
+
+    .info-tab.active-food {
+      background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+      color: #2e7d32;
+      box-shadow: 0 3px 12px rgba(46, 125, 50, .15);
+    }
+
+    .info-tab.active-vaccine {
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      color: #1565c0;
+      box-shadow: 0 3px 12px rgba(21, 101, 192, .15);
+    }
+
+    .info-tab.active-behavior {
+      background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+      color: #e65100;
+      box-shadow: 0 3px 12px rgba(230, 81, 0, .15);
+    }
+
+    .info-tab-icon {
+      font-size: 1.1rem;
+    }
+
+    .info-panel {
+      display: none;
+      background: #fff;
+      border: 1.5px solid var(--fog);
+      border-radius: 20px;
+      padding: 1.8rem;
+      box-shadow: 0 8px 30px rgba(59, 42, 26, .08);
+      animation: fadeUp .35s ease both;
+    }
+
+    .info-panel.show {
+      display: block;
+    }
+
+    .info-card {
+      background: var(--cream);
+      border-radius: 14px;
+      padding: 1.1rem 1.2rem;
+      margin-bottom: .8rem;
+      border: 1px solid rgba(59, 42, 26, .06);
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .info-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(59, 42, 26, .08);
+    }
+
+    .info-card:last-child {
+      margin-bottom: 0;
+    }
+
+    .info-card-header {
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+      margin-bottom: .55rem;
+    }
+
+    .info-card-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .95rem;
+      flex-shrink: 0;
+    }
+
+    .info-card-title {
+      font-weight: 600;
+      font-size: .88rem;
+      color: var(--bark);
+    }
+
+    .info-card-body {
+      font-size: .82rem;
+      color: #6a5a4a;
+      line-height: 1.7;
+    }
+
+    .info-card-body ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .info-card-body li {
+      padding: .25rem 0;
+      padding-left: 1.2rem;
+      position: relative;
+    }
+
+    .info-card-body li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--moss);
+      font-weight: 700;
+    }
+
+    .info-tag {
+      display: inline-block;
+      padding: .2rem .6rem;
+      border-radius: 100px;
+      font-size: .7rem;
+      font-weight: 600;
+      margin-right: .4rem;
+      margin-bottom: .3rem;
+    }
+
+    .tag-green {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .tag-red {
+      background: #ffebee;
+      color: #c62828;
+    }
+
+    .tag-blue {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+
+    .tag-orange {
+      background: #fff3e0;
+      color: #e65100;
+    }
+
+    .tag-purple {
+      background: #f3e5f5;
+      color: #6a1b9a;
+    }
+
+    .vaccine-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 .35rem;
+    }
+
+    .vaccine-table td {
+      padding: .45rem .6rem;
+      font-size: .8rem;
+      vertical-align: top;
+    }
+
+    .vaccine-table td:first-child {
+      font-weight: 600;
+      color: var(--bark);
+      white-space: nowrap;
+      width: 35%;
+    }
+
+    .vaccine-table td:last-child {
+      color: #6a5a4a;
+    }
+
+    .behavior-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .6rem;
+    }
+
+    .behavior-stat {
+      background: var(--cream);
+      border-radius: 10px;
+      padding: .7rem .9rem;
+      border: 1px solid rgba(59, 42, 26, .06);
+    }
+
+    .behavior-stat-label {
+      font-size: .7rem;
+      font-weight: 500;
+      color: #9a8a7a;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: .2rem;
+    }
+
+    .behavior-stat-value {
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--bark);
+    }
+
+    .info-note {
+      display: flex;
+      gap: .5rem;
+      align-items: flex-start;
+      background: #fdf8f3;
+      border: 1px solid var(--sand);
+      border-radius: 10px;
+      padding: .8rem 1rem;
+      margin-top: .7rem;
+      font-size: .78rem;
+      color: #6a5a4a;
+      line-height: 1.6;
+    }
+
+    .info-note-icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+      margin-top: .1rem;
+    }
+
+    .breed-info-loading {
+      text-align: center;
+      padding: 2rem;
+      color: #9a8a7a;
+      font-size: .88rem;
+    }
+
+    .breed-info-loading .spinner {
+      width: 18px;
+      height: 18px;
+    }
+
+    @media(max-width:600px) {
+      .navbar {
+        padding: 0 1rem;
+      }
+
+      .cards {
+        padding: 2rem 1rem 3rem;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .or-divider {
+        flex-direction: row;
+        padding-top: 0;
+        width: auto;
+        height: 24px;
+      }
+
+      .or-divider::before,
+      .or-divider::after {
+        width: 40px;
+        height: 1px;
+        flex: none;
+      }
+
+      .result-banner {
+        padding: 0 1rem;
+      }
+
+      .breed-info-section {
+        padding: 0 1rem;
+      }
+
+      .info-tabs {
+        gap: .3rem;
+        padding: .25rem;
+      }
+
+      .info-tab {
+        font-size: .74rem;
+        padding: .55rem .3rem;
+      }
+
+      .info-tab-label {
+        display: none;
+      }
+
+      .info-tab-icon {
+        font-size: 1.2rem;
+      }
+
+      .behavior-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .info-panel {
+        padding: 1.2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="home_page.htm" class="nav-brand">
+      <div class="logo-paw">🐾</div>
+      <div class="logo-text">Paw<span>Detect</span></div>
+    </a>
+    <div class="nav-right">
+      <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()" title="My Account">👤</button>
+      <div class="profile-dropdown" id="profileDropdown">
+        <div class="dropdown-header">
+          <div class="uname" id="ddName">…</div>
+          <div class="uemail" id="ddEmail"></div>
+        </div>
+        <button class="dropdown-item" onclick="openProfile()">👤 My Profile</button>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item logout" onclick="doLogout()">🚪 Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">AI-Powered Breed Detection</div>
+    <h1>Meet your dog's <em>inner identity</em></h1>
+    <p>Point your camera or drop a photo — our model identifies breed, traits, and more in seconds.</p>
+  </div>
+
+  <!-- RESULT BANNER (replaces alert) -->
+  <div class="result-banner" id="resultBanner">
+    <div class="result-card">
+      <img class="result-thumb" id="resultThumb" src="" alt="Dog" />
+      <div class="result-info">
+        <div class="result-label">Detection Result</div>
+        <div class="result-breed" id="resultBreed">—</div>
+        <div class="result-conf" id="resultConf"></div>
+        <div class="conf-bar">
+          <div class="conf-fill" id="confFill" style="width:0%"></div>
+        </div>
+        <div class="result-source" id="resultSource"></div>
+        <div class="result-saving" id="resultSaving"><span class="spinner"></span> Analyzing breed…</div>
+        <div class="result-top3" id="resultTop3"></div>
+      </div>
+      <button class="result-close" onclick="closeResult()">✕</button>
+    </div>
+  </div>
+
+  <!-- BREED INFO SECTION -->
+  <div class="breed-info-section" id="breedInfoSection">
+    <div class="breed-info-header">
+      <h2 id="breedInfoTitle">🐾 Breed Insights</h2>
+      <p id="breedInfoSubtitle">Everything you need to know about caring for this breed</p>
+    </div>
+
+    <div class="info-tabs">
+      <button class="info-tab" onclick="goToModule('food')">
+        <span class="info-tab-icon">🍖</span> <span class="info-tab-label">Food & Diet</span>
+      </button>
+      <button class="info-tab" onclick="goToModule('vaccine')">
+        <span class="info-tab-icon">💉</span> <span class="info-tab-label">Vaccines</span>
+      </button>
+      <button class="info-tab" onclick="goToModule('behavior')">
+        <span class="info-tab-icon">🐕</span> <span class="info-tab-label">Behavior</span>
+      </button>
+    </div>
+
+    <div class="breed-info-loading" id="breedInfoLoading" style="display:none">
+      <span class="spinner"></span> Loading breed information…
+    </div>
+  </div>
+
+  <!-- CARDS -->
+  <div class="cards">
+
+    <!-- Scan Card -->
+    <div class="card card-scan">
+      <span class="card-tag">Live</span>
+      <div class="card-icon">📷</div>
+      <h2>Scan with Camera</h2>
+      <p>Use your device camera for real-time detection. Best for quick on-the-spot breed identification.</p>
+      <div class="scan-area">
+        <div class="scan-ring">
+          <div class="scan-line"></div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </div>
+        <p style="font-size:.8rem;color:#8a9a84;margin-top:.5rem">Camera preview will appear here</p>
+      </div>
+      <button class="btn-start btn-scan" id="openCamBtn" onclick="openCamera()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z" />
+        </svg>
+        Start Scanning
+      </button>
+    </div>
+
+    <div class="or-divider">or</div>
+
+    <!-- Upload Card -->
+    <div class="card card-upload">
+      <span class="card-tag">Upload</span>
+      <div class="card-icon">🖼️</div>
+      <h2>Upload an Image</h2>
+      <p>Select or drag-and-drop any photo of your dog. Supports JPG, PNG, and WEBP formats.</p>
+      <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()"
+        ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+        <div class="upload-icon">⬆️</div>
+        <p><strong>Click to browse</strong> or drag &amp; drop</p>
+        <p style="margin-top:.3rem;font-size:.72rem;">JPG · PNG · WEBP — up to 10 MB</p>
+      </div>
+      <div class="preview-box" id="previewBox">
+        <img id="previewImg" src="" alt="Preview" />
+        <button class="clear-btn" onclick="clearImage(event)">✕</button>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" onchange="onFileSelect(event)" />
+      <button class="btn-start btn-upload" id="analyzeBtn" onclick="analyzeUpload()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 2L2 7l10 5 10-5-10-5z" />
+          <path d="M2 17l10 5 10-5" />
+          <path d="M2 12l10 5 10-5" />
+        </svg>
+        Analyze Image
+      </button>
+    </div>
+  </div>
+
+  <div class="formats">Powered by MobileNetV2 · Trained on 120+ dog breeds</div>
+
+  <!-- CAMERA MODAL -->
+  <div class="modal-overlay" id="cameraModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeCamera()">✕</button>
+      <h3>🐾 Live Scanner</h3>
+
+      <div class="cam-select-row" id="camSelectRow" style="display:none">
+        <label>Camera:</label>
+        <select id="camSelect" onchange="switchCamera()"></select>
+      </div>
+
+      <div class="video-wrapper" id="videoWrapper">
+        <video id="cameraFeed" autoplay playsinline muted></video>
+        <div class="scan-overlay">
+          <div class="corner tl"></div>
+          <div class="corner tr"></div>
+          <div class="corner bl"></div>
+          <div class="corner br"></div>
+        </div>
+      </div>
+      <div class="cam-error" id="camError">
+        <span style="font-size:2rem">📷</span>
+        <strong>Camera unavailable</strong>
+        <span id="camErrorMsg">Please allow camera permission and try again.</span>
+      </div>
+
+      <div class="captured-box" id="capturedBox">
+        <img id="capturedImg" src="" alt="Captured frame" />
+      </div>
+      <button class="retake-btn" id="retakeBtn" style="display:none" onclick="retake()">🔄 Retake Photo</button>
+
+      <div class="modal-actions">
+        <button id="captureBtn" onclick="captureFrame()">📸 Capture &amp; Analyze</button>
+        <button id="cancelBtn" onclick="closeCamera()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE MODAL -->
+  <div class="profile-modal" id="profileModal">
+    <div class="pm-box">
+      <button class="pm-close" onclick="closeProfile()">✕</button>
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.35rem;color:var(--bark);margin-bottom:1.1rem">My
+        Profile</h3>
+
+      <div class="pm-tabs">
+        <button class="pm-tab active" onclick="switchTab('tabInfo',this)">👤 Info</button>
+        <button class="pm-tab" onclick="switchTab('tabEmail',this)">✉️ Change Email</button>
+      </div>
+
+      <div class="pm-panel active" id="tabInfo">
+        <div class="pm-alert" id="infoAlert"></div>
+        <div class="pm-field"><label>Full Name</label><input type="text" id="pmName" placeholder="Your full name"></div>
+        <div class="pm-field"><label>Mobile Number</label><input type="tel" id="pmMobile" placeholder="+91 XXXXXXXXXX">
+        </div>
+        <div class="pm-field"><label>Age</label><input type="number" id="pmAge" min="1" max="120"
+            placeholder="Your age"></div>
+        <div class="pm-field">
+          <label>Gender</label>
+          <select id="pmGender">
+            <option value="">Prefer not to say</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+            <option value="prefer_not_to_say">Prefer not to say</option>
+          </select>
+        </div>
+        <button class="pm-btn" onclick="saveProfile()">💾 Save Changes</button>
+      </div>
+
+      <div class="pm-panel" id="tabEmail">
+        <div class="pm-alert" id="emailAlert"></div>
+        <div class="email-step active" id="emailStep1">
+          <p style="font-size:13px;color:#7a6a58;margin-bottom:10px">We'll send an OTP to your <strong>current
+              email</strong> to verify it's you.</p>
+          <p style="font-size:13px;font-weight:500;margin-bottom:14px">Current: <span id="currentEmailDisplay"></span>
+          </p>
+          <button class="pm-btn" onclick="requestEmailChange()">📧 Send Verification OTP</button>
+        </div>
+        <div class="email-step" id="emailStep2">
+          <p style="font-size:13px;color:#7a6a58;margin-bottom:8px">Enter the OTP sent to your current email:</p>
+          <div class="pm-otp-inputs" id="ceOTPBoxes1"></div>
+          <button class="pm-btn" onclick="verifyCurrentOTP()">✅ Verify OTP</button>
+          <button class="pm-btn secondary" onclick="goEmailStep(1)">← Back</button>
+        </div>
+        <div class="email-step" id="emailStep3">
+          <p style="font-size:13px;color:#7a6a58;margin-bottom:10px">Enter your new email address:</p>
+          <div class="pm-field"><label>New Email</label><input type="email" id="newEmailInput"
+              placeholder="new@email.com"></div>
+          <button class="pm-btn" onclick="sendNewEmailOTP()">📧 Send OTP to New Email</button>
+          <button class="pm-btn secondary" onclick="goEmailStep(1)">← Start Over</button>
+        </div>
+        <div class="email-step" id="emailStep4">
+          <p style="font-size:13px;color:#7a6a58;margin-bottom:8px">Enter the OTP sent to your new email:</p>
+          <div class="pm-otp-inputs" id="ceOTPBoxes2"></div>
+          <button class="pm-btn" onclick="verifyNewEmailOTP()">✅ Confirm New Email</button>
+          <button class="pm-btn secondary" onclick="goEmailStep(3)">← Back</button>
+        </div>
+        <div class="email-step" id="emailStep5" style="text-align:center;padding:20px 0">
+          <div style="font-size:46px;margin-bottom:10px">✅</div>
+          <p style="font-weight:500;color:var(--moss)">Email updated successfully!</p>
+          <p style="font-size:13px;color:#8a7a6a;margin-top:6px">Please login again with your new email.</p>
+          <button class="pm-btn" style="margin-top:14px" onclick="doLogout()">🔑 Go to Login</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toastContainer"></div>
+
+  <script>
+    /* ═══ AUTH ═══════════════════════════════════════════════════════ */
+    const userEmail = sessionStorage.getItem('pawdetect_user_email') || '';
+    const userName = sessionStorage.getItem('pawdetect_user_name') || 'User';
+    if (!userEmail) window.location.href = 'login_page.htm';
+
+    document.getElementById('ddName').textContent = userName;
+    document.getElementById('ddEmail').textContent = userEmail;
+    document.getElementById('currentEmailDisplay').textContent = userEmail;
+
+    function toggleDropdown() {
+      document.getElementById('profileDropdown').classList.toggle('open');
+    }
+    document.addEventListener('click', e => {
+      const dd = document.getElementById('profileDropdown');
+      const pb = document.getElementById('profileBtn');
+      if (!dd.contains(e.target) && !pb.contains(e.target)) dd.classList.remove('open');
+    });
+    function doLogout() {
+      sessionStorage.clear();
+      fetch('logout.php').catch(() => { });
+      window.location.href = 'home_page.htm';
+    }
+
+    /* ═══ TOAST ══════════════════════════════════════════════════════ */
+    function showToast(msg, type = 'info', ms = 3500) {
+      const t = document.createElement('div');
+      t.className = `toast ${type}`;
+      const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+      t.innerHTML = `<span>${icons[type] || 'ℹ️'}</span><span>${msg}</span>`;
+      document.getElementById('toastContainer').appendChild(t);
+      setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 400); }, ms);
+    }
+
+    /* ═══ RESULT BANNER ══════════════════════════════════════════════ */
+    function showResult(imgSrc, breed, confidence, source) {
+      document.getElementById('resultThumb').src = imgSrc || '';
+      document.getElementById('resultBreed').textContent = breed
+        ? breed.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '—';
+      document.getElementById('resultConf').textContent = confidence != null
+        ? `Confidence: ${(confidence * 100).toFixed(1)}%` : '';
+      document.getElementById('confFill').style.width = confidence != null
+        ? Math.min(confidence * 100, 100) + '%' : '0%';
+      document.getElementById('resultSource').textContent =
+        source === 'camera' ? '📷 Captured from camera' : '🖼️ Uploaded image';
+      setSaving(false);
+      document.getElementById('resultBanner').classList.add('show');
+      document.getElementById('resultBanner').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    function closeResult() {
+      document.getElementById('resultBanner').classList.remove('show');
+      document.getElementById('breedInfoSection').classList.remove('show');
+    }
+    function setSaving(on) {
+      document.getElementById('resultSaving').style.display = on ? 'flex' : 'none';
+    }
+
+    /* ═══ CAMERA ═════════════════════════════════════════════════════ */
+    let stream = null;
+    let capturedDataUrl = null;
+
+    async function openCamera() {
+      // reset state
+      capturedDataUrl = null;
+      document.getElementById('capturedBox').style.display = 'none';
+      document.getElementById('retakeBtn').style.display = 'none';
+      document.getElementById('cameraFeed').style.display = 'block';
+      document.getElementById('camError').style.display = 'none';
+      document.getElementById('captureBtn').disabled = false;
+      document.getElementById('captureBtn').textContent = '📸 Capture & Analyze';
+      document.getElementById('captureBtn').onclick = captureFrame;
+      document.getElementById('cameraModal').classList.add('open');
+
+      // enumerate real cameras only
+      try {
+        // request permission first so labels are available
+        const tempStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        tempStream.getTracks().forEach(t => t.stop());
+
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const cams = devices.filter(d => d.kind === 'videoinput');
+        const sel = document.getElementById('camSelect');
+        sel.innerHTML = '';
+        cams.forEach((d, i) => {
+          const opt = document.createElement('option');
+          opt.value = d.deviceId;
+          opt.textContent = d.label || `Camera ${i + 1}`;
+          sel.appendChild(opt);
+        });
+        document.getElementById('camSelectRow').style.display = cams.length > 1 ? 'flex' : 'none';
+      } catch (e) { /* fallback below */ }
+
+      await startStream();
+    }
+
+    async function startStream(deviceId = null) {
+      if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+
+      // Build constraints — prefer real cameras over virtual ones
+      const videoConstraints = deviceId
+        ? { deviceId: { exact: deviceId } }
+        : {
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          facingMode: { ideal: 'user' }  // prefer front cam on desktop
+        };
+
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: videoConstraints });
+        const video = document.getElementById('cameraFeed');
+        video.srcObject = stream;
+        video.style.display = 'block';
+        document.getElementById('camError').style.display = 'none';
+        document.getElementById('captureBtn').disabled = false;
+
+        // highlight selected camera in dropdown
+        const track = stream.getVideoTracks()[0];
+        const sid = track.getSettings().deviceId;
+        if (sid) document.getElementById('camSelect').value = sid;
+
+      } catch (err) {
+        document.getElementById('cameraFeed').style.display = 'none';
+        const box = document.getElementById('camError');
+        box.style.display = 'flex';
+        const msgs = {
+          NotAllowedError: 'Camera permission denied. Please allow access in your browser settings.',
+          NotFoundError: 'No camera found on this device.',
+          NotReadableError: 'Camera is already in use by another application. Please close it and try again.',
+        };
+        document.getElementById('camErrorMsg').textContent = msgs[err.name] || err.message || 'Camera unavailable.';
+        document.getElementById('captureBtn').disabled = true;
+      }
+    }
+
+    async function switchCamera() {
+      await startStream(document.getElementById('camSelect').value);
+    }
+
+    function closeCamera() {
+      document.getElementById('cameraModal').classList.remove('open');
+      if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+      capturedDataUrl = null;
+    }
+
+    async function captureFrame() {
+      const video = document.getElementById('cameraFeed');
+      if (!video.videoWidth) { showToast('Camera is not ready yet. Wait a moment.', 'error'); return; }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0);
+      capturedDataUrl = canvas.toDataURL('image/jpeg', 0.92);
+
+      // Show still preview
+      document.getElementById('capturedImg').src = capturedDataUrl;
+      document.getElementById('capturedBox').style.display = 'block';
+      document.getElementById('cameraFeed').style.display = 'none';
+      document.getElementById('retakeBtn').style.display = 'block';
+      document.getElementById('captureBtn').textContent = '✅ Save & Analyze';
+      document.getElementById('captureBtn').onclick = confirmCapture;
+    }
+
+    function retake() {
+      capturedDataUrl = null;
+      document.getElementById('capturedBox').style.display = 'none';
+      document.getElementById('retakeBtn').style.display = 'none';
+      document.getElementById('cameraFeed').style.display = 'block';
+      document.getElementById('captureBtn').textContent = '📸 Capture & Analyze';
+      document.getElementById('captureBtn').onclick = captureFrame;
+    }
+
+    async function confirmCapture() {
+      const dataUrl = capturedDataUrl;
+      closeCamera();
+
+      // Show result banner with spinner
+      document.getElementById('resultThumb').src = dataUrl;
+      document.getElementById('resultBreed').textContent = 'Processing…';
+      document.getElementById('resultConf').textContent = '';
+      document.getElementById('confFill').style.width = '0%';
+      document.getElementById('resultSource').textContent = '📷 Captured from camera';
+      document.getElementById('resultTop3').innerHTML = '';
+      setSaving(true);
+      document.getElementById('resultBanner').classList.add('show');
+      document.getElementById('resultBanner').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      // Step 1: Save image to server
+      const result = await saveImage(dataUrl, 'camera');
+
+      if (!result || !result.success) {
+        setSaving(false);
+        document.getElementById('resultBreed').textContent = 'Save Failed';
+        document.getElementById('resultConf').textContent = 'Could not save to server. Check your PHP setup.';
+        showToast('Photo captured but could not be saved.', 'error');
+        return;
+      }
+
+      // Step 2: Run CNN breed detection
+      const prediction = await predictBreed(result.image_path, result.scan_id);
+      setSaving(false);
+
+      if (prediction && prediction.success) {
+        displayPrediction(prediction, dataUrl, 'camera');
+        showToast('Breed detected: ' + prediction.breed, 'success');
+      } else {
+        document.getElementById('resultBreed').textContent = 'Detection Failed';
+        document.getElementById('resultConf').textContent = prediction ? prediction.message : 'CNN API unreachable. Run: python dog_breed_detector.py';
+        showToast('Image saved but breed detection failed.', 'error');
+      }
+    }
+
+    /* ═══ UPLOAD ═════════════════════════════════════════════════════ */
+    let selectedFile = null;
+
+    function onFileSelect(e) {
+      const f = e.target.files[0];
+      if (f) { selectedFile = f; showPreview(f); }
+    }
+    function onDragOver(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('drag-over'); }
+    function onDragLeave(e) { document.getElementById('dropZone').classList.remove('drag-over'); }
+    function onDrop(e) {
+      e.preventDefault(); document.getElementById('dropZone').classList.remove('drag-over');
+      const f = e.dataTransfer.files[0];
+      if (f && f.type.startsWith('image/')) { selectedFile = f; showPreview(f); }
+    }
+    function showPreview(file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById('previewImg').src = e.target.result;
+        document.getElementById('previewBox').style.display = 'block';
+        document.getElementById('dropZone').style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    }
+    function clearImage(e) {
+      e.stopPropagation();
+      document.getElementById('previewBox').style.display = 'none';
+      document.getElementById('dropZone').style.display = 'block';
+      document.getElementById('fileInput').value = '';
+      document.getElementById('previewImg').src = '';
+      selectedFile = null;
+      closeResult();
+    }
+
+    async function analyzeUpload() {
+      if (!selectedFile) { showToast('Please select an image first.', 'error'); return; }
+
+      const btn = document.getElementById('analyzeBtn');
+      btn.disabled = true; btn.textContent = 'Analyzing…';
+
+      const previewSrc = document.getElementById('previewImg').src;
+      document.getElementById('resultThumb').src = previewSrc;
+      document.getElementById('resultBreed').textContent = 'Processing…';
+      document.getElementById('resultConf').textContent = '';
+      document.getElementById('confFill').style.width = '0%';
+      document.getElementById('resultSource').textContent = '🖼️ Uploaded image';
+      document.getElementById('resultTop3').innerHTML = '';
+      setSaving(true);
+      document.getElementById('resultBanner').classList.add('show');
+      document.getElementById('resultBanner').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      // Step 1: Save image to server
+      const result = await saveImageFile(selectedFile);
+
+      if (!result || !result.success) {
+        setSaving(false);
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> Analyze Image`;
+        document.getElementById('resultBreed').textContent = 'Save Failed';
+        document.getElementById('resultConf').textContent = result
+          ? result.message : 'Server unreachable. Check PHP & uploads folder.';
+        showToast('Could not save image to server.', 'error');
+        closeResult();
+        return;
+      }
+
+      // Step 2: Run CNN breed detection
+      const prediction = await predictBreed(result.image_path, result.scan_id);
+      setSaving(false);
+      btn.disabled = false;
+      btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> Analyze Image`;
+
+      if (prediction && prediction.success) {
+        displayPrediction(prediction, previewSrc, 'upload');
+        showToast('Breed detected: ' + prediction.breed, 'success');
+      } else {
+        document.getElementById('resultBreed').textContent = 'Detection Failed';
+        document.getElementById('resultConf').textContent = prediction ? prediction.message : 'CNN API unreachable. Run: python dog_breed_detector.py';
+        showToast('Image saved but breed detection failed.', 'error');
+      }
+    }
+
+    /* ═══ SAVE TO SERVER ═════════════════════════════════════════════ */
+    async function saveImage(base64Data, source) {
+      const fd = new FormData();
+      fd.append('image_base64', base64Data);
+      fd.append('source', source);
+      try { return await (await fetch('save_scan.php', { method: 'POST', body: fd })).json(); }
+      catch (e) { return null; }
+    }
+    async function saveImageFile(file) {
+      const fd = new FormData();
+      fd.append('image', file);
+      fd.append('source', 'upload');
+      try { return await (await fetch('save_scan.php', { method: 'POST', body: fd })).json(); }
+      catch (e) { return null; }
+    }
+
+    /* ═══ CNN BREED PREDICTION ═══════════════════════════════════════════ */
+    async function predictBreed(imagePath, scanId) {
+      const fd = new FormData();
+      fd.append('image_path', imagePath);
+      fd.append('scan_id', scanId || 0);
+      try { return await (await fetch('predict.php', { method: 'POST', body: fd })).json(); }
+      catch (e) { return null; }
+    }
+
+    function displayPrediction(prediction, imgSrc, source) {
+      // Save state
+      const state = {
+        prediction: prediction,
+        imgSrc: imgSrc,
+        source: source,
+        timestamp: Date.now()
+      };
+      sessionStorage.setItem('last_prediction', JSON.stringify(state));
+
+      document.getElementById('resultThumb').src = imgSrc || '';
+      document.getElementById('resultSource').textContent =
+        source === 'camera' ? '📷 Captured from camera' : '🖼️ Uploaded image';
+
+      if (!prediction.is_dog) {
+        document.getElementById('resultBreed').textContent = '🐾 Not a Dog';
+        document.getElementById('resultConf').textContent = '';
+        document.getElementById('confFill').style.width = '0%';
+        document.getElementById('resultTop3').innerHTML =
+          '<div class="result-not-dog">⚠️ No dog breed detected. Please upload a clear photo of a dog.</div>';
+        showToast("The image isn't a dog image.", "error");
+        return;
+      }
+
+      const breed = prediction.breed || '—';
+      const conf = prediction.confidence || 0;
+      document.getElementById('resultBreed').textContent = '🐕 ' + breed;
+      document.getElementById('resultConf').textContent = `Confidence: ${(conf * 100).toFixed(1)}%`;
+      document.getElementById('confFill').style.width = Math.min(conf * 100, 100) + '%';
+
+      // Show top-3 predictions
+      const top3 = prediction.top3 || [];
+      if (top3.length > 0) {
+        let html = '';
+        top3.forEach((p, i) => {
+          const pct = (p.confidence * 100).toFixed(1);
+          html += `<div class="top3-item">
+        <span class="top3-rank">${i + 1}</span>
+        <span style="flex-shrink:0;min-width:100px">${p.breed}</span>
+        <div class="top3-bar-bg"><div class="top3-bar-fill" style="width:${pct}%"></div></div>
+        <span class="top3-pct">${p.confidence_pct}</span>
+      </div>`;
+        });
+        document.getElementById('resultTop3').innerHTML = html;
+      }
+
+      // Fetch breed info for the detected breed
+      if (prediction.is_dog && prediction.breed) {
+        fetchBreedInfo(prediction.breed);
+      } else {
+        document.getElementById('breedInfoSection').classList.remove('show');
+      }
+    }
+
+    /* ═══ PROFILE MODAL ══════════════════════════════════════════════ */
+    function openProfile() {
+      document.getElementById('profileDropdown').classList.remove('open');
+      loadProfile();
+      document.getElementById('profileModal').classList.add('open');
+    }
+    function closeProfile() { document.getElementById('profileModal').classList.remove('open'); }
+
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.pm-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.pm-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    async function loadProfile() {
+      try {
+        const data = await (await fetch('profile.php?action=get')).json();
+        if (data.success && data.user) {
+          const u = data.user;
+          document.getElementById('pmName').value = u.full_name || '';
+          document.getElementById('pmMobile').value = u.mobile || '';
+          document.getElementById('pmAge').value = u.age || '';
+          document.getElementById('pmGender').value = u.gender || '';
+        }
+      } catch (e) { }
+    }
+
+    async function saveProfile() {
+      showPMAlert('infoAlert', '');
+      const fd = new FormData();
+      fd.append('action', 'update');
+      fd.append('full_name', document.getElementById('pmName').value.trim());
+      fd.append('mobile', document.getElementById('pmMobile').value.trim());
+      fd.append('age', document.getElementById('pmAge').value);
+      fd.append('gender', document.getElementById('pmGender').value);
+      try {
+        const data = await (await fetch('profile.php', { method: 'POST', body: fd })).json();
+        showPMAlert('infoAlert', data.message, data.success ? 'success' : 'error');
+        if (data.success) {
+          const n = document.getElementById('pmName').value.trim();
+          sessionStorage.setItem('pawdetect_user_name', n);
+          document.getElementById('ddName').textContent = n;
+        }
+      } catch (e) { showPMAlert('infoAlert', 'Network error.', 'error'); }
+    }
+
+    function showPMAlert(id, msg, type = 'error') {
+      const el = document.getElementById(id);
+      if (!msg) { el.className = 'pm-alert'; el.textContent = ''; return; }
+      el.className = `pm-alert show ${type}`; el.textContent = msg;
+    }
+
+    /* ═══ EMAIL CHANGE ═══════════════════════════════════════════════ */
+    function goEmailStep(n) {
+      document.querySelectorAll('.email-step').forEach(s => s.classList.remove('active'));
+      document.getElementById('emailStep' + n).classList.add('active');
+      showPMAlert('emailAlert', '');
+    }
+    async function requestEmailChange() {
+      showPMAlert('emailAlert', '');
+      const fd = new FormData(); fd.append('action', 'request_email_change');
+      try {
+        const d = await (await fetch('profile.php', { method: 'POST', body: fd })).json();
+        if (d.success) { buildPMOTPBoxes('ceOTPBoxes1'); goEmailStep(2); }
+        else showPMAlert('emailAlert', d.message, 'error');
+      } catch (e) { showPMAlert('emailAlert', 'Network error.', 'error'); }
+    }
+    async function verifyCurrentOTP() {
+      showPMAlert('emailAlert', '');
+      const otp = getPMOTPValue('ceOTPBoxes1');
+      if (otp.length !== 6) { showPMAlert('emailAlert', 'Enter the 6-digit OTP.', 'error'); return; }
+      const fd = new FormData(); fd.append('action', 'verify_current_otp'); fd.append('otp', otp);
+      try {
+        const d = await (await fetch('profile.php', { method: 'POST', body: fd })).json();
+        if (d.success) goEmailStep(3); else showPMAlert('emailAlert', d.message, 'error');
+      } catch (e) { showPMAlert('emailAlert', 'Network error.', 'error'); }
+    }
+    async function sendNewEmailOTP() {
+      showPMAlert('emailAlert', '');
+      const ne = document.getElementById('newEmailInput').value.trim();
+      if (!ne) { showPMAlert('emailAlert', 'Enter a new email address.', 'error'); return; }
+      const fd = new FormData(); fd.append('action', 'send_new_email_otp'); fd.append('new_email', ne);
+      try {
+        const d = await (await fetch('profile.php', { method: 'POST', body: fd })).json();
+        if (d.success) { buildPMOTPBoxes('ceOTPBoxes2'); goEmailStep(4); }
+        else showPMAlert('emailAlert', d.message, 'error');
+      } catch (e) { showPMAlert('emailAlert', 'Network error.', 'error'); }
+    }
+    async function verifyNewEmailOTP() {
+      showPMAlert('emailAlert', '');
+      const otp = getPMOTPValue('ceOTPBoxes2');
+      if (otp.length !== 6) { showPMAlert('emailAlert', 'Enter the 6-digit OTP.', 'error'); return; }
+      const fd = new FormData(); fd.append('action', 'verify_new_email_otp'); fd.append('otp', otp);
+      try {
+        const d = await (await fetch('profile.php', { method: 'POST', body: fd })).json();
+        if (d.success) goEmailStep(5); else showPMAlert('emailAlert', d.message, 'error');
+      } catch (e) { showPMAlert('emailAlert', 'Network error.', 'error'); }
+    }
+
+    function buildPMOTPBoxes(cid) {
+      const c = document.getElementById(cid); c.innerHTML = '';
+      for (let i = 0; i < 6; i++) {
+        const inp = document.createElement('input');
+        inp.type = 'text'; inp.maxLength = 1; inp.inputMode = 'numeric';
+        inp.addEventListener('input', () => { inp.value = inp.value.replace(/\D/g, ''); if (inp.value && i < 5) c.children[i + 1].focus(); });
+        inp.addEventListener('keydown', e => { if (e.key === 'Backspace' && !inp.value && i > 0) c.children[i - 1].focus(); });
+        c.appendChild(inp);
+      }
+      setTimeout(() => c.children[0].focus(), 50);
+    }
+    function getPMOTPValue(cid) { return [...document.getElementById(cid).children].map(i => i.value).join(''); }
+
+    /* ═══ BREED INFO MODULES ═════════════════════════════════════════ */
+    let currentBreedInfo = null;
+
+    let currentBreedName = '';
+
+    async function fetchBreedInfo(breedName) {
+      const section = document.getElementById('breedInfoSection');
+      section.classList.add('show');
+      currentBreedName = breedName;
+      document.getElementById('breedInfoTitle').textContent = '🐾 ' + breedName + ' — Breed Insights';
+    }
+
+    function goToModule(type) {
+      if (!currentBreedName) return;
+      const pages = {
+        food: 'food_module.html',
+        vaccine: 'vaccination_module.html',
+        behavior: 'behavior_module.html'
+      };
+      const url = `${pages[type]}?breed=${encodeURIComponent(currentBreedName)}`;
+      window.location.href = url;
+    }
+
+    function renderFoodPanel(food) {
+      if (!food) return;
+      let html = '';
+      html += `<div class="info-card">
+    <div class="info-card-header">
+      <div class="info-card-icon" style="background:#e8f5e9">🥩</div>
+      <div class="info-card-title">Diet Type</div>
+    </div>
+    <div class="info-card-body">
+      <span class="info-tag tag-green">${food.diet_type}</span>
+    </div>
+  </div>`;
+
+      html += `<div class="info-card">
+    <div class="info-card-header">
+      <div class="info-card-icon" style="background:#e8f5e9">✅</div>
+      <div class="info-card-title">Recommended Foods</div>
+    </div>
+    <div class="info-card-body"><ul>${food.recommended_foods.map(f => '<li>' + f + '</li>').join('')}</ul></div>
+  </div>`;
+
+      html += `<div class="info-card">
+    <div class="info-card-header">
+      <div class="info-card-icon" style="background:#ffebee">🚫</div>
+      <div class="info-card-title">Foods to Avoid</div>
+    </div>
+    <div class="info-card-body"><ul>${food.foods_to_avoid.map(f => '<li>' + f + '</li>').join('')}</ul></div>
+  </div>`;
+
+      html += `<div class="info-card">
+    <div class="info-card-header">
+      <div class="info-card-icon" style="background:#e3f2fd">⏰</div>
+      <div class="info-card-title">Feeding Schedule</div>
+    </div>
+    <div class="info-card-body">
+      <p><strong>Frequency:</strong> ${food.feeding_frequency}</p>
+      <p style="margin-top:.3rem"><strong>Portion Tip:</strong> ${food.portion_tip}</p>
+    </div>
+  </div>`;
+
+      if (food.special_notes) {
+        html += `<div class="info-note"><span class="info-note-icon">💡</span><span>${food.special_notes}</span></div>`;
+      }
+      document.getElementById('panelFood').innerHTML = html;
+    }
+
+    function renderVaccinePanel(vacc) {
+      if (!vacc) return;
+      let html = '';
+      html += `<div class="info-card">
+    <div class="info-card-header">
+      <div class="info-card-icon" style="background:#e3f2fd">🛡️</div>
+      <div class="info-card-title">Core Vaccines (Required)</div>
+    </div>
+    <div class="info-card-body">
+      <table class="vaccine-table">${vacc.core_vaccines.map(v =>
+        '<tr><td>' + v.name + '</td><td>' + v.schedule + '</td></tr>'
+      ).join('')}</table>
+    </div>
+  </div>`;
+
+      if (vacc.optional_vaccines && vacc.optional_vaccines.length > 0) {
+        html += `<div class="info-card">
+      <div class="info-card-header">
+        <div class="info-card-icon" style="background:#f3e5f5">➕</div>
+        <div class="info-card-title">Optional / Lifestyle Vaccines</div>
+      </div>
+      <div class="info-card-body">
+        <table class="vaccine-table">${vacc.optional_vaccines.map(v =>
+          '<tr><td>' + v.name + '</td><td>' + v.when + '</td></tr>'
+        ).join('')}</table>
+      </div>
+    </div>`;
+      }
+
+      html += `<div class="info-card">
+    <div class="info-card-header">
+      <div class="info-card-icon" style="background:#fff3e0">🪱</div>
+      <div class="info-card-title">Deworming</div>
+    </div>
+    <div class="info-card-body"><p>${vacc.deworming}</p></div>
+  </div>`;
+
+      if (vacc.special_notes) {
+        html += `<div class="info-note"><span class="info-note-icon">⚠️</span><span>${vacc.special_notes}</span></div>`;
+      }
+      document.getElementById('panelVaccine').innerHTML = html;
+    }
+
+    function renderBehaviorPanel(beh) {
+      if (!beh) return;
+      let html = '';
+
+      html += `<div class="info-card">
+    <div class="info-card-header">
+      <div class="info-card-icon" style="background:#fff3e0">🧠</div>
+      <div class="info-card-title">Temperament</div>
+    </div>
+    <div class="info-card-body"><p>${beh.temperament}</p></div>
+  </div>`;
+
+      html += `<div class="behavior-grid">`;
+      const stats = [
+        { label: 'Energy Level', value: beh.energy_level, icon: '⚡' },
+        { label: 'Trainability', value: beh.trainability, icon: '🎓' },
+        { label: 'Barking', value: beh.barking_tendency, icon: '🔊' },
+        { label: 'Exercise Needs', value: beh.exercise_needs, icon: '🏃' },
+        { label: 'Good with Kids', value: beh.good_with_children, icon: '👶' },
+        { label: 'Good with Pets', value: beh.good_with_other_pets, icon: '🐱' },
+      ];
+      stats.forEach(s => {
+        html += `<div class="behavior-stat">
+      <div class="behavior-stat-label">${s.icon} ${s.label}</div>
+      <div class="behavior-stat-value">${s.value}</div>
+    </div>`;
+      });
+      html += `</div>`;
+
+      html += `<div class="info-card" style="margin-top:.8rem">
+    <div class="info-card-header">
+      <div class="info-card-icon" style="background:#e8f5e9">🤝</div>
+      <div class="info-card-title">Social Traits</div>
+    </div>
+    <div class="info-card-body"><p>${beh.social_traits}</p></div>
+  </div>`;
+
+      if (beh.special_notes) {
+        html += `<div class="info-note"><span class="info-note-icon">💡</span><span>${beh.special_notes}</span></div>`;
+      }
+      document.getElementById('panelBehavior').innerHTML = html;
+    }
+
+    // --- State Restoration ---
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved = sessionStorage.getItem('last_prediction');
+      if (saved) {
+        try {
+          const state = JSON.parse(saved);
+          if (Date.now() - state.timestamp < 30 * 60 * 1000) {
+            displayPrediction(state.prediction, state.imgSrc, state.source);
+            
+            // Explicitly show results banner and scroll to it
+            const banner = document.getElementById('resultBanner');
+            if (banner) {
+               banner.classList.add('show');
+               // banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            if (state.prediction.is_dog) {
+                document.getElementById('breedInfoSection').classList.add('show');
+            }
+          }
+        } catch (e) {
+          console.error("Failed to restore state", e);
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>

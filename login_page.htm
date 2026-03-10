@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — PawDetect</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        @keyframes float { 0%,100%{transform:translateY(0)rotate(0)} 50%{transform:translateY(-20px)rotate(5deg)} }
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes gradient { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #DEB887, #D2B48C, #F4A460, #CD853F);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before { content:'🐾'; position:absolute; top:10%; left:10%; font-size:60px; opacity:.15; animation:float 6s ease-in-out infinite; pointer-events:none; }
+        body::after  { content:'🐾'; position:absolute; bottom:15%; right:12%; font-size:80px; opacity:.12; animation:float 7s ease-in-out infinite 1s; pointer-events:none; }
+        .fp1 { position:absolute; top:30%; right:15%; font-size:50px; opacity:.1; animation:float 8s ease-in-out infinite .5s; pointer-events:none; }
+        .fp2 { position:absolute; bottom:30%; left:8%; font-size:70px; opacity:.13; animation:float 9s ease-in-out infinite 1.5s; pointer-events:none; }
+
+        /* Back to Home button */
+        .back-home {
+            position: fixed;
+            top: 22px; left: 22px;
+            background: rgba(255,255,255,0.95);
+            padding: 10px 20px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,.2);
+            color: #D2691E;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all .3s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            animation: fadeInUp .8s ease;
+        }
+        .back-home:hover { background: #fff; transform: translateX(-4px); box-shadow: 0 6px 20px rgba(0,0,0,.25); }
+
+        h1 {
+            font-weight:700; color:#2c1810; margin-bottom:28px; font-size:2.6rem;
+            animation:fadeInUp .8s ease; text-shadow:2px 2px 4px rgba(0,0,0,.1);
+            letter-spacing:1px; text-align:center;
+        }
+        h1::before { content:'🐾'; margin-right:10px; display:inline-block; animation:float 3s ease-in-out infinite; }
+        h1::after  { content:'🐶'; margin-left:10px; display:inline-block; animation:float 3s ease-in-out infinite .5s; }
+
+        .container { animation:fadeInUp 1s ease .2s backwards; position:relative; z-index:10; width:100%; max-width:400px; padding:0 16px; }
+
+        .form-box {
+            background:rgba(255,255,255,.95);
+            padding:38px 32px;
+            border-radius:20px;
+            box-shadow:0 15px 35px rgba(0,0,0,.2);
+            backdrop-filter:blur(10px);
+            border:2px solid rgba(255,255,255,.3);
+            transition:transform .3s,box-shadow .3s;
+        }
+        .form-box:hover { transform:translateY(-5px); box-shadow:0 20px 45px rgba(0,0,0,.25); }
+
+        .form-header h2 { color:#2c1810; font-size:1.7rem; margin-bottom:6px; }
+        .form-header p  { color:#666; font-size:.88rem; }
+
+        /* Panels */
+        .panel { display:none; }
+        .panel.active { display:block; }
+
+        .input-group { margin:18px 0; }
+        .input-group label { display:block; text-align:left; margin-bottom:6px; color:#555; font-weight:500; font-size:13px; }
+
+        .input-group input {
+            width:100%; padding:13px 15px; border:2px solid #e0e0e0; border-radius:10px;
+            font-size:15px; transition:all .3s; background:#fff; font-family:inherit;
+        }
+        .input-group input:focus { outline:none; border-color:#D2691E; box-shadow:0 0 0 3px rgba(210,105,30,.1); }
+
+        .btn-primary {
+            width:100%; padding:13px; background:linear-gradient(135deg,#D2691E,#CD853F);
+            color:#fff; border:none; border-radius:10px; cursor:pointer; font-size:15px;
+            font-weight:600; font-family:inherit; transition:all .3s;
+            box-shadow:0 4px 15px rgba(210,105,30,.3); margin-top:6px; position:relative; overflow:hidden;
+        }
+        .btn-primary:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(210,105,30,.4); }
+        .btn-primary:disabled { opacity:.65; cursor:not-allowed; transform:none; }
+
+        .btn-secondary {
+            width:100%; padding:13px; background:linear-gradient(135deg,#8B4513,#A0522D);
+            color:#fff; border:none; border-radius:10px; cursor:pointer; font-size:15px;
+            font-weight:600; font-family:inherit; transition:all .3s;
+            box-shadow:0 4px 15px rgba(139,69,19,.3); margin-top:8px;
+        }
+        .btn-secondary:hover { transform:translateY(-3px); }
+
+        .btn-text {
+            background:none; border:none; color:#D2691E; font-size:13px; cursor:pointer;
+            font-weight:500; transition:all .3s; padding:4px 0; font-family:inherit;
+        }
+        .btn-text:hover { color:#8B4513; }
+
+        .divider-row { display:flex; justify-content:space-between; align-items:center; margin-top:14px; }
+
+        .or-line { text-align:center; color:#999; font-size:13px; margin:18px 0; position:relative; }
+        .or-line::before,.or-line::after { content:''; position:absolute; top:50%; width:43%; height:1px; background:#ddd; }
+        .or-line::before { left:0; } .or-line::after { right:0; }
+
+        .alert { border-radius:8px; padding:11px 14px; font-size:13px; margin-top:12px; display:none; }
+        .alert.error   { background:#ffeaea; color:#c0392b; border:1px solid #f5c6cb; display:block; }
+        .alert.success { background:#eafaf1; color:#1e8449; border:1px solid #b2dfdb; display:block; }
+        .alert.info    { background:#eaf3ff; color:#1a5276; border:1px solid #b8d4f8; display:block; }
+
+        .otp-inputs { display:flex; gap:8px; justify-content:center; margin:16px 0; }
+        .otp-inputs input {
+            width:44px; height:52px; text-align:center; font-size:20px; font-weight:700;
+            border:2px solid #e0e0e0; border-radius:10px; transition:all .3s;
+        }
+        .otp-inputs input:focus { outline:none; border-color:#D2691E; box-shadow:0 0 0 3px rgba(210,105,30,.15); }
+
+        .timer { font-size:13px; color:#888; text-align:center; margin-top:6px; }
+        .timer.expired { color:#c0392b; }
+
+        @media(max-width:480px) {
+            h1 { font-size:2rem; }
+            .form-box { padding:28px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="fp1">🐾</div>
+    <div class="fp2">🐾</div>
+
+    <a href="home_page.htm" class="back-home">← 🏠 Home</a>
+
+    <h1>PawDetect</h1>
+
+    <div class="container">
+        <div class="form-box">
+            <!-- ── LOGIN PANEL ── -->
+            <div id="panelLogin" class="panel active">
+                <div class="form-header" style="margin-bottom:22px">
+                    <h2>Sign In</h2>
+                    <p>Access your account to continue</p>
+                </div>
+                <div id="loginAlert"></div>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password">
+                </div>
+                <button class="btn-primary" id="loginBtn" onclick="doLogin()">🔑 Login</button>
+                <div class="divider-row" style="margin-top:14px">
+                    <button class="btn-text" onclick="showPanel('panelForgot')">Forgot Password?</button>
+                    <button class="btn-text" onclick="showPanel('panelForgotDummy')" style="display:none"></button>
+                </div>
+                <div class="or-line">OR</div>
+                <a href="register.html" style="text-decoration:none">
+                    <button class="btn-secondary">✨ Create New Account</button>
+                </a>
+            </div>
+
+            <!-- ── FORGOT PASSWORD: SEND OTP ── -->
+            <div id="panelForgot" class="panel">
+                <div class="form-header" style="margin-bottom:22px">
+                    <h2>Forgot Password</h2>
+                    <p>Enter your registered email to receive an OTP</p>
+                </div>
+                <div id="forgotAlert"></div>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="forgotEmail" placeholder="Enter your email">
+                </div>
+                <button class="btn-primary" id="forgotBtn" onclick="sendForgotOTP()">📧 Send OTP</button>
+                <div style="text-align:center;margin-top:14px">
+                    <button class="btn-text" onclick="showPanel('panelLogin')">← Back to Login</button>
+                </div>
+            </div>
+
+            <!-- ── FORGOT PASSWORD: ENTER OTP ── -->
+            <div id="panelForgotOTP" class="panel">
+                <div class="form-header" style="margin-bottom:22px">
+                    <h2>Enter OTP</h2>
+                    <p id="forgotOTPSentTo">OTP sent to your email</p>
+                </div>
+                <div id="forgotOTPAlert"></div>
+                <div class="otp-inputs" id="otpBoxesForgot"></div>
+                <div class="timer" id="timerForgot"></div>
+                <button class="btn-primary" onclick="verifyForgotOTP()">✅ Verify OTP</button>
+                <div style="text-align:center;margin-top:10px">
+                    <button class="btn-text" id="resendForgotBtn" onclick="resendForgotOTP()">Resend OTP</button>
+                </div>
+            </div>
+
+            <!-- ── FORGOT PASSWORD: NEW PASSWORD ── -->
+            <div id="panelNewPassword" class="panel">
+                <div class="form-header" style="margin-bottom:22px">
+                    <h2>New Password</h2>
+                    <p>Set a strong new password for your account</p>
+                </div>
+                <div id="newPassAlert"></div>
+                <div class="input-group">
+                    <label>New Password</label>
+                    <input type="password" id="newPassword" placeholder="At least 8 chars + special char">
+                </div>
+                <div class="input-group">
+                    <label>Confirm Password</label>
+                    <input type="password" id="confirmNewPassword" placeholder="Re-enter new password">
+                </div>
+                <button class="btn-primary" onclick="resetPassword()">🔒 Reset Password</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+// ── Panel switcher ─────────────────────────────────────────────────
+function showPanel(id) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+function showAlert(id, msg, type='error') {
+    const el = document.getElementById(id);
+    el.className = 'alert ' + type;
+    el.textContent = msg;
+}
+function clearAlert(id) {
+    const el = document.getElementById(id);
+    el.className = 'alert';
+    el.textContent = '';
+}
+
+// ── LOGIN ──────────────────────────────────────────────────────────
+async function doLogin() {
+    clearAlert('loginAlert');
+    const email    = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const btn      = document.getElementById('loginBtn');
+
+    if (!email || !password) { showAlert('loginAlert','Please fill in all fields.'); return; }
+
+    btn.disabled = true; btn.textContent = 'Logging in…';
+    const fd = new FormData();
+    fd.append('email', email); fd.append('password', password);
+
+    try {
+        const res  = await fetch('login.php', { method:'POST', body:fd });
+        const data = await res.json();
+        if (data.success) {
+            sessionStorage.setItem('pawdetect_user_email', data.email);
+            sessionStorage.setItem('pawdetect_user_id',    data.user_id);
+            sessionStorage.setItem('pawdetect_user_name',  data.full_name);
+            showAlert('loginAlert','Login successful! Redirecting…','success');
+            setTimeout(() => window.location.href = 'detect.html', 900);
+        } else {
+            showAlert('loginAlert', data.message);
+        }
+    } catch(e) { showAlert('loginAlert','Network error. Please try again.'); }
+    finally { btn.disabled = false; btn.textContent = '🔑 Login'; }
+}
+
+document.getElementById('loginPassword').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+});
+
+// ── FORGOT PASSWORD ────────────────────────────────────────────────
+let forgotEmailAddr = '';
+
+async function sendForgotOTP() {
+    clearAlert('forgotAlert');
+    const email = document.getElementById('forgotEmail').value.trim();
+    if (!email) { showAlert('forgotAlert','Please enter your email.'); return; }
+
+    const btn = document.getElementById('forgotBtn');
+    btn.disabled = true; btn.textContent = 'Sending…';
+
+    const fd = new FormData();
+    fd.append('action','send_otp'); fd.append('email', email);
+
+    try {
+        const res  = await fetch('forgot_password.php', { method:'POST', body:fd });
+        const data = await res.json();
+        if (data.success) {
+            forgotEmailAddr = email;
+            document.getElementById('forgotOTPSentTo').textContent = 'OTP sent to ' + email;
+            buildOTPBoxes('otpBoxesForgot');
+            startTimer('timerForgot', 600, 'resendForgotBtn');
+            showPanel('panelForgotOTP');
+        } else {
+            showAlert('forgotAlert', data.message);
+        }
+    } catch(e) { showAlert('forgotAlert','Network error.'); }
+    finally { btn.disabled = false; btn.textContent = '📧 Send OTP'; }
+}
+
+async function verifyForgotOTP() {
+    clearAlert('forgotOTPAlert');
+    const otp = getOTPValue('otpBoxesForgot');
+    if (otp.length !== 6) { showAlert('forgotOTPAlert','Please enter the 6-digit OTP.'); return; }
+
+    const fd = new FormData();
+    fd.append('action','verify_otp'); fd.append('email', forgotEmailAddr); fd.append('otp', otp);
+
+    const res  = await fetch('forgot_password.php', { method:'POST', body:fd });
+    const data = await res.json();
+    if (data.success) { showPanel('panelNewPassword'); }
+    else { showAlert('forgotOTPAlert', data.message); }
+}
+
+async function resendForgotOTP() {
+    const fd = new FormData();
+    fd.append('action','send_otp'); fd.append('email', forgotEmailAddr);
+    const res  = await fetch('forgot_password.php', { method:'POST', body:fd });
+    const data = await res.json();
+    if (data.success) {
+        startTimer('timerForgot', 600, 'resendForgotBtn');
+        showAlert('forgotOTPAlert','New OTP sent!','info');
+    }
+}
+
+async function resetPassword() {
+    clearAlert('newPassAlert');
+    const pw  = document.getElementById('newPassword').value;
+    const cpw = document.getElementById('confirmNewPassword').value;
+    if (pw.length < 8)               { showAlert('newPassAlert','Password must be at least 8 characters.'); return; }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(pw)) { showAlert('newPassAlert','Password needs a special character.'); return; }
+    if (pw !== cpw)                   { showAlert('newPassAlert','Passwords do not match.'); return; }
+
+    const fd = new FormData();
+    fd.append('action','reset_password'); fd.append('password', pw); fd.append('confirmPassword', cpw);
+    const res  = await fetch('forgot_password.php', { method:'POST', body:fd });
+    const data = await res.json();
+    if (data.success) {
+        showAlert('newPassAlert', data.message + ' Redirecting to login…', 'success');
+        setTimeout(() => showPanel('panelLogin'), 2000);
+    } else {
+        showAlert('newPassAlert', data.message);
+    }
+}
+
+// ── OTP helpers ────────────────────────────────────────────────────
+function buildOTPBoxes(containerId) {
+    const c = document.getElementById(containerId);
+    c.innerHTML = '';
+    for (let i = 0; i < 6; i++) {
+        const inp = document.createElement('input');
+        inp.type = 'text'; inp.maxLength = 1; inp.inputMode = 'numeric';
+        inp.addEventListener('input', e => {
+            if (/\d/.test(e.target.value) && i < 5) c.children[i+1].focus();
+        });
+        inp.addEventListener('keydown', e => {
+            if (e.key === 'Backspace' && !e.target.value && i > 0) c.children[i-1].focus();
+        });
+        c.appendChild(inp);
+    }
+    c.children[0].focus();
+}
+
+function getOTPValue(containerId) {
+    return [...document.getElementById(containerId).children].map(i => i.value).join('');
+}
+
+// ── Countdown timer ────────────────────────────────────────────────
+let timerIntervals = {};
+function startTimer(timerElId, seconds, resendBtnId) {
+    clearInterval(timerIntervals[timerElId]);
+    const el  = document.getElementById(timerElId);
+    const btn = document.getElementById(resendBtnId);
+    if (btn) btn.style.display = 'none';
+    let remaining = seconds;
+    el.className = 'timer';
+    timerIntervals[timerElId] = setInterval(() => {
+        remaining--;
+        const m = Math.floor(remaining / 60).toString().padStart(2,'0');
+        const s = (remaining % 60).toString().padStart(2,'0');
+        el.textContent = `OTP expires in ${m}:${s}`;
+        if (remaining <= 0) {
+            clearInterval(timerIntervals[timerElId]);
+            el.textContent = 'OTP expired.';
+            el.className = 'timer expired';
+            if (btn) btn.style.display = 'inline';
+        }
+    }, 1000);
+}
+</script>
+</body>
+</html>

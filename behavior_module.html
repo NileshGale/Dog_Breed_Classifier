@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PawDetect — Behavior Module</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream: #f5f0e8;
+      --bark: #3b2a1a;
+      --moss: #4a6741;
+      --sand: #c9a96e;
+      --rust: #b55a2a;
+      --fog: #e8e0d4;
+      --leaf: #7a9e6e;
+      --orange: #e65100;
+      --orange-light: #fff3e0;
+      --orange-mid: #ffe0b2;
+    }
+    body {
+      background-color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--bark); min-height: 100vh; overflow-x: hidden;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0;
+    }
+
+    /* NAVBAR */
+    .navbar { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,.92); backdrop-filter: blur(12px); border-bottom: 1.5px solid var(--fog); padding: 0 2.5rem; display: flex; align-items: center; justify-content: space-between; height: 64px; box-shadow: 0 2px 12px rgba(59,42,26,.07); }
+    .nav-brand { display: flex; align-items: center; gap: .65rem; text-decoration: none; color: var(--bark); }
+    .logo-paw { width: 36px; height: 36px; background: var(--bark); border-radius: 50% 50% 50% 20%; display: flex; align-items: center; justify-content: center; color: var(--cream); font-size: 1.1rem; }
+    .logo-text { font-family: 'Playfair Display', serif; font-size: 1.45rem; font-weight: 700; letter-spacing: -.02em; }
+    .logo-text span { color: var(--rust); }
+    .nav-back:hover { background: #ddd8cc; border-color: var(--sand); }
+
+    /* SECONDARY BACK BUTTON */
+    .btn-back-wrap { margin-bottom: 2rem; animation: fadeUp .55s ease both; display: flex; justify-content: flex-start; }
+    .btn-back {
+      display: inline-flex; align-items: center; gap: .6rem;
+      text-decoration: none; color: var(--bark);
+      font-size: .88rem; font-weight: 500;
+      padding: .6rem 1.2rem; 
+      background: #fff;
+      border: 1.5px solid var(--fog);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(59,42,26,.05);
+      transition: all .2s ease;
+      cursor: pointer;
+    }
+    .btn-back:hover { 
+      transform: translateX(-4px);
+      border-color: var(--sand);
+      box-shadow: 0 6px 16px rgba(59,42,26,.1);
+      color: var(--rust);
+    }
+
+    /* TOAST */
+    #toastContainer { position: fixed; top: 80px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+    .toast { padding: 13px 18px; border-radius: 14px; font-size: .86rem; font-weight: 500; box-shadow: 0 8px 30px rgba(0,0,0,.15); max-width: 300px; display: flex; align-items: center; gap: 10px; animation: toastIn .35s cubic-bezier(0.34,1.56,0.64,1) both; }
+    .toast.hide { animation: toastOut .3s ease forwards; }
+    .toast.success { background: #1e8449; color: #fff; }
+    .toast.error { background: #c0392b; color: #fff; }
+    .toast.info { background: var(--bark); color: var(--cream); }
+    @keyframes toastIn { from { opacity:0; transform:translateX(60px) } to { opacity:1; transform:translateX(0) } }
+    @keyframes toastOut { from { opacity:1; transform:translateX(0) } to { opacity:0; transform:translateX(60px) } }
+
+    /* LAYOUT */
+    .page-wrapper { position: relative; z-index: 1; max-width: 820px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+
+    /* HEADER */
+    .page-header { text-align: center; margin-bottom: 2.2rem; animation: fadeUp .6s ease both; }
+    .page-eyebrow { display: inline-flex; align-items: center; gap: .5rem; background: linear-gradient(135deg, var(--orange-light), var(--orange-mid)); color: var(--orange); font-size: .72rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; padding: .35rem 1rem; border-radius: 100px; margin-bottom: 1rem; }
+    .page-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem,4vw,2.8rem); letter-spacing: -.03em; margin-bottom: .5rem; }
+    .page-header h1 em { font-style: italic; color: var(--orange); }
+    .page-header p { font-size: .92rem; color: #7a6a58; font-weight: 300; max-width: 480px; margin: 0 auto; line-height: 1.7; }
+
+    /* SEARCH */
+    .search-bar-wrap { position: relative; margin-bottom: 2rem; animation: fadeUp .65s ease both; }
+    .search-bar { width: 100%; padding: 1rem 1.2rem 1rem 3rem; border: 2px solid var(--fog); border-radius: 16px; font-family: 'DM Sans', sans-serif; font-size: .95rem; background: #fff; color: var(--bark); transition: border-color .2s, box-shadow .2s; box-shadow: 0 4px 16px rgba(59,42,26,.06); }
+    .search-bar:focus { outline: none; border-color: var(--orange); box-shadow: 0 4px 20px rgba(230,81,0,.15); }
+    .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-size: 1.1rem; pointer-events: none; }
+    .search-clear { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: var(--fog); border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-size: .8rem; display: none; align-items: center; justify-content: center; transition: background .2s; }
+    .search-clear:hover { background: #ddd; }
+    .search-clear.visible { display: flex; }
+
+    /* CHIPS */
+    .breed-chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 2rem; animation: fadeUp .7s ease both; }
+    .breed-chip { padding: .35rem .85rem; border-radius: 100px; background: #fff; border: 1.5px solid var(--fog); font-size: .78rem; font-weight: 500; color: var(--bark); cursor: pointer; transition: all .2s; }
+    .breed-chip:hover { background: var(--cream); border-color: var(--orange); color: var(--orange); }
+    .breed-chip.active { background: linear-gradient(135deg, var(--orange-light), var(--orange-mid)); border-color: #ffb74d; color: var(--orange); }
+
+    /* LOADING / EMPTY */
+    .loading-state { text-align: center; padding: 3rem 1rem; color: #9a8a7a; animation: fadeUp .4s ease both; }
+    .spinner { width: 20px; height: 20px; border: 2.5px solid var(--fog); border-top-color: var(--orange); border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; margin-bottom: .8rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty-state { text-align: center; padding: 3rem 1rem; color: #9a8a7a; animation: fadeUp .4s ease both; }
+    .empty-icon { font-size: 3rem; margin-bottom: .8rem; }
+
+    /* MODULE */
+    .behavior-module { animation: fadeUp .5s ease both; }
+    .module-breed-title { display: flex; align-items: center; gap: .8rem; margin-bottom: 1.5rem; }
+    .module-breed-icon { font-size: 2rem; }
+    .module-breed-name { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--bark); }
+    .module-breed-sub { font-size: .8rem; color: #9a8a7a; margin-top: .1rem; }
+
+    /* TEMPERAMENT HERO CARD */
+    .temperament-card {
+      background: linear-gradient(135deg, #fff8f0, #fef3e8);
+      border: 1.5px solid #ffd180; border-radius: 20px;
+      padding: 1.6rem 1.8rem; margin-bottom: 1rem;
+      position: relative; overflow: hidden;
+    }
+    .temperament-card::before {
+      content: '🧠'; position: absolute; right: 1.5rem; top: 50%;
+      transform: translateY(-50%); font-size: 4rem; opacity: .12;
+    }
+    .temperament-label { font-size: .72rem; font-weight: 500; color: var(--orange); text-transform: uppercase; letter-spacing: .1em; margin-bottom: .5rem; }
+    .temperament-text { font-size: 1rem; color: var(--bark); line-height: 1.7; font-weight: 300; max-width: 90%; }
+
+    /* STATS GRID */
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin-bottom: 1rem; }
+    @media(max-width:580px) { .stats-grid { grid-template-columns: 1fr 1fr; } }
+    @media(max-width:380px) { .stats-grid { grid-template-columns: 1fr; } }
+
+    .stat-card {
+      background: #fff; border: 1.5px solid var(--fog); border-radius: 16px;
+      padding: 1.1rem; transition: transform .25s, box-shadow .25s;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(59,42,26,.1); }
+    .stat-icon { font-size: 1.4rem; margin-bottom: .4rem; }
+    .stat-label { font-size: .68rem; font-weight: 500; color: #9a8a7a; text-transform: uppercase; letter-spacing: .07em; margin-bottom: .3rem; }
+    .stat-value { font-size: .9rem; font-weight: 600; color: var(--bark); }
+    .stat-meter { height: 5px; background: var(--fog); border-radius: 100px; overflow: hidden; margin-top: .5rem; }
+    .stat-meter-fill { height: 100%; border-radius: 100px; transition: width .8s ease; }
+    .fill-high { background: linear-gradient(90deg, #43a047, #66bb6a); }
+    .fill-medium { background: linear-gradient(90deg, var(--sand), var(--rust)); }
+    .fill-low { background: linear-gradient(90deg, #ef9a9a, #e53935); }
+
+    /* INFO CARDS */
+    .info-card { background: #fff; border: 1.5px solid var(--fog); border-radius: 20px; padding: 1.4rem; margin-bottom: 1rem; transition: transform .25s, box-shadow .25s; }
+    .info-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(59,42,26,.1); }
+    .card-header { display: flex; align-items: center; gap: .7rem; margin-bottom: .9rem; }
+    .card-icon-wrap { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+    .icon-orange { background: var(--orange-light); }
+    .icon-green { background: #e8f5e9; }
+    .icon-blue { background: #e3f2fd; }
+    .card-title { font-weight: 600; font-size: .95rem; color: var(--bark); }
+    .card-sub { font-size: .75rem; color: #9a8a7a; margin-top: .1rem; }
+    .card-body { font-size: .85rem; color: #5a4a3a; line-height: 1.7; }
+
+    /* COMPATIBILITY GRID */
+    .compat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
+    .compat-item { display: flex; align-items: center; gap: .6rem; padding: .65rem .9rem; background: var(--cream); border-radius: 12px; border: 1px solid rgba(59,42,26,.06); }
+    .compat-emoji { font-size: 1.2rem; }
+    .compat-label { font-size: .78rem; color: #7a6a58; }
+    .compat-value { font-size: .82rem; font-weight: 600; color: var(--bark); margin-top: .1rem; }
+
+    /* TIPS */
+    .tips-list { list-style: none; padding: 0; }
+    .tips-list li { display: flex; align-items: flex-start; gap: .7rem; padding: .55rem 0; font-size: .84rem; color: #5a4a3a; line-height: 1.5; border-bottom: 1px solid var(--fog); }
+    .tips-list li:last-child { border-bottom: none; }
+    .tip-bullet { flex-shrink: 0; width: 22px; height: 22px; background: linear-gradient(135deg, var(--orange-light), var(--orange-mid)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .7rem; margin-top: .1rem; }
+
+    /* NOTE */
+    .info-note { display: flex; gap: .6rem; align-items: flex-start; background: #fdf8f3; border: 1px solid var(--sand); border-radius: 14px; padding: 1rem 1.1rem; margin-top: .5rem; font-size: .82rem; color: #6a5a4a; line-height: 1.65; }
+    .note-icon { font-size: 1rem; flex-shrink: 0; margin-top: .1rem; }
+
+    @keyframes fadeUp { from { opacity:0; transform:translateY(24px) } to { opacity:1; transform:translateY(0) } }
+    @media(max-width:600px) { .navbar { padding: 0 1rem; } .page-wrapper { padding: 2rem 1rem 3rem; } .compat-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="home_page.htm" class="nav-brand">
+      <div class="logo-paw">🐾</div>
+      <div class="logo-text">Paw<span>Detect</span></div>
+    </a>
+  </nav>
+
+  <div class="page-wrapper">
+    <!-- SECONDARY BACK -->
+    <div class="btn-back-wrap">
+      <a href="detect.html" class="btn-back">← Back to Detection</a>
+    </div>
+    <div class="page-header">
+      <div class="page-eyebrow">🐕 Behavior Guide</div>
+      <h1>Traits &amp; <em>Behavior</em> Profile</h1>
+      <p>Understand your dog's temperament, energy levels, social traits, and training needs.</p>
+    </div>
+
+    <div id="contentArea">
+      <div class="empty-state">
+        <div class="empty-icon">🐕</div>
+        <p>Search for a breed above or select one from the quick picks.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer"></div>
+
+  <script>
+    // Check for breed in URL
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const breed = params.get('breed');
+      if (breed) {
+        loadBreedBehavior(breed);
+      }
+    });
+
+    function showEmpty() {
+      document.getElementById('contentArea').innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🐕</div>
+          <p>No breed information selected.</p>
+        </div>`;
+    }
+
+    function showLoading() {
+      document.getElementById('contentArea').innerHTML = `<div class="loading-state"><div class="spinner"></div><p>Fetching behavior profile…</p></div>`;
+    }
+
+    async function loadBreedBehavior(breedName) {
+      showLoading();
+      const key = breedName.toLowerCase().replace(/\s+/g, '_');
+      try {
+        const res = await fetch('breed_info.php?breed=' + encodeURIComponent(key));
+        const data = await res.json();
+        if (data.success && data.behavior) {
+          renderBehavior(data.breed_name || breedName, data.behavior);
+        } else {
+          showError(data.message || 'No behavior data found for this breed.');
+        }
+      } catch (e) {
+        showError('Could not reach server. Make sure breed_info.php is running.');
+      }
+    }
+
+    function showError(msg) {
+      document.getElementById('contentArea').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>${msg}</p></div>`;
+      showToast(msg, 'error');
+    }
+
+    // Map text values to meter width %
+    function getMeterWidth(value) {
+      const v = (value || '').toLowerCase();
+      if (v.includes('very high') || v.includes('excellent')) return 95;
+      if (v.includes('high')) return 80;
+      if (v.includes('moderate') || v.includes('medium')) return 55;
+      if (v.includes('low')) return 28;
+      if (v.includes('yes')) return 90;
+      if (v.includes('no')) return 10;
+      return 50;
+    }
+
+    function getMeterClass(value) {
+      const v = (value || '').toLowerCase();
+      if (v.includes('very high') || v.includes('high') || v.includes('excellent') || v.includes('yes')) return 'fill-high';
+      if (v.includes('moderate') || v.includes('medium')) return 'fill-medium';
+      return 'fill-low';
+    }
+
+    function renderBehavior(breedName, beh) {
+      const stats = [
+        { icon: '⚡', label: 'Energy Level',   value: beh.energy_level },
+        { icon: '🎓', label: 'Trainability',   value: beh.trainability },
+        { icon: '🔊', label: 'Barking',         value: beh.barking_tendency },
+        { icon: '🏃', label: 'Exercise Needs',  value: beh.exercise_needs },
+        { icon: '👶', label: 'Kids Friendly',   value: beh.good_with_children },
+        { icon: '🐱', label: 'Pets Friendly',   value: beh.good_with_other_pets },
+      ];
+
+      const trainingTips = [
+        'Use positive reinforcement — treats, praise, and play work best.',
+        'Keep training sessions short (10–15 min) and consistent.',
+        'Start socialization early — expose to people, sounds, and environments.',
+        'Never use punishment-based methods; they increase anxiety and aggression.',
+        'Enroll in puppy classes for structured socialization and learning.',
+      ];
+
+      let html = `<div class="behavior-module">
+        <div class="module-breed-title">
+          <span class="module-breed-icon">🐕</span>
+          <div>
+            <div class="module-breed-name">${breedName}</div>
+            <div class="module-breed-sub">Behavior &amp; Personality Profile</div>
+          </div>
+        </div>
+
+        <!-- Temperament -->
+        <div class="temperament-card">
+          <div class="temperament-label">Temperament</div>
+          <div class="temperament-text">${beh.temperament || 'Loyal, friendly, and intelligent.'}</div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          ${stats.map(s => {
+            const w = getMeterWidth(s.value);
+            const cls = getMeterClass(s.value);
+            return `<div class="stat-card">
+              <div class="stat-icon">${s.icon}</div>
+              <div class="stat-label">${s.label}</div>
+              <div class="stat-value">${s.value || '—'}</div>
+              <div class="stat-meter"><div class="stat-meter-fill ${cls}" style="width:${w}%"></div></div>
+            </div>`;
+          }).join('')}
+        </div>
+
+        <!-- Social Traits -->
+        <div class="info-card">
+          <div class="card-header">
+            <div class="card-icon-wrap icon-orange">🤝</div>
+            <div><div class="card-title">Social Traits</div><div class="card-sub">How this breed interacts with the world</div></div>
+          </div>
+          <div class="card-body">${beh.social_traits || 'Generally sociable with proper introductions.'}</div>
+        </div>
+
+        <!-- Compatibility -->
+        <div class="info-card">
+          <div class="card-header">
+            <div class="card-icon-wrap icon-green">🏠</div>
+            <div><div class="card-title">Compatibility Overview</div><div class="card-sub">Is this breed right for you?</div></div>
+          </div>
+          <div class="compat-grid">
+            <div class="compat-item">
+              <span class="compat-emoji">👶</span>
+              <div><div class="compat-label">With Kids</div><div class="compat-value">${beh.good_with_children || '—'}</div></div>
+            </div>
+            <div class="compat-item">
+              <span class="compat-emoji">🐾</span>
+              <div><div class="compat-label">With Other Pets</div><div class="compat-value">${beh.good_with_other_pets || '—'}</div></div>
+            </div>
+            <div class="compat-item">
+              <span class="compat-emoji">🏃</span>
+              <div><div class="compat-label">Exercise Needs</div><div class="compat-value">${beh.exercise_needs || '—'}</div></div>
+            </div>
+            <div class="compat-item">
+              <span class="compat-emoji">🔊</span>
+              <div><div class="compat-label">Barking Tendency</div><div class="compat-value">${beh.barking_tendency || '—'}</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Training Tips -->
+        <div class="info-card">
+          <div class="card-header">
+            <div class="card-icon-wrap icon-blue">💡</div>
+            <div><div class="card-title">Training Tips</div><div class="card-sub">General guidance for any breed</div></div>
+          </div>
+          <ul class="tips-list">
+            ${trainingTips.map(tip => `<li><div class="tip-bullet">🐾</div>${tip}</li>`).join('')}
+          </ul>
+        </div>`;
+
+      if (beh.special_notes) {
+        html += `<div class="info-note">
+          <span class="note-icon">💡</span>
+          <span><strong>Breed-Specific Tip:</strong> ${beh.special_notes}</span>
+        </div>`;
+      }
+
+      html += `</div>`;
+      document.getElementById('contentArea').innerHTML = html;
+
+      // Animate meters after render
+      setTimeout(() => {
+        document.querySelectorAll('.stat-meter-fill').forEach(el => {
+          const w = el.style.width;
+          el.style.width = '0%';
+          requestAnimationFrame(() => { el.style.width = w; });
+        });
+      }, 50);
+
+      showToast('Behavior profile loaded for ' + breedName, 'success');
+    }
+
+    function showToast(msg, type = 'info', ms = 3000) {
+      const t = document.createElement('div');
+      t.className = `toast ${type}`;
+      const icons = { success:'✅', error:'❌', info:'ℹ️' };
+      t.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+      document.getElementById('toastContainer').appendChild(t);
+      setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 400); }, ms);
+    }
+  </script>
+</body>
+</html>

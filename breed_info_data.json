@@ -1,0 +1,862 @@
+{
+  "_default": {
+    "food": {
+      "diet_type": "High-quality commercial dog food",
+      "recommended_foods": ["Lean meats (chicken, turkey, beef)", "Brown rice or oats", "Vegetables (carrots, green beans, sweet potatoes)", "Fish (salmon, sardines)"],
+      "foods_to_avoid": ["Chocolate", "Grapes & raisins", "Onions & garlic", "Xylitol (artificial sweetener)", "Cooked bones", "Macadamia nuts", "Alcohol", "Caffeine"],
+      "feeding_frequency": "2 meals per day for adults, 3–4 meals for puppies",
+      "portion_tip": "Follow package guidelines based on weight; adjust for activity level",
+      "special_notes": "Always provide fresh water. Consult your vet for breed-specific dietary needs."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "First dose at 12–16 weeks, booster at 1 year, then every 1–3 years"},
+        {"name": "Distemper (DHPP)", "schedule": "3 doses at 6–8, 10–12, and 14–16 weeks; booster at 1 year, then every 3 years"},
+        {"name": "Parvovirus", "schedule": "Included in DHPP combo vaccine"},
+        {"name": "Adenovirus (Hepatitis)", "schedule": "Included in DHPP combo vaccine"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella (Kennel Cough)", "when": "Recommended if dog visits boarding, grooming, or dog parks"},
+        {"name": "Leptospirosis", "when": "Recommended in areas with wildlife or standing water"},
+        {"name": "Canine Influenza", "when": "Recommended for social dogs in outbreak areas"},
+        {"name": "Lyme Disease", "when": "Recommended in tick-endemic regions"}
+      ],
+      "deworming": "Deworm puppies at 2, 4, 6, 8 weeks; adults every 3–6 months",
+      "special_notes": "Follow your veterinarian's recommended schedule. Keep vaccination records updated."
+    },
+    "behavior": {
+      "temperament": "Varies by breed — loyal, friendly, and intelligent",
+      "energy_level": "Moderate",
+      "trainability": "Moderate — responds well to positive reinforcement",
+      "social_traits": "Generally good with families; early socialization recommended",
+      "exercise_needs": "30–60 minutes of daily exercise",
+      "barking_tendency": "Moderate",
+      "good_with_children": "Yes, with proper socialization",
+      "good_with_other_pets": "Yes, with proper introduction",
+      "special_notes": "Every dog is unique. Temperament can vary based on upbringing and training."
+    }
+  },
+  "golden_retriever": {
+    "food": {
+      "diet_type": "High-quality protein-rich food",
+      "recommended_foods": ["Chicken, salmon, or lamb-based kibble", "Sweet potatoes & brown rice", "Blueberries & cranberries", "Fish oil supplements for coat health"],
+      "foods_to_avoid": ["Fatty foods (prone to pancreatitis)", "Chocolate", "Grapes & raisins", "Excessive treats (prone to obesity)"],
+      "feeding_frequency": "2 meals per day (1.5–2 cups each)",
+      "portion_tip": "Monitor weight closely — Golden Retrievers are prone to obesity",
+      "special_notes": "Omega-3 fatty acids help maintain their luxurious coat. Consider joint supplements for older dogs."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "12–16 weeks, booster at 1 year, then every 3 years"},
+        {"name": "DHPP (Distemper, Hepatitis, Parainfluenza, Parvovirus)", "schedule": "6–8, 10–12, 14–16 weeks; annual booster"},
+        {"name": "Parvovirus", "schedule": "Included in DHPP"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "Highly recommended — Goldens are social dogs"},
+        {"name": "Leptospirosis", "when": "Recommended — Goldens love water and outdoor activities"},
+        {"name": "Canine Influenza", "when": "Recommended for dog park visitors"},
+        {"name": "Lyme Disease", "when": "Recommended in tick-prone areas"}
+      ],
+      "deworming": "Every 3 months for active outdoor dogs",
+      "special_notes": "Goldens are prone to cancer — regular vet checkups are essential."
+    },
+    "behavior": {
+      "temperament": "Friendly, reliable, and trustworthy. One of the most beloved family dogs.",
+      "energy_level": "High",
+      "trainability": "Excellent — eager to please, very intelligent (ranked #4 in intelligence)",
+      "social_traits": "Extremely social, loves everyone including strangers. Great therapy dogs.",
+      "exercise_needs": "60–90 minutes daily — loves swimming, fetching, and hiking",
+      "barking_tendency": "Moderate — barks to alert but not excessive",
+      "good_with_children": "Excellent — patient and gentle with kids",
+      "good_with_other_pets": "Excellent — very friendly with other animals",
+      "special_notes": "Prone to separation anxiety if left alone too long. They thrive on human companionship."
+    }
+  },
+  "labrador_retriever": {
+    "food": {
+      "diet_type": "High-protein, moderate-fat diet",
+      "recommended_foods": ["Chicken or fish-based kibble", "Brown rice & vegetables", "Carrots as treats", "Joint-support food with glucosamine"],
+      "foods_to_avoid": ["High-fat foods", "Table scraps", "Chocolate", "Grapes & onions"],
+      "feeding_frequency": "2 meals per day (2–2.5 cups each)",
+      "portion_tip": "Labs are notorious overeaters — use measured portions and avoid free-feeding",
+      "special_notes": "Labs have a genetic mutation that makes them always feel hungry. Weight management is critical."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "12–16 weeks, booster at 1 year, then every 3 years"},
+        {"name": "DHPP", "schedule": "6–8, 10–12, 14–16 weeks; annual booster"},
+        {"name": "Parvovirus", "schedule": "Included in DHPP"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "Recommended for social/active Labs"},
+        {"name": "Leptospirosis", "when": "Highly recommended — Labs love swimming"},
+        {"name": "Canine Influenza", "when": "Recommended for frequently boarded dogs"},
+        {"name": "Lyme Disease", "when": "Essential in tick-endemic areas"}
+      ],
+      "deworming": "Every 3 months",
+      "special_notes": "Labs are prone to hip dysplasia — regular vet monitoring recommended."
+    },
+    "behavior": {
+      "temperament": "Outgoing, active, and friendly. America's most popular breed for decades.",
+      "energy_level": "Very High",
+      "trainability": "Excellent — highly intelligent and food-motivated",
+      "social_traits": "Extremely friendly with everyone. Natural service and guide dogs.",
+      "exercise_needs": "60–120 minutes daily — loves swimming, retrieving, and running",
+      "barking_tendency": "Moderate",
+      "good_with_children": "Excellent — gentle, patient, and playful",
+      "good_with_other_pets": "Excellent",
+      "special_notes": "Labs need mental stimulation too — puzzle toys and training sessions prevent destructive behavior."
+    }
+  },
+  "german_shepherd": {
+    "food": {
+      "diet_type": "High-protein diet with joint support",
+      "recommended_foods": ["Beef, chicken, or fish-based food", "Eggs (cooked)", "Pumpkin for digestion", "Glucosamine-enriched food"],
+      "foods_to_avoid": ["Dairy products (often lactose intolerant)", "Soy-based foods", "Corn fillers", "Fatty cuts of meat"],
+      "feeding_frequency": "2 meals per day (2–3 cups each)",
+      "portion_tip": "Feed for ideal weight, not current weight. GSDs can have sensitive stomachs.",
+      "special_notes": "German Shepherds are prone to bloat (GDV) — avoid exercise 1 hour before/after meals."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "12–16 weeks, booster at 1 year, then every 3 years"},
+        {"name": "DHPP", "schedule": "6–8, 10–12, 14–16 weeks; annual booster"},
+        {"name": "Parvovirus", "schedule": "Extra dose recommended — GSDs are more susceptible"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "Recommended for working/social dogs"},
+        {"name": "Leptospirosis", "when": "Recommended for outdoor/working dogs"},
+        {"name": "Canine Influenza", "when": "Recommended in outbreak areas"},
+        {"name": "Lyme Disease", "when": "Essential in tick-endemic areas"}
+      ],
+      "deworming": "Every 3 months, more frequently for working dogs",
+      "special_notes": "GSDs are prone to degenerative myelopathy — discuss genetic testing with your vet."
+    },
+    "behavior": {
+      "temperament": "Confident, courageous, and smart. World's premier working dog.",
+      "energy_level": "Very High",
+      "trainability": "Exceptional — ranked #3 in intelligence, eager to work",
+      "social_traits": "Loyal and protective of family. Can be aloof with strangers.",
+      "exercise_needs": "90–120 minutes daily — needs both physical and mental challenges",
+      "barking_tendency": "High — natural watchdog instincts",
+      "good_with_children": "Very good — protective and gentle with family children",
+      "good_with_other_pets": "Good with proper socialization from puppyhood",
+      "special_notes": "Require a confident owner. Without proper training, they can become anxious or overprotective."
+    }
+  },
+  "bulldog": {
+    "food": {
+      "diet_type": "Low-calorie, easily digestible food",
+      "recommended_foods": ["Lean chicken or turkey", "Rice and pumpkin", "Omega fatty acid supplements", "Limited ingredient diets"],
+      "foods_to_avoid": ["High-fat foods", "Soy and wheat (common allergens)", "Spicy foods", "Dairy"],
+      "feeding_frequency": "2 meals per day (1–1.5 cups each)",
+      "portion_tip": "Bulldogs gain weight very easily — strict portion control is essential",
+      "special_notes": "Bulldogs are prone to food allergies. Consider a hypoallergenic diet if skin issues arise."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "12–16 weeks, booster at 1 year, then every 3 years"},
+        {"name": "DHPP", "schedule": "Standard puppy schedule"},
+        {"name": "Parvovirus", "schedule": "Included in DHPP"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "Recommended due to brachycephalic respiratory sensitivity"},
+        {"name": "Canine Influenza", "when": "Important — respiratory infections are more serious for flat-faced breeds"}
+      ],
+      "deworming": "Every 3–6 months",
+      "special_notes": "Brachycephalic breed — monitor closely for respiratory issues after vaccination."
+    },
+    "behavior": {
+      "temperament": "Calm, courageous, and friendly. A gentle companion.",
+      "energy_level": "Low",
+      "trainability": "Moderate — can be stubborn, responds to patience and treats",
+      "social_traits": "Very affectionate, loves being around people. Good apartment dogs.",
+      "exercise_needs": "20–30 minutes daily — short walks, avoid heat and overexertion",
+      "barking_tendency": "Low to moderate",
+      "good_with_children": "Excellent — patient and sturdy",
+      "good_with_other_pets": "Good with proper introduction",
+      "special_notes": "Cannot tolerate heat or intense exercise due to brachycephalic anatomy. Keep cool!"
+    }
+  },
+  "beagle": {
+    "food": {
+      "diet_type": "Balanced protein and fiber diet",
+      "recommended_foods": ["Chicken or turkey-based food", "Sweet potatoes", "Green beans", "Peas and carrots"],
+      "foods_to_avoid": ["High-calorie treats", "Fatty table scraps", "Chocolate", "Grapes"],
+      "feeding_frequency": "2 meals per day (1–1.5 cups each)",
+      "portion_tip": "Beagles are food-obsessed — never free-feed, measure every meal",
+      "special_notes": "Beagles will eat anything they find. Keep food secured and trash bins closed."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "Standard schedule"},
+        {"name": "DHPP", "schedule": "Standard puppy series"},
+        {"name": "Parvovirus", "schedule": "Included in DHPP"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "Recommended for pack-oriented Beagles"},
+        {"name": "Leptospirosis", "when": "Recommended — Beagles love sniffing everything outdoors"},
+        {"name": "Lyme Disease", "when": "Recommended in tick areas"}
+      ],
+      "deworming": "Every 3 months",
+      "special_notes": "Beagles are generally healthy but prone to ear infections — keep ears clean and dry."
+    },
+    "behavior": {
+      "temperament": "Merry, friendly, and curious. A classic scent hound.",
+      "energy_level": "High",
+      "trainability": "Moderate — intelligent but easily distracted by scents",
+      "social_traits": "Pack dogs — get along great with other dogs and people",
+      "exercise_needs": "60–90 minutes daily — loves walks, sniffing adventures, and playtime",
+      "barking_tendency": "High — known for howling and baying",
+      "good_with_children": "Excellent — playful and sturdy",
+      "good_with_other_pets": "Very good — pack-oriented",
+      "special_notes": "Beagles follow their nose everywhere. Always use a leash outdoors — they will chase scents."
+    }
+  },
+  "poodle": {
+    "food": {
+      "diet_type": "High-quality protein with omega fatty acids",
+      "recommended_foods": ["Salmon or duck-based food", "Eggs", "Blueberries", "Coconut oil for coat"],
+      "foods_to_avoid": ["Corn and soy fillers", "Artificial preservatives", "Chocolate", "Onions"],
+      "feeding_frequency": "2 meals per day (portion varies by size: toy, miniature, standard)",
+      "portion_tip": "Adjust portions based on Poodle size variant — Toy: 0.5 cup, Mini: 1 cup, Standard: 2 cups",
+      "special_notes": "Poodles benefit greatly from fish oil supplements for their iconic curly coat."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "Standard schedule"},
+        {"name": "DHPP", "schedule": "Standard puppy series"},
+        {"name": "Parvovirus", "schedule": "Included in DHPP"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "Recommended for grooming and show dogs"},
+        {"name": "Canine Influenza", "when": "Recommended for social/show Poodles"},
+        {"name": "Leptospirosis", "when": "Recommended — Standard Poodles love water"}
+      ],
+      "deworming": "Every 3–6 months",
+      "special_notes": "Poodles are prone to Addison's disease — regular blood work recommended."
+    },
+    "behavior": {
+      "temperament": "Proud, intelligent, and elegant. Highly versatile companion.",
+      "energy_level": "High",
+      "trainability": "Exceptional — ranked #2 in intelligence among all breeds",
+      "social_traits": "Bonds closely with family. Can be reserved with strangers initially.",
+      "exercise_needs": "60+ minutes daily — loves swimming, agility, and retrieving",
+      "barking_tendency": "Moderate",
+      "good_with_children": "Very good — gentle and patient",
+      "good_with_other_pets": "Good with socialization",
+      "special_notes": "Hypoallergenic coat requires regular grooming every 4–6 weeks. Mental stimulation is as important as physical."
+    }
+  },
+  "rottweiler": {
+    "food": {
+      "diet_type": "High-protein, moderate-fat diet for muscle maintenance",
+      "recommended_foods": ["Beef or chicken-based food", "Brown rice", "Eggs", "Glucosamine supplements"],
+      "foods_to_avoid": ["High-fat treats", "Dairy", "Cooked bones", "Salty snacks"],
+      "feeding_frequency": "2 meals per day (2.5–3.5 cups each)",
+      "portion_tip": "Feed for lean body condition — Rotties should have a visible waist",
+      "special_notes": "Prone to bloat — use slow-feeder bowls and avoid exercise around meal times."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "12–16 weeks, booster at 1 year, then every 3 years"},
+        {"name": "DHPP", "schedule": "Extended puppy series recommended — 6, 9, 12, 16 weeks"},
+        {"name": "Parvovirus", "schedule": "Rottweilers are high-risk — extra booster at 18 weeks recommended"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "Recommended for boarding/training"},
+        {"name": "Leptospirosis", "when": "Recommended for outdoor dogs"},
+        {"name": "Lyme Disease", "when": "In tick-endemic areas"}
+      ],
+      "deworming": "Every 3 months",
+      "special_notes": "Rottweilers are more susceptible to Parvovirus — ensure complete vaccination series."
+    },
+    "behavior": {
+      "temperament": "Loyal, confident, and protective. A powerful guardian breed.",
+      "energy_level": "Moderate to High",
+      "trainability": "Very good — intelligent and eager to work, but needs firm leadership",
+      "social_traits": "Devoted to family, naturally protective. Reserved with strangers.",
+      "exercise_needs": "60–90 minutes daily — enjoys walks, swimming, and obedience work",
+      "barking_tendency": "Low to moderate — barks with purpose",
+      "good_with_children": "Good with family children when raised together",
+      "good_with_other_pets": "Can be dominant — early socialization is key",
+      "special_notes": "Require experienced owners. Early socialization and consistent training are essential."
+    }
+  },
+  "yorkshire_terrier": {
+    "food": {
+      "diet_type": "Small-breed formula, high-protein",
+      "recommended_foods": ["Small-bite chicken or turkey kibble", "Cooked lean meats", "Sweet potato", "Omega-3 for silky coat"],
+      "foods_to_avoid": ["Large kibble sizes", "Rich fatty foods", "Chocolate", "Raw bones"],
+      "feeding_frequency": "3–4 small meals per day (Yorkies are prone to hypoglycemia)",
+      "portion_tip": "0.25–0.5 cup per day total — tiny dogs need tiny portions",
+      "special_notes": "Yorkies have sensitive stomachs and are prone to low blood sugar. Never skip meals."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "Standard schedule — monitor for vaccine reactions due to small size"},
+        {"name": "DHPP", "schedule": "Standard puppy series"},
+        {"name": "Parvovirus", "schedule": "Included in DHPP"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "Recommended for grooming visits"},
+        {"name": "Canine Influenza", "when": "Recommended for social/travel dogs"}
+      ],
+      "deworming": "Every 3–6 months — use weight-appropriate dosing",
+      "special_notes": "Small breeds can have more vaccine reactions — discuss spacing vaccinations with your vet."
+    },
+    "behavior": {
+      "temperament": "Bold, confident, and affectionate. Big personality in a tiny body.",
+      "energy_level": "Moderate to High",
+      "trainability": "Moderate — intelligent but can be stubborn. Positive reinforcement works best.",
+      "social_traits": "Bonds deeply with owner. Can be feisty with larger dogs.",
+      "exercise_needs": "30–45 minutes daily — short walks and indoor play",
+      "barking_tendency": "High — alert and vocal",
+      "good_with_children": "Better with older children — too fragile for rough play",
+      "good_with_other_pets": "Can be bossy with other dogs, generally okay with cats",
+      "special_notes": "Yorkies are fragile — handle with care. Dental disease is very common — brush teeth regularly."
+    }
+  },
+  "boxer": {
+    "food": {
+      "diet_type": "High-protein, grain-free option recommended",
+      "recommended_foods": ["Chicken, beef, or fish-based food", "Sweet potatoes", "Probiotics for digestion", "Taurine-rich foods"],
+      "foods_to_avoid": ["Grain-heavy foods (common allergens)", "Soy products", "Artificial colors/preservatives", "High-fat foods"],
+      "feeding_frequency": "2 meals per day (2–3 cups each)",
+      "portion_tip": "Boxers should be lean and muscular — avoid overfeeding",
+      "special_notes": "Boxers are prone to heart issues — ensure diet includes taurine and L-carnitine."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "Standard schedule"},
+        {"name": "DHPP", "schedule": "Standard puppy series"},
+        {"name": "Parvovirus", "schedule": "Included in DHPP"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "Recommended — Boxers are social dogs"},
+        {"name": "Canine Influenza", "when": "Brachycephalic breed — respiratory vaccines important"},
+        {"name": "Leptospirosis", "when": "For outdoor-active Boxers"}
+      ],
+      "deworming": "Every 3 months",
+      "special_notes": "Boxers are cancer-prone — regular vet checkups and early screening recommended."
+    },
+    "behavior": {
+      "temperament": "Fun-loving, bright, and energetic. The clown of the dog world.",
+      "energy_level": "Very High",
+      "trainability": "Good — intelligent but can be goofy and easily distracted",
+      "social_traits": "Extremely affectionate, great family dog. Protective but friendly.",
+      "exercise_needs": "60–90 minutes daily — loves play sessions, running, and agility",
+      "barking_tendency": "Moderate",
+      "good_with_children": "Excellent — playful, patient, and protective",
+      "good_with_other_pets": "Good with proper socialization",
+      "special_notes": "Boxers are eternal puppies — they stay playful well into adulthood. Cannot tolerate extreme heat."
+    }
+  },
+  "dachshund": {
+    "food": {
+      "diet_type": "Low-calorie, weight-management food",
+      "recommended_foods": ["Lean protein (chicken, turkey)", "Vegetables", "Small-breed formula", "Joint-support supplements"],
+      "foods_to_avoid": ["High-calorie treats", "Fatty foods", "Table scraps", "Large kibble"],
+      "feeding_frequency": "2 meals per day (0.5–1.5 cups depending on size)",
+      "portion_tip": "Weight control is CRITICAL — extra weight causes back injuries in Dachshunds",
+      "special_notes": "Even 1–2 extra pounds on a Dachshund greatly increases risk of IVDD (back disease)."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "Standard schedule"},
+        {"name": "DHPP", "schedule": "Standard puppy series"},
+        {"name": "Parvovirus", "schedule": "Included in DHPP"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "Recommended for social dogs"},
+        {"name": "Leptospirosis", "when": "For dogs with outdoor access"},
+        {"name": "Lyme Disease", "when": "In tick-prone areas — low-to-ground dogs pick up more ticks"}
+      ],
+      "deworming": "Every 3 months",
+      "special_notes": "Monitor for back issues (IVDD) — avoid jumping on/off furniture."
+    },
+    "behavior": {
+      "temperament": "Clever, lively, and courageous. Surprisingly brave for their size.",
+      "energy_level": "Moderate",
+      "trainability": "Moderate — intelligent but independent and stubborn",
+      "social_traits": "Loyal and attached to family. Can be wary of strangers.",
+      "exercise_needs": "30–60 minutes daily — walks and play, avoid jumping and stairs",
+      "barking_tendency": "High — very vocal alert dogs",
+      "good_with_children": "Good with older children who handle them gently",
+      "good_with_other_pets": "Can be territorial — early socialization helps",
+      "special_notes": "NEVER let them jump off furniture or go down stairs unsupported — back injury risk is very high."
+    }
+  },
+  "siberian_husky": {
+    "food": {
+      "diet_type": "High-protein, moderate-fat working dog diet",
+      "recommended_foods": ["Fish-based food (salmon, whitefish)", "Lean meats", "Eggs", "Fish oil supplements"],
+      "foods_to_avoid": ["Cheap grain-filled foods", "Excessive carbs", "Chocolate", "Artificial ingredients"],
+      "feeding_frequency": "2 meals per day (1.5–2 cups each)",
+      "portion_tip": "Huskies eat surprisingly little for their size — they're metabolically efficient",
+      "special_notes": "Huskies may refuse food when not hungry — this is normal, not a cause for concern."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "Standard schedule"},
+        {"name": "DHPP", "schedule": "Standard puppy series"},
+        {"name": "Parvovirus", "schedule": "Included in DHPP"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "Recommended for pack-oriented Huskies"},
+        {"name": "Leptospirosis", "when": "For outdoor/adventure dogs"},
+        {"name": "Canine Influenza", "when": "In outbreak areas"}
+      ],
+      "deworming": "Every 3 months",
+      "special_notes": "Huskies are generally very healthy — one of the healthiest purebreds."
+    },
+    "behavior": {
+      "temperament": "Outgoing, mischievous, and free-spirited. Born to run.",
+      "energy_level": "Extremely High",
+      "trainability": "Challenging — very intelligent but independent and stubborn",
+      "social_traits": "Friendly with everyone including strangers. Poor guard dogs!",
+      "exercise_needs": "90–120+ minutes daily — running, hiking, pulling activities",
+      "barking_tendency": "Moderate barking but VERY vocal — known for howling and 'talking'",
+      "good_with_children": "Very good — gentle and playful",
+      "good_with_other_pets": "High prey drive — supervise with small animals",
+      "special_notes": "Notorious escape artists — need secure fencing (6ft minimum). Not suited for hot climates."
+    }
+  },
+  "shih_tzu": {
+    "food": {
+      "diet_type": "Small-breed formula with gentle ingredients",
+      "recommended_foods": ["Chicken or lamb-based small kibble", "Cooked rice", "Carrots and green beans", "Omega supplements for coat"],
+      "foods_to_avoid": ["Hard large kibble", "Dairy", "Fatty foods", "Foods with artificial dyes"],
+      "feeding_frequency": "2–3 meals per day (0.5–1 cup total)",
+      "portion_tip": "Small meals prevent bloating in this small breed",
+      "special_notes": "Shih Tzus can be picky eaters. Dental issues are common — consider dental-care kibble."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "Standard schedule"},
+        {"name": "DHPP", "schedule": "Standard puppy series"},
+        {"name": "Parvovirus", "schedule": "Included in DHPP"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "Recommended for grooming appointments"},
+        {"name": "Canine Influenza", "when": "Brachycephalic — respiratory vaccines are important"}
+      ],
+      "deworming": "Every 3–6 months",
+      "special_notes": "Brachycephalic breed — keep airways clear and monitor breathing."
+    },
+    "behavior": {
+      "temperament": "Affectionate, happy, and outgoing. A true companion breed.",
+      "energy_level": "Low to Moderate",
+      "trainability": "Moderate — charming but can be stubborn about housetraining",
+      "social_traits": "Loves being the center of attention. Good with everyone.",
+      "exercise_needs": "20–30 minutes daily — short walks and indoor play",
+      "barking_tendency": "Moderate",
+      "good_with_children": "Good — gentle but better with older gentle children",
+      "good_with_other_pets": "Very good — friendly with other animals",
+      "special_notes": "Coat requires daily brushing or a short 'puppy cut'. Prone to eye issues — keep face clean."
+    }
+  },
+  "doberman": {
+    "food": {
+      "diet_type": "High-protein, taurine-enriched diet",
+      "recommended_foods": ["Meat-first ingredient kibble", "Salmon and fish", "Eggs", "Taurine and L-carnitine supplements"],
+      "foods_to_avoid": ["Grain-heavy foods", "BHA/BHT preservatives", "Low-quality fillers", "Excessive sodium"],
+      "feeding_frequency": "2 meals per day (2.5–3.5 cups each)",
+      "portion_tip": "Dobes need lean muscle — avoid overfeeding carbs",
+      "special_notes": "Dobermans are prone to DCM (heart disease) — taurine supplementation is critical."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "Standard schedule"},
+        {"name": "DHPP", "schedule": "Extended series at 6, 9, 12, 16 weeks"},
+        {"name": "Parvovirus", "schedule": "Dobermans are high-risk — extra booster recommended"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "For training and social environments"},
+        {"name": "Leptospirosis", "when": "Recommended for active outdoor dogs"},
+        {"name": "Lyme Disease", "when": "In tick-endemic regions"}
+      ],
+      "deworming": "Every 3 months",
+      "special_notes": "Dobermans are Parvovirus-susceptible — do not skip boosters. Screen for DCM annually."
+    },
+    "behavior": {
+      "temperament": "Loyal, fearless, and alert. One of the best personal protection dogs.",
+      "energy_level": "High",
+      "trainability": "Excellent — ranked #5 in intelligence, loves to work",
+      "social_traits": "Velcro dogs — deeply bonded with their person. Naturally protective.",
+      "exercise_needs": "60–90 minutes daily — running, hiking, agility training",
+      "barking_tendency": "Moderate — barks with purpose as an alert dog",
+      "good_with_children": "Very good with family children",
+      "good_with_other_pets": "Can be dominant — socialization is important",
+      "special_notes": "Need to be with their people — suffer greatly from isolation. Best for active, involved owners."
+    }
+  },
+  "great_dane": {
+    "food": {
+      "diet_type": "Large-breed specific formula",
+      "recommended_foods": ["Large-breed puppy food (controlled calcium)", "Chicken and rice", "Joint supplements", "Slow-feeder bowls essential"],
+      "foods_to_avoid": ["High-calcium puppy foods (causes growth issues)", "Small-breed formulas", "Fatty foods", "Large meals at once"],
+      "feeding_frequency": "2–3 meals per day (3–5 cups per meal for adults)",
+      "portion_tip": "Use elevated feeding bowls and slow feeders to prevent bloat",
+      "special_notes": "CRITICAL: Use large-breed puppy food — standard puppy food causes bone growth problems."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "Standard schedule"},
+        {"name": "DHPP", "schedule": "Standard puppy series"},
+        {"name": "Parvovirus", "schedule": "Included in DHPP"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "Recommended"},
+        {"name": "Leptospirosis", "when": "For outdoor Great Danes"},
+        {"name": "Canine Influenza", "when": "In outbreak areas"}
+      ],
+      "deworming": "Every 3 months — weight-appropriate dosing",
+      "special_notes": "Great Danes have shorter lifespans (7–10 years) — proactive health care is vital."
+    },
+    "behavior": {
+      "temperament": "Friendly, patient, and dependable. The 'gentle giant' of dogs.",
+      "energy_level": "Moderate",
+      "trainability": "Good — eager to please despite their size",
+      "social_traits": "Affectionate and loves to lean on people. Surprisingly good apartment dogs.",
+      "exercise_needs": "45–60 minutes daily — moderate walks, avoid intense exercise during growth",
+      "barking_tendency": "Low to moderate — deep bark is intimidating enough",
+      "good_with_children": "Very good — gentle despite size (supervise due to size)",
+      "good_with_other_pets": "Generally good with all animals",
+      "special_notes": "Bloat (GDV) is the #1 killer of Great Danes — learn the signs and consider preventive surgery."
+    }
+  },
+  "chihuahua": {
+    "food": {
+      "diet_type": "Small-breed, high-calorie-density food",
+      "recommended_foods": ["Tiny-bite kibble", "Cooked chicken and rice", "Small amounts of cheese", "Puppy food for extra energy"],
+      "foods_to_avoid": ["Large kibble", "Rawhide chews", "Chocolate", "Grapes"],
+      "feeding_frequency": "3–4 small meals daily (Chihuahuas are prone to hypoglycemia)",
+      "portion_tip": "Only 0.25–0.5 cup per day — measure carefully, even small overfeeding causes obesity",
+      "special_notes": "Always have food available for young Chihuahuas — hypoglycemia can be fatal in tiny puppies."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "Standard — some vets recommend spacing vaccines due to tiny size"},
+        {"name": "DHPP", "schedule": "Standard puppy series — some vets split into individual vaccines"},
+        {"name": "Parvovirus", "schedule": "Critical due to small size"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "For social Chihuahuas"},
+        {"name": "Canine Influenza", "when": "Respiratory infections hit small breeds harder"}
+      ],
+      "deworming": "Every 3–6 months — precise weight-based dosing essential",
+      "special_notes": "Tiny breeds can have vaccine reactions — discuss spacing vaccines with your vet."
+    },
+    "behavior": {
+      "temperament": "Charming, graceful, and sassy. Fiercely loyal to one person.",
+      "energy_level": "Moderate",
+      "trainability": "Moderate — clever but can be willful. Consistency is key.",
+      "social_traits": "Bonds intensely with owner. Can be snappy with strangers if not socialized.",
+      "exercise_needs": "20–30 minutes daily — short walks and indoor play",
+      "barking_tendency": "Very High — one of the most vocal breeds",
+      "good_with_children": "Better with older gentle children — too fragile for toddlers",
+      "good_with_other_pets": "Often prefers other Chihuahuas; can be bossy with bigger dogs",
+      "special_notes": "Fragile bones — handle carefully. Keep warm in cold weather. Dental care is essential."
+    }
+  },
+  "pomeranian": {
+    "food": {
+      "diet_type": "Small-breed, nutrient-dense formula",
+      "recommended_foods": ["Small-kibble chicken or fish food", "Cooked eggs", "Blueberries", "Omega-3 for fluffy coat"],
+      "foods_to_avoid": ["Large treats", "Fatty table scraps", "Dairy", "Chocolate"],
+      "feeding_frequency": "2–3 small meals daily",
+      "portion_tip": "0.25–0.5 cup per day total — Poms gain weight easily under all that fluff",
+      "special_notes": "Dense coat hides weight gain — weigh regularly at the vet."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "Standard schedule"},
+        {"name": "DHPP", "schedule": "Standard puppy series"},
+        {"name": "Parvovirus", "schedule": "Included in DHPP"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "Recommended for grooming and social outings"},
+        {"name": "Canine Influenza", "when": "For social Pomeranians"}
+      ],
+      "deworming": "Every 3–6 months",
+      "special_notes": "Poms are prone to collapsed trachea — use harnesses instead of collars."
+    },
+    "behavior": {
+      "temperament": "Lively, bold, and curious. Spirited extrovert.",
+      "energy_level": "Moderate to High",
+      "trainability": "Good — smart and loves performing tricks",
+      "social_traits": "Confident and outgoing. May try to boss around larger dogs.",
+      "exercise_needs": "30–45 minutes daily — walks and play sessions",
+      "barking_tendency": "High — alert and vocal",
+      "good_with_children": "Better with older children due to small size",
+      "good_with_other_pets": "Good with proper socialization",
+      "special_notes": "Double coat needs regular brushing (3x/week minimum). Never shave a Pom's coat."
+    }
+  },
+  "french_bulldog": {
+    "food": {
+      "diet_type": "Limited-ingredient, easily digestible food",
+      "recommended_foods": ["Hypoallergenic kibble", "Lean turkey or duck", "Pumpkin for digestion", "Probiotics"],
+      "foods_to_avoid": ["Soy, wheat, corn (common allergens for Frenchies)", "Dairy", "Fatty foods", "Citrus"],
+      "feeding_frequency": "2 meals per day (1–1.5 cups each)",
+      "portion_tip": "Frenchies gain weight fast — maintain strict portion control",
+      "special_notes": "French Bulldogs are allergy-prone — an elimination diet may be needed to find safe foods."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "Standard schedule"},
+        {"name": "DHPP", "schedule": "Standard puppy series"},
+        {"name": "Parvovirus", "schedule": "Included in DHPP"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "Highly recommended — brachycephalic respiratory concerns"},
+        {"name": "Canine Influenza", "when": "Very important for flat-faced breeds"}
+      ],
+      "deworming": "Every 3–6 months",
+      "special_notes": "Brachycephalic breed — respiratory infections are more dangerous. Prioritize respiratory vaccines."
+    },
+    "behavior": {
+      "temperament": "Adaptable, playful, and smart. The perfect city companion.",
+      "energy_level": "Low to Moderate",
+      "trainability": "Moderate — smart but can be stubborn. Food motivation helps.",
+      "social_traits": "Very sociable, loves people and other dogs. Minimal guarding instinct.",
+      "exercise_needs": "30–45 minutes daily — short walks, avoid heat and overexertion",
+      "barking_tendency": "Low — one of the quieter breeds",
+      "good_with_children": "Excellent — sturdy and playful",
+      "good_with_other_pets": "Very good",
+      "special_notes": "Cannot swim (heavy front). Cannot tolerate heat. Snoring is completely normal!"
+    }
+  },
+  "border_collie": {
+    "food": {
+      "diet_type": "High-protein, high-energy working dog food",
+      "recommended_foods": ["Performance or active-dog formula", "Chicken, beef, or lamb", "Complex carbs for sustained energy", "Fish oil"],
+      "foods_to_avoid": ["Low-quality fillers", "Excessive grain", "Chocolate", "Onions"],
+      "feeding_frequency": "2 meals per day (1.5–2 cups each)",
+      "portion_tip": "Active Border Collies may need more; adjust based on activity level",
+      "special_notes": "Working Border Collies may need up to 30% more calories than pet Collies."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "Standard schedule"},
+        {"name": "DHPP", "schedule": "Standard puppy series"},
+        {"name": "Parvovirus", "schedule": "Included in DHPP"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "For agility/competition dogs"},
+        {"name": "Leptospirosis", "when": "Essential for farm/outdoor dogs"},
+        {"name": "Lyme Disease", "when": "Critical in rural tick areas"}
+      ],
+      "deworming": "Every 3 months — more frequently for farm dogs",
+      "special_notes": "IMPORTANT: Border Collies may carry the MDR1 gene — some drugs (like ivermectin) can be toxic. Get tested."
+    },
+    "behavior": {
+      "temperament": "Brilliant, energetic, and driven. The smartest of all dog breeds.",
+      "energy_level": "Extremely High",
+      "trainability": "Unmatched — #1 most intelligent breed. Learns commands in under 5 repetitions.",
+      "social_traits": "Bonds deeply with handler. May try to 'herd' children and other pets.",
+      "exercise_needs": "120+ minutes daily — needs a JOB to do (herding, agility, flyball)",
+      "barking_tendency": "Moderate to High — especially when stimulated",
+      "good_with_children": "Good — but may nip at heels (herding instinct)",
+      "good_with_other_pets": "Good but may try to herd them",
+      "special_notes": "NOT a couch potato breed. Under-stimulated Border Collies become destructive. They need mental AND physical work."
+    }
+  },
+  "cocker_spaniel": {
+    "food": {
+      "diet_type": "Moderate-protein food with ear and skin health support",
+      "recommended_foods": ["Fish-based food for omega-3", "Chicken and rice", "Probiotics", "Ear-health supplements"],
+      "foods_to_avoid": ["Common allergens (wheat, soy, corn)", "Fatty foods", "Chocolate", "Excessive dairy"],
+      "feeding_frequency": "2 meals per day (1–1.5 cups each)",
+      "portion_tip": "Cocker Spaniels love food and gain weight easily",
+      "special_notes": "Prone to ear infections — diet with omega-3 and anti-inflammatory ingredients helps."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "Standard schedule"},
+        {"name": "DHPP", "schedule": "Standard puppy series"},
+        {"name": "Parvovirus", "schedule": "Included in DHPP"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "Recommended for social dogs"},
+        {"name": "Leptospirosis", "when": "For outdoor/hunting Cockers"},
+        {"name": "Lyme Disease", "when": "In tick areas — long ears drag in brush"}
+      ],
+      "deworming": "Every 3 months",
+      "special_notes": "Clean ears weekly — Cockers are extremely prone to ear infections."
+    },
+    "behavior": {
+      "temperament": "Gentle, happy, and trusting. The 'merry Cocker'.",
+      "energy_level": "Moderate to High",
+      "trainability": "Very good — eager to please and responsive",
+      "social_traits": "Loves everyone — one of the friendliest breeds",
+      "exercise_needs": "45–60 minutes daily — walks, fetch, and swimming",
+      "barking_tendency": "Moderate",
+      "good_with_children": "Excellent — gentle and patient",
+      "good_with_other_pets": "Very good",
+      "special_notes": "Regular grooming needed. Prone to 'submissive urination' — use positive-only training methods."
+    }
+  },
+  "australian_shepherd": {
+    "food": {
+      "diet_type": "High-protein active dog food",
+      "recommended_foods": ["Active/performance formula", "Chicken, beef, or salmon", "Brown rice", "Joint supplements"],
+      "foods_to_avoid": ["Low-quality fillers", "Corn syrup", "Artificial preservatives", "Excessive carbs"],
+      "feeding_frequency": "2 meals per day (1.5–2.5 cups each)",
+      "portion_tip": "Adjust portions based on activity — working Aussies need more fuel",
+      "special_notes": "Like Border Collies, Aussies may carry the MDR1 gene. Get tested before deworming."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "Standard schedule"},
+        {"name": "DHPP", "schedule": "Standard puppy series"},
+        {"name": "Parvovirus", "schedule": "Included in DHPP"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "For social and competition dogs"},
+        {"name": "Leptospirosis", "when": "For ranch/outdoor dogs"},
+        {"name": "Lyme Disease", "when": "In tick-prone areas"}
+      ],
+      "deworming": "Every 3 months — MDR1 testing first!",
+      "special_notes": "MDR1 gene sensitivity — some common medications can be dangerous. Always inform your vet."
+    },
+    "behavior": {
+      "temperament": "Smart, work-oriented, and exuberant. A herding powerhouse.",
+      "energy_level": "Very High",
+      "trainability": "Excellent — highly intelligent and eager to learn",
+      "social_traits": "Loyal to family, can be reserved with strangers. Strong herding instinct.",
+      "exercise_needs": "90–120 minutes daily — agility, frisbee, hiking, herding",
+      "barking_tendency": "Moderate to High",
+      "good_with_children": "Very good — may try to herd kids",
+      "good_with_other_pets": "Good with socialization",
+      "special_notes": "Will herd everything — kids, cats, other dogs. Need a job or activity to stay happy."
+    }
+  },
+  "maltese": {
+    "food": {
+      "diet_type": "Small-breed, gentle-ingredient food",
+      "recommended_foods": ["Small-bite lamb or chicken kibble", "Boiled chicken and rice", "Salmon oil for coat", "Small treats"],
+      "foods_to_avoid": ["Foods with red dye (causes tear staining)", "Rich fatty foods", "Dairy", "Chocolate"],
+      "feeding_frequency": "2–3 small meals daily",
+      "portion_tip": "0.25–0.5 cup daily — tiny breed needs tiny portions",
+      "special_notes": "Feed foods without red dye or beet pulp to reduce tear staining."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "Standard schedule — may space for small size"},
+        {"name": "DHPP", "schedule": "Standard puppy series"},
+        {"name": "Parvovirus", "schedule": "Included in DHPP"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "For grooming appointments"},
+        {"name": "Canine Influenza", "when": "For social/show Maltese"}
+      ],
+      "deworming": "Every 3–6 months",
+      "special_notes": "Small breeds may benefit from spaced-out vaccination schedule."
+    },
+    "behavior": {
+      "temperament": "Gentle, playful, and charming. A classic lap dog with spirit.",
+      "energy_level": "Low to Moderate",
+      "trainability": "Good — responsive to gentle training and praise",
+      "social_traits": "Loves attention, bonds closely with family. Can develop separation anxiety.",
+      "exercise_needs": "20–30 minutes daily — short walks, indoor play",
+      "barking_tendency": "Moderate to High",
+      "good_with_children": "Better with older gentle children",
+      "good_with_other_pets": "Good with other small dogs",
+      "special_notes": "Coat needs daily brushing. Tear staining requires daily cleaning. Dental care is critical."
+    }
+  },
+  "saint_bernard": {
+    "food": {
+      "diet_type": "Large-breed, joint-support formula",
+      "recommended_foods": ["Large-breed specific food", "Lean meats", "Glucosamine-chondroitin supplements", "Slow-feeder bowls"],
+      "foods_to_avoid": ["High-calcium puppy foods", "Fatty treats", "Small-breed formulas", "Large single meals"],
+      "feeding_frequency": "2–3 meals per day (4–6 cups total for adults)",
+      "portion_tip": "Split meals to prevent bloat — never feed one large meal",
+      "special_notes": "High risk of bloat (GDV). Use elevated slow-feeder bowls. Rest after meals."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "Standard schedule"},
+        {"name": "DHPP", "schedule": "Standard puppy series"},
+        {"name": "Parvovirus", "schedule": "Included in DHPP"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "Recommended"},
+        {"name": "Leptospirosis", "when": "For outdoor/mountain dogs"}
+      ],
+      "deworming": "Every 3 months — weight-appropriate dosing",
+      "special_notes": "Giant breeds need careful growth management — never rush growth with supplements."
+    },
+    "behavior": {
+      "temperament": "Gentle, patient, and watchful. The ultimate gentle giant.",
+      "energy_level": "Low to Moderate",
+      "trainability": "Good — eager to please but can be slow/stubborn",
+      "social_traits": "Wonderful with everyone. Natural nanny dog instinct.",
+      "exercise_needs": "30–60 minutes daily — moderate walks, avoid overexertion especially in heat",
+      "barking_tendency": "Low",
+      "good_with_children": "Exceptional — incredibly gentle and patient",
+      "good_with_other_pets": "Very good",
+      "special_notes": "Drool is unavoidable! Cannot tolerate heat well. Short lifespan (8–10 years)."
+    }
+  },
+  "pit_bull_terrier": {
+    "food": {
+      "diet_type": "High-protein, muscle-building diet",
+      "recommended_foods": ["Beef, chicken, or fish-based food", "Eggs", "Sweet potatoes", "Lean meats"],
+      "foods_to_avoid": ["Grain-heavy foods (skin allergies)", "Soy products", "Artificial ingredients", "Fatty scraps"],
+      "feeding_frequency": "2 meals per day (1.5–2.5 cups each)",
+      "portion_tip": "Feed for a lean, muscular build — you should see a defined waist",
+      "special_notes": "Pit Bulls are prone to skin allergies — limited-ingredient diets often work best."
+    },
+    "vaccines": {
+      "core_vaccines": [
+        {"name": "Rabies", "schedule": "Standard schedule — required by law in most areas"},
+        {"name": "DHPP", "schedule": "Standard puppy series"},
+        {"name": "Parvovirus", "schedule": "Pit Bulls can be more susceptible — complete all boosters"},
+        {"name": "Adenovirus", "schedule": "Included in DHPP"}
+      ],
+      "optional_vaccines": [
+        {"name": "Bordetella", "when": "For social/training environments"},
+        {"name": "Leptospirosis", "when": "For outdoor dogs"},
+        {"name": "Canine Influenza", "when": "In outbreak areas"}
+      ],
+      "deworming": "Every 3 months",
+      "special_notes": "Keep vaccination records — some areas have breed-specific regulations."
+    },
+    "behavior": {
+      "temperament": "Loyal, affectionate, and eager to please. Often called 'nanny dogs'.",
+      "energy_level": "High",
+      "trainability": "Very good — intelligent and people-focused",
+      "social_traits": "Extremely affectionate with family. Dog-selectiveness is common.",
+      "exercise_needs": "60–90 minutes daily — loves tug, fetch, and hiking",
+      "barking_tendency": "Low to Moderate",
+      "good_with_children": "Excellent — known for being gentle and patient with kids",
+      "good_with_other_pets": "Varies — early socialization is important. May be dog-selective.",
+      "special_notes": "Training and socialization are essential. They aim to please — positive reinforcement gets amazing results."
+    }
+  }
+}

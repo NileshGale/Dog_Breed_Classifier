@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register — PawDetect</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        @keyframes float { 0%,100%{transform:translateY(0)rotate(0)} 50%{transform:translateY(-20px)rotate(5deg)} }
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes gradient { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+
+        body {
+            font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+            background:linear-gradient(-45deg,#DEB887,#D2B48C,#F4A460,#CD853F);
+            background-size:400% 400%; animation:gradient 15s ease infinite;
+            min-height:100vh; display:flex; flex-direction:column;
+            justify-content:center; align-items:center;
+            position:relative; overflow-x:hidden; padding:20px 0;
+        }
+
+        body::before { content:'🐾'; position:fixed; top:10%; left:10%; font-size:60px; opacity:.15; animation:float 6s ease-in-out infinite; pointer-events:none; }
+        body::after  { content:'🐾'; position:fixed; bottom:15%; right:12%; font-size:80px; opacity:.12; animation:float 7s ease-in-out infinite 1s; pointer-events:none; }
+        .fp1 { position:fixed; top:30%; right:15%; font-size:50px; opacity:.1; animation:float 8s ease-in-out infinite .5s; pointer-events:none; }
+        .fp2 { position:fixed; bottom:30%; left:8%; font-size:70px; opacity:.13; animation:float 9s ease-in-out infinite 1.5s; pointer-events:none; }
+
+        /* Back to Home */
+        .back-home {
+            position:fixed; top:22px; left:22px;
+            background:rgba(255,255,255,.95); padding:10px 20px;
+            border-radius:30px; box-shadow:0 4px 15px rgba(0,0,0,.2);
+            color:#D2691E; text-decoration:none; font-weight:600; font-size:14px;
+            transition:all .3s; z-index:1000; display:flex; align-items:center; gap:6px;
+            animation:fadeInUp .8s ease;
+        }
+        .back-home:hover { background:#fff; transform:translateX(-4px); box-shadow:0 6px 20px rgba(0,0,0,.25); }
+
+        h1 {
+            font-weight:700; color:#2c1810; margin-bottom:26px; font-size:2.5rem;
+            animation:fadeInUp .8s ease; text-shadow:2px 2px 4px rgba(0,0,0,.1);
+            letter-spacing:1px; text-align:center;
+        }
+        h1::before { content:'🐾'; margin-right:10px; display:inline-block; animation:float 3s ease-in-out infinite; }
+        h1::after  { content:'🐶'; margin-left:10px; display:inline-block; animation:float 3s ease-in-out infinite .5s; }
+
+        .container { animation:fadeInUp 1s ease .2s backwards; position:relative; z-index:10; width:100%; max-width:440px; padding:0 16px 40px; }
+
+        .form-box {
+            background:rgba(255,255,255,.95); padding:36px 30px;
+            border-radius:20px; box-shadow:0 15px 35px rgba(0,0,0,.2);
+            backdrop-filter:blur(10px); border:2px solid rgba(255,255,255,.3);
+            transition:transform .3s,box-shadow .3s;
+        }
+        .form-box:hover { transform:translateY(-4px); box-shadow:0 20px 45px rgba(0,0,0,.25); }
+
+        .panel { display:none; }
+        .panel.active { display:block; }
+
+        .form-header { margin-bottom:20px; }
+        .form-header h2 { color:#2c1810; font-size:1.65rem; margin-bottom:5px; }
+        .form-header p  { color:#666; font-size:.88rem; }
+
+        .input-group { margin:15px 0; }
+        .input-group label { display:block; text-align:left; margin-bottom:6px; color:#555; font-weight:500; font-size:13px; }
+
+        .input-group input, .input-group select {
+            width:100%; padding:13px 15px; border:2px solid #e0e0e0; border-radius:10px;
+            font-size:15px; transition:all .3s; background:#fff; font-family:inherit;
+        }
+        .input-group input:focus, .input-group select:focus { outline:none; border-color:#D2691E; box-shadow:0 0 0 3px rgba(210,105,30,.1); }
+        .input-group input.valid   { border-color:#27ae60; }
+        .input-group input.invalid { border-color:#e74c3c; }
+
+        .pw-reqs { background:#f9f9f9; border-radius:8px; padding:10px 14px; margin-top:8px; font-size:12px; }
+        .pw-reqs li { list-style:none; padding:2px 0; color:#e74c3c; }
+        .pw-reqs li.ok { color:#27ae60; }
+        .pw-reqs li::before { content:'✗ '; }
+        .pw-reqs li.ok::before { content:'✓ '; }
+
+        .hint { font-size:11.5px; margin-top:4px; }
+        .hint.ok  { color:#27ae60; }
+        .hint.err { color:#e74c3c; }
+
+        .btn-primary {
+            width:100%; padding:13px; background:linear-gradient(135deg,#D2691E,#CD853F);
+            color:#fff; border:none; border-radius:10px; cursor:pointer; font-size:15px;
+            font-weight:600; font-family:inherit; transition:all .3s;
+            box-shadow:0 4px 15px rgba(210,105,30,.3); margin-top:6px;
+        }
+        .btn-primary:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(210,105,30,.4); }
+        .btn-primary:disabled { opacity:.65; cursor:not-allowed; transform:none; }
+
+        .btn-text { background:none; border:none; color:#D2691E; font-size:13px; cursor:pointer; font-weight:500; transition:all .3s; padding:4px 0; font-family:inherit; }
+        .btn-text:hover { color:#8B4513; }
+
+        .alert { border-radius:8px; padding:10px 14px; font-size:13px; margin:10px 0; display:none; }
+        .alert.show { display:block; }
+        .alert.error   { background:#ffeaea; color:#c0392b; border:1px solid #f5c6cb; }
+        .alert.success { background:#eafaf1; color:#1e8449; border:1px solid #b2dfdb; }
+        .alert.info    { background:#eaf3ff; color:#1a5276; border:1px solid #b8d4f8; }
+
+        .otp-inputs { display:flex; gap:8px; justify-content:center; margin:16px 0; }
+        .otp-inputs input {
+            width:44px; height:52px; text-align:center; font-size:20px; font-weight:700;
+            border:2px solid #e0e0e0; border-radius:10px; transition:all .3s;
+            font-family:inherit;
+        }
+        .otp-inputs input:focus { outline:none; border-color:#D2691E; box-shadow:0 0 0 3px rgba(210,105,30,.15); }
+
+        .timer { font-size:13px; color:#888; text-align:center; margin-top:6px; }
+        .timer.expired { color:#c0392b; }
+
+        .login-link { text-align:center; margin-top:16px; font-size:13.5px; color:#666; }
+        .login-link a { color:#D2691E; font-weight:600; text-decoration:none; }
+        .login-link a:hover { color:#8B4513; }
+
+        @media(max-width:480px) {
+            h1 { font-size:2rem; }
+            .form-box { padding:26px 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="fp1">🐾</div>
+    <div class="fp2">🐾</div>
+
+    <!-- Back to Home (no back-to-login) -->
+    <a href="home_page.htm" class="back-home">← 🏠 Home</a>
+
+    <h1>Join PawDetect</h1>
+
+    <div class="container">
+        <div class="form-box">
+
+            <!-- ── REGISTER FORM ── -->
+            <div id="panelRegister" class="panel active">
+                <div class="form-header">
+                    <h2>Create Account</h2>
+                    <p>Sign up to start identifying dog breeds</p>
+                </div>
+                <div class="alert" id="regAlert"></div>
+
+                <div class="input-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" name="full_name" placeholder="Enter your full name">
+                </div>
+
+                <div class="input-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your email">
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Create a password">
+                    <ul class="pw-reqs">
+                        <li id="req-len">At least 8 characters</li>
+                        <li id="req-sym">At least 1 special symbol (!@#$%^&*)</li>
+                    </ul>
+                </div>
+
+                <div class="input-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Re-enter your password">
+                    <div class="hint" id="matchHint"></div>
+                </div>
+
+                <button class="btn-primary" id="regBtn" onclick="submitRegister()">Register →</button>
+                <div class="login-link">Already have an account? <a href="login_page.htm">Sign in</a></div>
+            </div>
+
+            <!-- ── OTP VERIFICATION ── -->
+            <div id="panelOTP" class="panel">
+                <div class="form-header">
+                    <h2>Verify Email</h2>
+                    <p id="otpSentTo" style="color:#555;font-size:13px;margin-top:4px">OTP sent to your email</p>
+                </div>
+                <div class="alert" id="otpAlert"></div>
+                <div class="otp-inputs" id="otpBoxes"></div>
+                <div class="timer" id="otpTimer"></div>
+                <button class="btn-primary" onclick="verifyOTP()">✅ Verify &amp; Create Account</button>
+                <div style="text-align:center;margin-top:12px">
+                    <button class="btn-text" id="resendBtn" onclick="resendOTP()" style="display:none">Resend OTP</button>
+                </div>
+                <div style="text-align:center;margin-top:8px">
+                    <button class="btn-text" onclick="showPanel('panelRegister')">← Back to Registration</button>
+                </div>
+            </div>
+
+            <!-- ── SUCCESS ── -->
+            <div id="panelSuccess" class="panel" style="text-align:center;padding:20px 0">
+                <div style="font-size:56px;margin-bottom:16px">🎉</div>
+                <h2 style="color:#2c1810;margin-bottom:8px">Welcome to PawDetect!</h2>
+                <p style="color:#666;font-size:14px;margin-bottom:24px">Your account has been created successfully.</p>
+                <a href="login_page.htm" style="text-decoration:none">
+                    <button class="btn-primary">🔑 Go to Login</button>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+<script>
+let pendingEmail = '';
+let timerInterval = null;
+
+function showPanel(id) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+function showAlert(id, msg, type='error') {
+    const el = document.getElementById(id);
+    el.className = 'alert show ' + type;
+    el.textContent = msg;
+}
+function clearAlert(id) {
+    const el = document.getElementById(id);
+    el.className = 'alert';
+    el.textContent = '';
+}
+
+// ── Password validation UI ─────────────────────────────────────────
+document.getElementById('password').addEventListener('input', function() {
+    const v = this.value;
+    document.getElementById('req-len').className = v.length >= 8 ? 'ok' : '';
+    document.getElementById('req-sym').className = /[!@#$%^&*(),.?":{}|<>]/.test(v) ? 'ok' : '';
+    checkMatch();
+});
+document.getElementById('confirmPassword').addEventListener('input', checkMatch);
+
+function checkMatch() {
+    const pw  = document.getElementById('password').value;
+    const cpw = document.getElementById('confirmPassword').value;
+    const hint = document.getElementById('matchHint');
+    if (!cpw) { hint.textContent = ''; hint.className = 'hint'; return; }
+    if (pw === cpw) { hint.textContent = '✓ Passwords match'; hint.className = 'hint ok'; }
+    else            { hint.textContent = '✗ Passwords do not match'; hint.className = 'hint err'; }
+}
+
+// ── Submit registration ────────────────────────────────────────────
+async function submitRegister() {
+    clearAlert('regAlert');
+    const fullName       = document.getElementById('fullName').value.trim();
+    const email          = document.getElementById('email').value.trim();
+    const password       = document.getElementById('password').value;
+    const confirmPassword= document.getElementById('confirmPassword').value;
+    const btn            = document.getElementById('regBtn');
+
+    if (!fullName)          { showAlert('regAlert','Full name is required.'); return; }
+    if (fullName.length < 2){ showAlert('regAlert','Full name must be at least 2 characters.'); return; }
+    if (!email)             { showAlert('regAlert','Email is required.'); return; }
+    if (password.length < 8){ showAlert('regAlert','Password must be at least 8 characters.'); return; }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) { showAlert('regAlert','Password needs a special character.'); return; }
+    if (password !== confirmPassword) { showAlert('regAlert','Passwords do not match.'); return; }
+
+    btn.disabled = true; btn.textContent = 'Sending OTP…';
+    const fd = new FormData();
+    fd.append('action','register');
+    fd.append('full_name', fullName);
+    fd.append('email', email);
+    fd.append('password', password);
+    fd.append('confirmPassword', confirmPassword);
+
+    try {
+        const res  = await fetch('register_otp.php', { method:'POST', body:fd });
+        const data = await res.json();
+        if (data.success) {
+            pendingEmail = email;
+            document.getElementById('otpSentTo').textContent = 'OTP sent to ' + email;
+            buildOTPBoxes('otpBoxes');
+            startTimer(600);
+            showPanel('panelOTP');
+        } else {
+            showAlert('regAlert', data.message);
+        }
+    } catch(e) { showAlert('regAlert','Network error. Please try again.'); }
+    finally { btn.disabled = false; btn.textContent = 'Register →'; }
+}
+
+// ── Verify OTP ─────────────────────────────────────────────────────
+async function verifyOTP() {
+    clearAlert('otpAlert');
+    const otp = getOTPValue('otpBoxes');
+    if (otp.length !== 6) { showAlert('otpAlert','Please enter the complete 6-digit OTP.'); return; }
+
+    const fd = new FormData();
+    fd.append('action','verify_otp');
+    fd.append('email', pendingEmail);
+    fd.append('otp', otp);
+
+    try {
+        const res  = await fetch('register_otp.php', { method:'POST', body:fd });
+        const data = await res.json();
+        if (data.success) {
+            clearInterval(timerInterval);
+            showPanel('panelSuccess');
+        } else {
+            showAlert('otpAlert', data.message);
+        }
+    } catch(e) { showAlert('otpAlert','Network error. Please try again.'); }
+}
+
+// ── Resend OTP ─────────────────────────────────────────────────────
+async function resendOTP() {
+    clearAlert('otpAlert');
+    const fd = new FormData();
+    fd.append('action','resend_otp'); fd.append('email', pendingEmail);
+    try {
+        const res  = await fetch('register_otp.php', { method:'POST', body:fd });
+        const data = await res.json();
+        if (data.success) {
+            showAlert('otpAlert', 'New OTP sent!', 'info');
+            document.getElementById('resendBtn').style.display = 'none';
+            startTimer(600);
+        } else {
+            showAlert('otpAlert', data.message);
+        }
+    } catch(e) { showAlert('otpAlert','Network error.'); }
+}
+
+// ── OTP input boxes ────────────────────────────────────────────────
+function buildOTPBoxes(containerId) {
+    const c = document.getElementById(containerId);
+    c.innerHTML = '';
+    for (let i = 0; i < 6; i++) {
+        const inp = document.createElement('input');
+        inp.type = 'text'; inp.maxLength = 1; inp.inputMode = 'numeric';
+        inp.addEventListener('input', e => {
+            inp.value = inp.value.replace(/\D/g,'');
+            if (inp.value && i < 5) c.children[i+1].focus();
+        });
+        inp.addEventListener('keydown', e => {
+            if (e.key === 'Backspace' && !inp.value && i > 0) c.children[i-1].focus();
+        });
+        c.appendChild(inp);
+    }
+    c.children[0].focus();
+}
+
+function getOTPValue(containerId) {
+    return [...document.getElementById(containerId).children].map(i => i.value).join('');
+}
+
+// ── Countdown timer ────────────────────────────────────────────────
+function startTimer(seconds) {
+    clearInterval(timerInterval);
+    const el  = document.getElementById('otpTimer');
+    const btn = document.getElementById('resendBtn');
+    btn.style.display = 'none';
+    el.className = 'timer';
+    let remaining = seconds;
+    timerInterval = setInterval(() => {
+        remaining--;
+        const m = Math.floor(remaining/60).toString().padStart(2,'0');
+        const s = (remaining%60).toString().padStart(2,'0');
+        el.textContent = `OTP expires in ${m}:${s}`;
+        if (remaining <= 0) {
+            clearInterval(timerInterval);
+            el.textContent = 'OTP expired. Please resend.';
+            el.className = 'timer expired';
+            btn.style.display = 'inline';
+        }
+    }, 1000);
+}
+</script>
+</body>
+</html>

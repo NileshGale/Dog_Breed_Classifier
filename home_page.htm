@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PawDetect - AI Dog Breed Detector</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-50px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(50px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-5deg); }
+    75% { transform: rotate(5deg); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+
+body {
+    background:
+        repeating-linear-gradient(
+            45deg,
+            rgba(255, 224, 240, 0.35),
+            rgba(255, 224, 240, 0.35) 20px,
+            rgba(255, 240, 248, 0.35) 20px,
+            rgba(255, 240, 248, 0.35) 40px
+        ),
+        linear-gradient(135deg, #FAF0E6 0%, #FFE4E1 50%, #FFF0F5 100%);
+    color: #333;
+    position: relative;
+    min-height: 100vh;
+}
+
+/* Header */
+header {
+    padding: 18px 60px;
+    font-size: 24px;
+    font-weight: 700;
+    animation: slideInLeft 0.8s ease;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+header:hover {
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.nav-btns {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.nav-btn {
+    padding: 9px 22px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: "Segoe UI", Arial, sans-serif;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-login {
+    background: transparent;
+    color: #2c2c2c;
+    border: 1.5px solid rgba(0,0,0,0.18);
+}
+.btn-login:hover {
+    background: #fff3ea;
+    border-color: #ff8c42;
+    color: #ff6b20;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255,140,66,0.15);
+}
+
+.btn-register {
+    background: linear-gradient(135deg, #ff8c42, #ff6b20);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(255,140,66,0.35);
+}
+.btn-register:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255,140,66,0.5);
+    filter: brightness(1.06);
+}
+
+.btn-detect {
+    background: linear-gradient(135deg, #4a6741, #7a9e6e);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(74,103,65,0.3);
+}
+.btn-detect:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74,103,65,0.45);
+    filter: brightness(1.06);
+}
+
+.btn-logout {
+    background: transparent;
+    color: #c0392b;
+    border: 1.5px solid rgba(192,57,43,0.22);
+}
+.btn-logout:hover {
+    background: #fff0ee;
+    border-color: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(192,57,43,0.12);
+}
+
+.user-badge {
+    font-size: 13px;
+    font-weight: 500;
+    color: #888;
+    background: #f5f5f5;
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 7px 14px;
+    border-radius: 20px;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#guestBtns { display: flex; gap: 10px; align-items: center; }
+#userBtns  { display: none; gap: 10px; align-items: center; }
+
+@media(max-width: 768px) {
+    header { padding: 14px 20px; }
+    .nav-btn { padding: 7px 14px; font-size: 12px; }
+    .user-badge { display: none; }
+}
+
+/* Main */
+.main {
+    text-align: center;
+    padding: 80px 20px 60px;
+}
+
+.main h1 {
+    font-size: 48px;
+    margin-bottom: 18px;
+    animation: fadeIn 1s ease;
+    color: #2c2c2c;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.main h1 span {
+    color: #ff8c42;
+    position: relative;
+    display: inline-block;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.main h1 span::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #ff8c42, transparent);
+    animation: shimmer 2s infinite;
+}
+
+.subtitle {
+    color: #666;
+    max-width: 700px;
+    margin: 0 auto 50px;
+    font-size: 18px;
+    line-height: 1.6;
+    animation: fadeIn 1.2s ease;
+}
+
+/* CTA button */
+.cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #ff8c42, #ff6b20);
+    color: #fff;
+    padding: 15px 36px;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 700;
+    text-decoration: none;
+    margin-bottom: 60px;
+    box-shadow: 0 6px 20px rgba(255,140,66,0.4);
+    transition: all 0.3s ease;
+    animation: fadeIn 1.3s ease;
+}
+.cta-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255,140,66,0.5); filter: brightness(1.05); }
+
+/* Feature cards */
+.features {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    animation: fadeIn 1.6s ease;
+}
+
+.card {
+    background: linear-gradient(145deg, #ffffff 0%, #f9f9f9 100%);
+    width: 280px;
+    padding: 32px;
+    border-radius: 24px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    border: 2px solid transparent;
+}
+
+.card::before {
+    content: '🐾';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 40px;
+    opacity: 0.1;
+    transition: all 0.4s ease;
+}
+
+.card:hover::before { opacity: 0.3; transform: rotate(20deg) scale(1.2); }
+.card:hover { transform: translateY(-12px) rotate(2deg); box-shadow: 0 20px 50px rgba(0,0,0,0.15); border-color: #ff8c42; }
+.card:nth-child(1) { animation: slideInLeft 1s ease; }
+.card:nth-child(2) { animation: fadeIn 1.2s ease; }
+.card:nth-child(3) { animation: slideInRight 1s ease; }
+
+.card h3 { margin-bottom: 12px; font-size: 22px; color: #2c2c2c; font-weight: 700; transition: color 0.3s ease; }
+.card:hover h3 { color: #ff8c42; }
+.card p { font-size: 15px; color: #666; line-height: 1.6; }
+
+/* Rules */
+.rules {
+    background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+    margin: 100px auto 0;
+    padding: 80px 40px;
+    border-radius: 50px 50px 0 0;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.08);
+    animation: fadeIn 1.8s ease;
+}
+
+.rules h2 {
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 36px;
+    color: #2c2c2c;
+    font-weight: 800;
+    position: relative;
+    display: inline-block;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.rules h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, #ff8c42, #ff6b35);
+    border-radius: 2px;
+}
+
+.rules ul { max-width: 700px; margin: auto; list-style: none; }
+
+.rules li {
+    margin-bottom: 20px;
+    padding: 20px 20px 20px 60px;
+    position: relative;
+    color: #555;
+    background: #f9f9f9;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+    font-size: 16px;
+}
+
+.rules li:hover { background: #fff; transform: translateX(10px); box-shadow: 0 5px 20px rgba(0,0,0,0.08); border-left-color: #ff8c42; }
+.rules li::before { content: '🐾'; position: absolute; left: 20px; font-size: 24px; transition: transform 0.3s ease; }
+.rules li:hover::before { transform: rotate(20deg) scale(1.2); }
+
+footer { text-align: center; padding: 30px; font-size: 14px; color: #999; background: #fafafa; }
+
+@media(max-width: 768px) {
+    header { padding: 20px 30px; font-size: 20px; }
+    .main { padding: 60px 20px 40px; }
+    .main h1 { font-size: 36px; }
+    .subtitle { font-size: 16px; }
+    .card { width: 100%; max-width: 320px; }
+    .rules { padding: 60px 20px; }
+    .rules h2 { font-size: 28px; }
+}
+
+.scroll-reveal { opacity: 0; transform: translateY(30px); transition: all 0.6s ease; }
+.scroll-reveal.active { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+
+<body>
+
+<header>
+    <div>🐶 PawDetect</div>
+
+    <div class="nav-btns">
+        <!-- Shown when NOT logged in -->
+        <div id="guestBtns">
+            <a href="login_page.htm" class="nav-btn btn-login">🔑 Login</a>
+            <a href="register.html" class="nav-btn btn-register">✨ Register</a>
+        </div>
+        <!-- Shown when logged in -->
+        <div id="userBtns">
+            <span class="user-badge" id="userEmailBadge"></span>
+            <a href="detect.html" class="nav-btn btn-detect">🐾 Detect</a>
+            <button class="nav-btn btn-logout" onclick="logout()">🚪 Logout</button>
+        </div>
+    </div>
+</header>
+
+<section class="main">
+    <h1>Discover Your Dog's <span>Breed</span></h1>
+    <p class="subtitle">
+        Upload a photo and let our advanced AI identify your dog's breed with detailed characteristics and insights
+    </p>
+
+    <!-- CTA changes based on auth state -->
+    <a href="detect.html" class="cta-btn" id="ctaBtn">🐾 Try PawDetect Now</a>
+
+    <div class="features">
+        <div class="card">
+            <h3>🤖 AI-Powered</h3>
+            <p>Advanced machine learning technology for accurate breed identification with over 95% accuracy</p>
+        </div>
+
+        <div class="card">
+            <h3>✅ Reliable</h3>
+            <p>Trusted by dog owners and professionals worldwide with thousands of successful identifications</p>
+        </div>
+
+        <div class="card">
+            <h3>⚡ Instant Results</h3>
+            <p>Get detailed breed information, characteristics, and care tips in just seconds</p>
+        </div>
+    </div>
+</section>
+
+<section class="rules">
+    <h2>Rules &amp; Regulations</h2>
+    <ul>
+        <li>Upload clear, well-lit images of dogs only for best results</li>
+        <li>One dog per image to ensure accurate breed identification</li>
+        <li>Supported formats: JPG, PNG, WEBP with high resolution</li>
+        <li>Maximum image size: 5MB for optimal processing speed</li>
+        <li>Ensure the dog is clearly visible and faces the camera</li>
+        <li>Avoid heavily filtered or edited photos for accuracy</li>
+    </ul>
+</section>
+
+<footer>
+    © 2026 PawDetect - All Rights Reserved | Made with ❤️ for Dog Lovers
+</footer>
+
+<script>
+function checkAuthState() {
+    const email    = sessionStorage.getItem('pawdetect_user_email');
+    const name     = sessionStorage.getItem('pawdetect_user_name');
+    const guestBtns = document.getElementById('guestBtns');
+    const userBtns  = document.getElementById('userBtns');
+    const badge     = document.getElementById('userEmailBadge');
+    const ctaBtn    = document.getElementById('ctaBtn');
+
+    if (email) {
+        guestBtns.style.display = 'none';
+        userBtns.style.display  = 'flex';
+        badge.textContent = name || email;
+        ctaBtn.href = 'detect.html';
+    } else {
+        guestBtns.style.display = 'flex';
+        userBtns.style.display  = 'none';
+        ctaBtn.href = 'login_page.htm';
+    }
+}
+
+function logout() {
+    sessionStorage.clear();
+    fetch('logout.php').catch(() => {});
+    checkAuthState();
+}
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('active'); });
+}, { threshold: 0.15 });
+document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+
+checkAuthState();
+</script>
+</body>
+</html>
