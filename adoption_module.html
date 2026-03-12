@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PawDetect — Dog Adoption</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream: #f5f0e8;
+      --bark: #3b2a1a;
+      --moss: #4a6741;
+      --sand: #c9a96e;
+      --rust: #b55a2a;
+      --fog: #e8e0d4;
+      --leaf: #7a9e6e;
+      --teal: #00796b;
+      --teal-light: #e0f2f1;
+      --teal-mid: #b2dfdb;
+    }
+    body {
+      background-color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--bark); min-height: 100vh; overflow-x: hidden;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0;
+    }
+
+    /* NAVBAR */
+    .navbar { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,.92); backdrop-filter: blur(12px); border-bottom: 1.5px solid var(--fog); padding: 0 2.5rem; display: flex; align-items: center; justify-content: space-between; height: 64px; box-shadow: 0 2px 12px rgba(59,42,26,.07); }
+    .nav-brand { display: flex; align-items: center; gap: .65rem; text-decoration: none; color: var(--bark); }
+    .logo-paw { width: 36px; height: 36px; background: var(--bark); border-radius: 50% 50% 50% 20%; display: flex; align-items: center; justify-content: center; color: var(--cream); font-size: 1.1rem; }
+    .logo-text { font-family: 'Playfair Display', serif; font-size: 1.45rem; font-weight: 700; letter-spacing: -.02em; }
+    .logo-text span { color: var(--rust); }
+    .nav-btn { display: inline-flex; align-items: center; gap: .5rem; text-decoration: none; color: var(--bark); font-size: .85rem; font-weight: 500; padding: .5rem 1.1rem; background: #fff; border: 1.5px solid var(--fog); border-radius: 10px; transition: all .2s; }
+    .nav-btn:hover { border-color: var(--sand); background: var(--cream); }
+    .nav-btn.primary { background: var(--bark); color: var(--cream); border-color: var(--bark); }
+    .nav-btn.primary:hover { background: var(--rust); border-color: var(--rust); }
+    .nav-actions { display: flex; align-items: center; gap: .5rem; }
+
+    /* NAV ICON BUTTONS */
+    .nav-divider { width: 1px; height: 26px; background: var(--fog); flex-shrink: 0; }
+    .nav-icon-btn {
+      position: relative; width: 40px; height: 40px; border-radius: 12px;
+      border: 1.5px solid var(--fog); background: #fff;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; text-decoration: none; color: var(--bark);
+      cursor: pointer; flex-shrink: 0;
+      transition: border-color .2s, background .2s, transform .2s, box-shadow .2s;
+    }
+    .nav-icon-btn:hover { border-color: var(--rust); background: #fff8f4; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(181,90,42,.15); }
+    .nav-icon-btn.active { background: linear-gradient(135deg, var(--rust), var(--sand)); border-color: var(--rust); color: #fff; box-shadow: 0 4px 14px rgba(181,90,42,.3); }
+    .nav-icon-btn .tip {
+      position: absolute; bottom: -34px; left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      background: var(--bark); color: var(--cream); font-size: .67rem; font-weight: 500;
+      white-space: nowrap; padding: .28rem .65rem; border-radius: 7px;
+      pointer-events: none; opacity: 0;
+      transition: opacity .15s, transform .15s; z-index: 300;
+    }
+    .nav-icon-btn .tip::before {
+      content: ''; position: absolute; top: -4px; left: 50%; transform: translateX(-50%);
+      border: 4px solid transparent; border-bottom-color: var(--bark); border-top: none;
+    }
+    .nav-icon-btn:hover .tip { opacity: 1; transform: translateX(-50%) translateY(0); }
+    /* Profile icon — matches detect.html profile-btn style */
+    .nav-profile-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--rust), var(--sand));
+      border: none; cursor: pointer; color: #fff; font-size: 1.1rem;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: box-shadow .2s, transform .2s;
+      box-shadow: 0 2px 8px rgba(181,90,42,.3);
+      text-decoration: none; flex-shrink: 0;
+    }
+    .nav-profile-btn:hover { transform: scale(1.07); box-shadow: 0 4px 14px rgba(181,90,42,.4); }
+
+    /* TOAST */
+    #toastContainer { position: fixed; top: 80px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+    .toast { padding: 13px 18px; border-radius: 14px; font-size: .86rem; font-weight: 500; box-shadow: 0 8px 30px rgba(0,0,0,.15); max-width: 300px; display: flex; align-items: center; gap: 10px; animation: toastIn .35s cubic-bezier(0.34,1.56,0.64,1) both; }
+    .toast.hide { animation: toastOut .3s ease forwards; }
+    .toast.success { background: #1e8449; color: #fff; }
+    .toast.error { background: #c0392b; color: #fff; }
+    .toast.info { background: var(--bark); color: var(--cream); }
+    @keyframes toastIn { from { opacity:0; transform:translateX(60px) } to { opacity:1; transform:translateX(0) } }
+    @keyframes toastOut { from { opacity:1; transform:translateX(0) } to { opacity:0; transform:translateX(60px) } }
+
+    /* LAYOUT */
+    .page-wrapper { position: relative; z-index: 1; max-width: 1000px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+
+    /* HEADER */
+    .page-header { text-align: center; margin-bottom: 2.4rem; animation: fadeUp .6s ease both; }
+    .page-eyebrow { display: inline-flex; align-items: center; gap: .5rem; background: linear-gradient(135deg, var(--teal-light), var(--teal-mid)); color: var(--teal); font-size: .72rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; padding: .35rem 1rem; border-radius: 100px; margin-bottom: 1rem; }
+    .page-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem,4vw,2.8rem); letter-spacing: -.03em; margin-bottom: .5rem; }
+    .page-header h1 em { font-style: italic; color: var(--teal); }
+    .page-header p { font-size: .92rem; color: #7a6a58; font-weight: 300; max-width: 500px; margin: 0 auto; line-height: 1.7; }
+
+    /* FILTERS */
+    .filter-row { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.6rem; flex-wrap: wrap; animation: fadeUp .65s ease both; }
+    .search-wrap { position: relative; flex: 1; min-width: 200px; }
+    .search-bar { width: 100%; padding: .75rem 1rem .75rem 2.7rem; border: 2px solid var(--fog); border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: .92rem; background: #fff; color: var(--bark); transition: border-color .2s, box-shadow .2s; }
+    .search-bar:focus { outline: none; border-color: var(--teal); box-shadow: 0 4px 20px rgba(0,121,107,.12); }
+    .search-icon { position: absolute; left: .9rem; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 1rem; }
+    .filter-select { padding: .72rem 1rem; border: 2px solid var(--fog); border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: .85rem; background: #fff; color: var(--bark); cursor: pointer; transition: border-color .2s; }
+    .filter-select:focus { outline: none; border-color: var(--teal); }
+
+    /* STATS BAR */
+    .stats-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.6rem; animation: fadeUp .7s ease both; }
+    .stats-count { font-size: .88rem; color: #7a6a58; }
+    .stats-count strong { color: var(--bark); font-weight: 600; }
+    .view-toggle { display: flex; gap: .3rem; background: #fff; border: 1.5px solid var(--fog); border-radius: 10px; padding: .2rem; }
+    .view-btn { padding: .4rem .7rem; border: none; background: none; border-radius: 8px; cursor: pointer; font-size: .9rem; transition: background .2s; }
+    .view-btn.active { background: var(--bark); color: var(--cream); }
+
+    /* CARDS GRID */
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.4rem; }
+    .cards-grid.list-view { grid-template-columns: 1fr; }
+
+    /* DOG CARD */
+    .dog-card { background: #fff; border: 1.5px solid var(--fog); border-radius: 20px; overflow: hidden; transition: transform .3s, box-shadow .3s; animation: fadeUp .5s ease both; cursor: pointer; }
+    .dog-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(59,42,26,.14); }
+    .dog-card-img { width: 100%; height: 200px; object-fit: cover; background: linear-gradient(135deg, #f0e8dc, #e8ddd0); display: flex; align-items: center; justify-content: center; font-size: 4rem; position: relative; }
+    .dog-card-img img { width: 100%; height: 100%; object-fit: cover; }
+    .dog-card-badge { position: absolute; top: .8rem; right: .8rem; background: var(--teal); color: #fff; font-size: .65rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; padding: .25rem .65rem; border-radius: 100px; }
+    .dog-card-badge.urgent { background: var(--rust); }
+    .dog-card-body { padding: 1.2rem 1.3rem; }
+    .dog-name { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--bark); margin-bottom: .25rem; }
+    .dog-breed-tag { display: inline-block; background: var(--teal-light); color: var(--teal); font-size: .72rem; font-weight: 500; padding: .2rem .65rem; border-radius: 100px; margin-bottom: .8rem; }
+    .dog-meta { display: flex; gap: 1rem; margin-bottom: .9rem; }
+    .dog-meta-item { display: flex; align-items: center; gap: .35rem; font-size: .78rem; color: #7a6a58; }
+    .dog-desc { font-size: .82rem; color: #7a6a58; line-height: 1.6; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .dog-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: .9rem; border-top: 1.5px solid var(--fog); }
+    .owner-mini { display: flex; align-items: center; gap: .5rem; }
+    .owner-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--sand), var(--rust)); display: flex; align-items: center; justify-content: center; font-size: .7rem; color: #fff; font-weight: 600; }
+    .owner-name { font-size: .78rem; color: #7a6a58; }
+    .contact-btn { display: inline-flex; align-items: center; gap: .4rem; padding: .45rem .9rem; background: var(--bark); color: var(--cream); border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: .78rem; font-weight: 500; cursor: pointer; transition: background .2s, transform .15s; text-decoration: none; }
+    .contact-btn:hover { background: var(--rust); transform: scale(1.03); }
+
+    /* LIST VIEW CARD */
+    .cards-grid.list-view .dog-card { display: flex; flex-direction: row; }
+    .cards-grid.list-view .dog-card-img { width: 160px; height: auto; flex-shrink: 0; border-radius: 0; }
+    .cards-grid.list-view .dog-card-body { flex: 1; }
+
+    /* MODAL OVERLAY */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(30,20,10,.5); backdrop-filter: blur(6px); z-index: 500; display: none; align-items: center; justify-content: center; padding: 1.5rem; }
+    .modal-overlay.open { display: flex; animation: fadeIn .2s ease; }
+    @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+    .modal { background: #fff; border-radius: 24px; max-width: 560px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 30px 80px rgba(0,0,0,.25); animation: modalUp .3s cubic-bezier(0.34,1.4,0.64,1) both; }
+    @keyframes modalUp { from { opacity:0; transform:translateY(30px) scale(.97) } to { opacity:1; transform:translateY(0) scale(1) } }
+    .modal-header { padding: 1.8rem 1.8rem 1.2rem; border-bottom: 1.5px solid var(--fog); display: flex; align-items: flex-start; justify-content: space-between; }
+    .modal-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--bark); }
+    .modal-subtitle { font-size: .82rem; color: #9a8a7a; margin-top: .15rem; }
+    .modal-close { background: var(--fog); border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-size: .9rem; display: flex; align-items: center; justify-content: center; transition: background .2s; flex-shrink: 0; }
+    .modal-close:hover { background: #ddd; }
+    .modal-body { padding: 1.6rem 1.8rem; }
+    .modal-dog-header { display: flex; gap: 1.2rem; margin-bottom: 1.5rem; align-items: flex-start; }
+    .modal-dog-photo { width: 90px; height: 90px; border-radius: 16px; background: linear-gradient(135deg, var(--teal-light), var(--teal-mid)); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; overflow: hidden; flex-shrink: 0; }
+    .modal-dog-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .modal-dog-info h2 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--bark); margin-bottom: .3rem; }
+    .modal-tags { display: flex; gap: .4rem; flex-wrap: wrap; }
+    .modal-tag { display: inline-block; padding: .2rem .6rem; border-radius: 100px; font-size: .7rem; font-weight: 500; }
+    .tag-teal { background: var(--teal-light); color: var(--teal); }
+    .tag-sand { background: #fdf3e3; color: var(--rust); }
+    .modal-section { margin-bottom: 1.3rem; }
+    .modal-section-title { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: #9a8a7a; margin-bottom: .7rem; }
+    .modal-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
+    .modal-detail-item { background: var(--cream); border-radius: 12px; padding: .7rem .9rem; }
+    .detail-label { font-size: .68rem; color: #9a8a7a; margin-bottom: .2rem; }
+    .detail-value { font-size: .88rem; font-weight: 500; color: var(--bark); }
+    .modal-desc { font-size: .88rem; color: #6a5a4a; line-height: 1.7; }
+    .contact-box { background: linear-gradient(135deg, var(--teal-light), var(--teal-mid)); border: 1.5px solid #80cbc4; border-radius: 16px; padding: 1.2rem 1.4rem; }
+    .contact-box-title { font-size: .8rem; font-weight: 600; color: var(--teal); margin-bottom: .75rem; text-transform: uppercase; letter-spacing: .08em; }
+    .contact-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .contact-info { display: flex; align-items: center; gap: .6rem; }
+    .contact-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--teal); display: flex; align-items: center; justify-content: center; color: #fff; font-size: .85rem; font-weight: 600; flex-shrink: 0; }
+    .contact-owner-name { font-size: .9rem; font-weight: 600; color: var(--bark); }
+    .contact-email { font-size: .78rem; color: var(--teal); }
+    .btn-email { display: inline-flex; align-items: center; gap: .45rem; padding: .6rem 1.2rem; background: var(--teal); color: #fff; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: .82rem; font-weight: 500; cursor: pointer; transition: background .2s, transform .15s; text-decoration: none; }
+    .btn-email:hover { background: #00695c; transform: scale(1.03); }
+
+    /* EMPTY */
+    .empty-state { text-align: center; padding: 4rem 1rem; color: #9a8a7a; animation: fadeUp .4s ease both; }
+    .empty-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+    .empty-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--bark); margin-bottom: .5rem; }
+
+    @keyframes fadeUp { from { opacity:0; transform:translateY(18px) } to { opacity:1; transform:translateY(0) } }
+    @media (max-width: 600px) {
+      .navbar { padding: 0 1rem; }
+      .page-wrapper { padding: 2rem 1rem 3rem; }
+      .modal-detail-grid { grid-template-columns: 1fr; }
+      .cards-grid.list-view .dog-card { flex-direction: column; }
+      .cards-grid.list-view .dog-card-img { width: 100%; height: 180px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="nav-brand" href="home_page.htm">
+    <div class="logo-paw">🐾</div>
+    <span class="logo-text">Paw<span>Detect</span></span>
+  </a>
+  <div class="nav-actions">
+    <a href="adoption_module.html" class="nav-icon-btn active">
+      🏡<span class="tip">Adopt a Dog</span>
+    </a>
+    <a href="list_your_dog.html" class="nav-icon-btn">
+      🐶<span class="tip">List My Dog</span>
+    </a>
+    <div class="nav-divider"></div>
+    <a href="detect.html" class="nav-profile-btn" title="My Account">👤</a>
+  </div>
+</nav>
+
+<div id="toastContainer"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modalTitle">Dog Name</div>
+        <div class="modal-subtitle" id="modalSubtitle">Breed • Age</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="page-eyebrow">🏡 Find a Forever Home</div>
+    <h1>Adopt a <em>Dog</em></h1>
+    <p>Browse dogs looking for loving homes. Each listing is posted by a verified owner. Contact them directly to begin the adoption journey.</p>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filter-row">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-bar" id="searchInput" placeholder="Search by name, breed…" oninput="filterCards()">
+    </div>
+    <select class="filter-select" id="ageFilter" onchange="filterCards()">
+      <option value="">All Ages</option>
+      <option value="puppy">Puppy (0–1 yr)</option>
+      <option value="young">Young (1–3 yrs)</option>
+      <option value="adult">Adult (3–8 yrs)</option>
+      <option value="senior">Senior (8+ yrs)</option>
+    </select>
+    <select class="filter-select" id="sizeFilter" onchange="filterCards()">
+      <option value="">All Sizes</option>
+      <option value="small">Small</option>
+      <option value="medium">Medium</option>
+      <option value="large">Large</option>
+    </select>
+    <select class="filter-select" id="genderFilter" onchange="filterCards()">
+      <option value="">All Genders</option>
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+    </select>
+  </div>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stats-count"><strong id="visibleCount">6</strong> dogs available for adoption</div>
+    <div class="view-toggle">
+      <button class="view-btn active" id="gridViewBtn" onclick="setView('grid')">⊞</button>
+      <button class="view-btn" id="listViewBtn" onclick="setView('list')">≡</button>
+    </div>
+  </div>
+
+  <!-- CARDS -->
+  <div class="cards-grid" id="cardsGrid"></div>
+
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <div class="empty-icon">🐾</div>
+    <div class="empty-title" id="emptyTitle">No dogs listed yet</div>
+    <p id="emptyMsg">Be the first to <a href="list_your_dog.html" style="color:var(--teal);font-weight:600;">list a dog for adoption</a>.</p>
+  </div>
+
+</div>
+
+<script>
+  // ── Load listings from localStorage (saved by list_your_dog.html) ──
+  function loadListings() {
+    try {
+      const raw = localStorage.getItem('pawdetect_listings');
+      return raw ? JSON.parse(raw) : [];
+    } catch(e) { return []; }
+  }
+
+  let dogs = loadListings();
+
+  // ── Listen for new listings saved in another tab / same tab ────────
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'pawdetect_listings') {
+      dogs = loadListings();
+      filterCards();
+      showToast('New listing added!', 'success');
+    }
+  });
+
+  // ── Also re-check when tab regains focus (same-tab navigation) ─────
+  window.addEventListener('focus', () => {
+    const fresh = loadListings();
+    if (fresh.length !== dogs.length) {
+      dogs = fresh;
+      filterCards();
+    }
+  });
+
+  function getEmoji(breed) {
+    if (!breed) return '🐕';
+    const b = breed.toLowerCase();
+    if (b.includes('golden')) return '🐕';
+    if (b.includes('labrador') || b.includes('lab')) return '🐶';
+    if (b.includes('shepherd')) return '🐺';
+    if (b.includes('beagle')) return '🐩';
+    if (b.includes('pomeranian')) return '🦊';
+    if (b.includes('husky')) return '🐺';
+    if (b.includes('poodle')) return '🐩';
+    if (b.includes('indie') || b.includes('street')) return '🐾';
+    return '🐕';
+  }
+
+  function getInitials(name) {
+    if (!name) return '??';
+    return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  }
+
+  let currentView = 'grid';
+  let filtered = [...dogs];
+
+  function renderCards(list) {
+    const grid = document.getElementById('cardsGrid');
+    const empty = document.getElementById('emptyState');
+    document.getElementById('visibleCount').textContent = list.length;
+
+    if (list.length === 0) {
+      grid.innerHTML = '';
+      empty.style.display = 'block';
+      const isFiltered = document.getElementById('searchInput').value ||
+                         document.getElementById('ageFilter').value ||
+                         document.getElementById('sizeFilter').value ||
+                         document.getElementById('genderFilter').value;
+      if (isFiltered) {
+        document.getElementById('emptyTitle').textContent = 'No dogs match your filters';
+        document.getElementById('emptyMsg').innerHTML = 'Try adjusting or clearing your filters.';
+      } else if (dogs.length === 0) {
+        document.getElementById('emptyTitle').textContent = 'No dogs listed yet';
+        document.getElementById('emptyMsg').innerHTML = 'Be the first to <a href="list_your_dog.html" style="color:var(--teal);font-weight:600;">list a dog for adoption</a>.';
+      }
+      return;
+    }
+    empty.style.display = 'none';
+
+    grid.innerHTML = list.map((d, i) => `
+      <div class="dog-card" style="animation-delay:${i * 0.06}s" onclick="openModal(${d.id})">
+        <div class="dog-card-img">
+          ${d.photo ? `<img src="${d.photo}" alt="${d.name}">` : `<span style="font-size:4rem">${getEmoji(d.breed)}</span>`}
+          <span class="dog-card-badge ${d.urgent ? 'urgent' : ''}">${d.urgent ? '🔴 Urgent' : '✅ Available'}</span>
+        </div>
+        <div class="dog-card-body">
+          <div class="dog-name">${d.name}</div>
+          <span class="dog-breed-tag">${d.breed}</span>
+          <div class="dog-meta">
+            <span class="dog-meta-item">🎂 ${d.age_label}</span>
+            <span class="dog-meta-item">${d.gender === 'Male' ? '♂' : '♀'} ${d.gender}</span>
+            <span class="dog-meta-item">📍 ${d.location}</span>
+          </div>
+          <div class="dog-desc">${d.description}</div>
+          <div class="dog-card-footer">
+            <div class="owner-mini">
+              <div class="owner-avatar">${getInitials(d.owner_name)}</div>
+              <span class="owner-name">${d.owner_name}</span>
+            </div>
+            <button class="contact-btn" onclick="event.stopPropagation(); contactOwner('${d.owner_email}', '${d.name}')">✉️ Contact</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function filterCards() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const age = document.getElementById('ageFilter').value;
+    const size = document.getElementById('sizeFilter').value.toLowerCase();
+    const gender = document.getElementById('genderFilter').value.toLowerCase();
+
+    filtered = dogs.filter(d => {
+      const matchQ = !q || d.name.toLowerCase().includes(q) || d.breed.toLowerCase().includes(q);
+      const matchAge = !age || d.age_cat === age;
+      const matchSize = !size || d.size.toLowerCase() === size;
+      const matchGender = !gender || d.gender.toLowerCase() === gender;
+      return matchQ && matchAge && matchSize && matchGender;
+    });
+    renderCards(filtered);
+  }
+
+  function setView(view) {
+    currentView = view;
+    const grid = document.getElementById('cardsGrid');
+    document.getElementById('gridViewBtn').classList.toggle('active', view === 'grid');
+    document.getElementById('listViewBtn').classList.toggle('active', view === 'list');
+    grid.classList.toggle('list-view', view === 'list');
+  }
+
+  function openModal(id) {
+    const d = dogs.find(x => x.id === id);
+    if (!d) return;
+    document.getElementById('modalTitle').textContent = d.name;
+    document.getElementById('modalSubtitle').textContent = `${d.breed} • ${d.age_label} • ${d.gender}`;
+    document.getElementById('modalBody').innerHTML = `
+      <div class="modal-dog-header">
+        <div class="modal-dog-photo">
+          ${d.photo ? `<img src="${d.photo}" alt="${d.name}">` : `<span>${getEmoji(d.breed)}</span>`}
+        </div>
+        <div class="modal-dog-info">
+          <h2>${d.name}</h2>
+          <div class="modal-tags">
+            <span class="modal-tag tag-teal">${d.breed}</span>
+            <span class="modal-tag tag-sand">${d.age_label}</span>
+            <span class="modal-tag tag-teal">${d.size}</span>
+            ${d.vaccinated ? '<span class="modal-tag" style="background:#e8f5e9;color:#2e7d32">💉 Vaccinated</span>' : ''}
+            ${d.neutered ? '<span class="modal-tag" style="background:#fce4ec;color:#c62828">✂️ Neutered</span>' : ''}
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">Details</div>
+        <div class="modal-detail-grid">
+          <div class="modal-detail-item"><div class="detail-label">Gender</div><div class="detail-value">${d.gender === 'Male' ? '♂ Male' : '♀ Female'}</div></div>
+          <div class="modal-detail-item"><div class="detail-label">Weight</div><div class="detail-value">${d.weight}</div></div>
+          <div class="modal-detail-item"><div class="detail-label">Good with Kids</div><div class="detail-value">${d.good_with_kids ? '✅ Yes' : '⚠️ No'}</div></div>
+          <div class="modal-detail-item"><div class="detail-label">Good with Pets</div><div class="detail-value">${d.good_with_pets ? '✅ Yes' : '⚠️ No'}</div></div>
+          <div class="modal-detail-item"><div class="detail-label">Location</div><div class="detail-value">📍 ${d.location}</div></div>
+          <div class="modal-detail-item"><div class="detail-label">Status</div><div class="detail-value">${d.urgent ? '🔴 Urgent' : '🟢 Available'}</div></div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">About ${d.name}</div>
+        <div class="modal-desc">${d.description}</div>
+      </div>
+
+      <div class="contact-box">
+        <div class="contact-box-title">📬 Contact Owner</div>
+        <div class="contact-row">
+          <div class="contact-info">
+            <div class="contact-avatar">${getInitials(d.owner_name)}</div>
+            <div>
+              <div class="contact-owner-name">${d.owner_name}</div>
+              <div class="contact-email">${d.owner_email}</div>
+            </div>
+          </div>
+          <a class="btn-email" href="mailto:${d.owner_email}?subject=Adoption Enquiry — ${d.name}&body=Hi ${d.owner_name.split(' ')[0]},%0A%0AI saw ${d.name}'s listing on PawDetect and I'm interested in adoption. Could we connect?%0A%0AThank you!">
+            ✉️ Send Email
+          </a>
+        </div>
+      </div>
+    `;
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+  function closeModalOutside(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
+
+  function contactOwner(email, name) {
+    window.location.href = `mailto:${email}?subject=Adoption Enquiry — ${name}&body=Hi,%0A%0AI saw ${name}'s listing on PawDetect and I'm interested in adoption. Could we connect?%0A%0AThank you!`;
+    showToast('Opening email client…', 'info');
+  }
+
+  function showToast(msg, type='info', ms=3000) {
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    const icons = { success:'✅', error:'❌', info:'ℹ️' };
+    t.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+    document.getElementById('toastContainer').appendChild(t);
+    setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 400); }, ms);
+  }
+
+  // Init — render listings from localStorage
+  filtered = [...dogs];
+  renderCards(dogs);
+</script>
+</body>
+</html>

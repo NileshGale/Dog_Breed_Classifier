@@ -92,7 +92,74 @@
     }
 
     .nav-right {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
       position: relative;
+    }
+
+    /* NAV ICON BUTTONS (adoption & list-dog) */
+    .nav-icon-btn {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      border: 1.5px solid var(--fog);
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      text-decoration: none;
+      color: var(--bark);
+      cursor: pointer;
+      transition: border-color .2s, background .2s, transform .2s, box-shadow .2s;
+      flex-shrink: 0;
+    }
+    .nav-icon-btn:hover {
+      border-color: var(--rust);
+      background: #fff8f4;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(181, 90, 42, .15);
+    }
+    .nav-icon-btn .tip {
+      position: absolute;
+      bottom: -34px;
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      background: var(--bark);
+      color: var(--cream);
+      font-size: .67rem;
+      font-weight: 500;
+      white-space: nowrap;
+      padding: .28rem .65rem;
+      border-radius: 7px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .15s, transform .15s;
+      z-index: 300;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .nav-icon-btn .tip::before {
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 4px solid transparent;
+      border-bottom-color: var(--bark);
+      border-top: none;
+    }
+    .nav-icon-btn:hover .tip {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .nav-divider {
+      width: 1px;
+      height: 26px;
+      background: var(--fog);
+      flex-shrink: 0;
     }
 
     .profile-btn {
@@ -1694,6 +1761,13 @@
       <div class="logo-text">Paw<span>Detect</span></div>
     </a>
     <div class="nav-right">
+      <a href="adoption_module.html" class="nav-icon-btn" title="">
+        🏡<span class="tip">Adopt a Dog</span>
+      </a>
+      <a href="list_your_dog.html" class="nav-icon-btn" title="">
+        🐶<span class="tip">List My Dog</span>
+      </a>
+      <div class="nav-divider"></div>
       <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()" title="My Account">👤</button>
       <div class="profile-dropdown" id="profileDropdown">
         <div class="dropdown-header">
