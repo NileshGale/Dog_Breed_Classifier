@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <meta charset="UTF-8">
 <title>PawDetect - AI Dog Breed Detector</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -261,7 +262,9 @@ header:hover {
 }
 
 .card::before {
-    content: '🐾';
+    content: '\f1b0';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
     position: absolute;
     top: 10px;
     right: 10px;
@@ -329,7 +332,12 @@ header:hover {
 }
 
 .rules li:hover { background: #fff; transform: translateX(10px); box-shadow: 0 5px 20px rgba(0,0,0,0.08); border-left-color: #ff8c42; }
-.rules li::before { content: '🐾'; position: absolute; left: 20px; font-size: 24px; transition: transform 0.3s ease; }
+.rules li::before { 
+    content: '\f1b0'; 
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute; left: 20px; font-size: 24px; transition: transform 0.3s ease; 
+}
 .rules li:hover::before { transform: rotate(20deg) scale(1.2); }
 
 footer { text-align: center; padding: 30px; font-size: 14px; color: #999; background: #fafafa; }
@@ -352,19 +360,19 @@ footer { text-align: center; padding: 30px; font-size: 14px; color: #999; backgr
 <body>
 
 <header>
-    <div>🐶 PawDetect</div>
+    <div><i class="fa-solid fa-dog"></i> PawDetect</div>
 
     <div class="nav-btns">
         <!-- Shown when NOT logged in -->
         <div id="guestBtns">
-            <a href="login_page.htm" class="nav-btn btn-login">🔑 Login</a>
-            <a href="register.html" class="nav-btn btn-register">✨ Register</a>
+            <a href="login_page.htm" class="nav-btn btn-login"><i class="fa-solid fa-key"></i> Login</a>
+            <a href="register.html" class="nav-btn btn-register"><i class="fa-solid fa-wand-magic-sparkles"></i> Register</a>
         </div>
         <!-- Shown when logged in -->
         <div id="userBtns">
             <span class="user-badge" id="userEmailBadge"></span>
-            <a href="detect.html" class="nav-btn btn-detect">🐾 Detect</a>
-            <button class="nav-btn btn-logout" onclick="logout()">🚪 Logout</button>
+            <a href="detect.html" class="nav-btn btn-detect"><i class="fa-solid fa-paw"></i> Detect</a>
+            <button class="nav-btn btn-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
         </div>
     </div>
 </header>
@@ -376,21 +384,21 @@ footer { text-align: center; padding: 30px; font-size: 14px; color: #999; backgr
     </p>
 
     <!-- CTA changes based on auth state -->
-    <a href="detect.html" class="cta-btn" id="ctaBtn">🐾 Try PawDetect Now</a>
+    <a href="detect.html" class="cta-btn" id="ctaBtn"><i class="fa-solid fa-paw"></i> Try PawDetect Now</a>
 
     <div class="features">
         <div class="card">
-            <h3>🤖 AI-Powered</h3>
+            <h3><i class="fa-solid fa-robot"></i> AI-Powered</h3>
             <p>Advanced machine learning technology for accurate breed identification with over 95% accuracy</p>
         </div>
 
         <div class="card">
-            <h3>✅ Reliable</h3>
+            <h3><i class="fa-solid fa-circle-check"></i> Reliable</h3>
             <p>Trusted by dog owners and professionals worldwide with thousands of successful identifications</p>
         </div>
 
         <div class="card">
-            <h3>⚡ Instant Results</h3>
+            <h3><i class="fa-solid fa-bolt"></i> Instant Results</h3>
             <p>Get detailed breed information, characteristics, and care tips in just seconds</p>
         </div>
     </div>
@@ -409,7 +417,7 @@ footer { text-align: center; padding: 30px; font-size: 14px; color: #999; backgr
 </section>
 
 <footer>
-    © 2026 PawDetect - All Rights Reserved | Made with ❤️ for Dog Lovers
+    © 2026 PawDetect - All Rights Reserved | Made with <i class="fa-solid fa-heart" style="color: #e74c3c;"></i> for Dog Lovers
 </footer>
 
 <script>
@@ -448,3 +456,5 @@ checkAuthState();
 </script>
 </body>
 </html>
+
+

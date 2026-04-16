@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PawDetect — List Your Dog for Adoption</title>
@@ -222,18 +223,18 @@
 <!-- NAVBAR -->
 <nav class="navbar">
   <a class="nav-brand" href="home_page.html">
-    <div class="logo-paw">🐾</div>
+    <div class="logo-paw"><i class="fa-solid fa-paw"></i></div>
     <span class="logo-text">Paw<span>Detect</span></span>
   </a>
   <div class="nav-actions">
     <a href="adoption_module.html" class="nav-icon-btn">
-      🏡<span class="tip">Adopt a Dog</span>
+      <i class="fa-solid fa-house-chimney"></i><span class="tip">Adopt a Dog</span>
     </a>
     <a href="list_your_dog.html" class="nav-icon-btn active">
-      🐶<span class="tip">List My Dog</span>
+      <i class="fa-solid fa-dog"></i><span class="tip">List My Dog</span>
     </a>
     <div class="nav-divider"></div>
-    <a href="detect.html" class="nav-profile-btn" title="My Account">👤</a>
+    <a href="detect.html" class="nav-profile-btn" title="My Account"><i class="fa-solid fa-user"></i></a>
   </div>
 </nav>
 
@@ -243,7 +244,7 @@
 
   <!-- HEADER -->
   <div class="page-header" id="pageHeader">
-    <div class="page-eyebrow">🐶 Give a Loving Home</div>
+    <div class="page-eyebrow"><i class="fa-solid fa-dog"></i> Give a Loving Home</div>
     <h1>List Your Dog for <em>Adoption</em></h1>
     <p>Fill in your dog's details and a brief description. Interested adopters will reach you directly via email.</p>
   </div>
@@ -271,7 +272,7 @@
     <!-- Photo Upload -->
     <div class="form-card">
       <div class="form-card-title">
-        <div class="form-card-icon">📸</div>
+        <div class="form-card-icon"><i class="fa-solid fa-camera"></i></div>
         <div>
           <h2>Dog Photo</h2>
           <p>Upload a clear, recent photo of your dog</p>
@@ -281,7 +282,7 @@
       <div class="photo-upload-area" id="photoArea" onclick="document.getElementById('photoInput').click()"
            ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
         <div class="upload-placeholder">
-          <div class="upload-icon">🐾</div>
+          <div class="upload-icon"><i class="fa-solid fa-paw"></i></div>
           <div class="upload-title">Click or drag to upload</div>
           <div class="upload-sub">JPG, PNG or WEBP • max 5 MB</div>
           <div class="upload-badge">📷 A good photo gets more responses</div>
@@ -295,7 +296,7 @@
     <!-- Basic Info -->
     <div class="form-card">
       <div class="form-card-title">
-        <div class="form-card-icon">🐕</div>
+        <div class="form-card-icon"><i class="fa-solid fa-dog"></i></div>
         <div>
           <h2>Basic Information</h2>
           <p>Tell us about your dog</p>
@@ -324,8 +325,8 @@
           <label class="field-label">Gender <span class="req">*</span></label>
           <select class="field-select" id="dogGender" onchange="livePreview()">
             <option value="">Select…</option>
-            <option value="Male">♂ Male</option>
-            <option value="Female">♀ Female</option>
+            <option value="Male"><i class="fa-solid fa-mars"></i> Male</option>
+            <option value="Female"><i class="fa-solid fa-venus"></i> Female</option>
           </select>
           <span class="field-err" id="errDogGender">Please select gender.</span>
         </div>
@@ -366,7 +367,7 @@
     <div class="preview-card" id="previewCard">
       <div class="preview-card-title">👁 Live Preview — How your listing will appear</div>
       <div class="preview-inner">
-        <div class="preview-photo" id="previewPhoto">🐕</div>
+        <div class="preview-photo" id="previewPhoto"><i class="fa-solid fa-dog"></i></div>
         <div>
           <div class="preview-name" id="previewName">Your Dog's Name</div>
           <div class="preview-tags" id="previewTags"></div>
@@ -383,19 +384,19 @@
   <div id="formStep2" style="display:none">
     <div class="form-card">
       <div class="form-card-title">
-        <div class="form-card-icon">✅</div>
+        <div class="form-card-icon"><i class="fa-solid fa-circle-check"></i></div>
         <div><h2>Health &amp; Compatibility</h2><p>Help adopters understand your dog's situation</p></div>
       </div>
 
       <div class="field-group">
         <label class="field-label">Tick all that apply</label>
         <div class="check-grid">
-          <label class="check-item"><input type="checkbox" id="chkVaccinated"><span>💉 Vaccinated</span></label>
-          <label class="check-item"><input type="checkbox" id="chkNeutered"><span>✂️ Spayed / Neutered</span></label>
-          <label class="check-item"><input type="checkbox" id="chkKids"><span>👶 Good with kids</span></label>
-          <label class="check-item"><input type="checkbox" id="chkPets"><span>🐾 Good with other pets</span></label>
-          <label class="check-item"><input type="checkbox" id="chkHoused"><span>🏠 House-trained</span></label>
-          <label class="check-item"><input type="checkbox" id="chkMicrochipped"><span>📡 Microchipped</span></label>
+          <label class="check-item"><input type="checkbox" id="chkVaccinated"><span><i class="fa-solid fa-syringe"></i> Vaccinated</span></label>
+          <label class="check-item"><input type="checkbox" id="chkNeutered"><span><i class="fa-solid fa-scissors"></i> Spayed / Neutered</span></label>
+          <label class="check-item"><input type="checkbox" id="chkKids"><span><i class="fa-solid fa-child"></i> Good with kids</span></label>
+          <label class="check-item"><input type="checkbox" id="chkPets"><span><i class="fa-solid fa-paw"></i> Good with other pets</span></label>
+          <label class="check-item"><input type="checkbox" id="chkHoused"><span><i class="fa-solid fa-house"></i> House-trained</span></label>
+          <label class="check-item"><input type="checkbox" id="chkMicrochipped"><span><i class="fa-solid fa-satellite-dish"></i> Microchipped</span></label>
         </div>
       </div>
 
@@ -409,8 +410,8 @@
         <label class="field-label">Urgency</label>
         <div class="field-hint" style="margin-bottom:.6rem">Is rehoming urgent? (e.g. relocation, health reason)</div>
         <div class="urgency-row">
-          <button type="button" class="urgency-btn selected-no" id="urgentNo" onclick="setUrgency(false)">🟢 Not urgent</button>
-          <button type="button" class="urgency-btn" id="urgentYes" onclick="setUrgency(true)">🔴 Urgent rehoming</button>
+          <button type="button" class="urgency-btn selected-no" id="urgentNo" onclick="setUrgency(false)"><i class="fa-solid fa-circle" style="color: #4caf50;"></i> Not urgent</button>
+          <button type="button" class="urgency-btn" id="urgentYes" onclick="setUrgency(true)"><i class="fa-solid fa-circle" style="color: #f44336;"></i> Urgent rehoming</button>
         </div>
       </div>
     </div>
@@ -462,7 +463,7 @@
     <!-- Summary -->
     <div class="form-card" style="background:linear-gradient(135deg,#fafaf8,var(--cream))">
       <div class="form-card-title">
-        <div class="form-card-icon">📋</div>
+        <div class="form-card-icon"><i class="fa-solid fa-clipboard-list"></i></div>
         <div><h2>Listing Summary</h2><p>Review before submitting</p></div>
       </div>
       <div id="summaryContent" style="font-size:.85rem;color:#6a5a4a;line-height:1.9"></div>
@@ -471,21 +472,21 @@
     <div class="submit-row">
       <button class="btn-preview" onclick="goToStep2()">← Back</button>
       <button class="btn-submit" id="submitBtn" onclick="submitListing()">
-        <span>🐾</span> Submit Listing
+        <span><i class="fa-solid fa-paw"></i></span> Submit Listing
       </button>
     </div>
   </div>
 
   <!-- ── SUCCESS ─────────────────────────────── -->
   <div class="success-screen" id="successScreen">
-    <div class="success-icon">🎉</div>
+    <div class="success-icon"><i class="fa-solid fa-tada"></i></div>
     <div class="success-title">Your listing is live!</div>
     <div class="success-sub">
       Thank you for giving your dog a chance at a loving home.<br>
       Interested adopters will contact you at <strong id="successEmail"></strong>.
     </div>
     <div class="success-actions">
-      <a href="adoption_module.html" class="success-btn primary">🏡 View All Listings</a>
+      <a href="adoption_module.html" class="success-btn primary"><i class="fa-solid fa-house-chimney"></i> View All Listings</a>
       <button class="success-btn secondary" onclick="resetForm()">+ List Another Dog</button>
     </div>
   </div>
@@ -547,7 +548,7 @@
     if (!name && !breed) { pc.classList.remove('visible'); return; }
     pc.classList.add('visible');
     const pp = document.getElementById('previewPhoto');
-    pp.innerHTML = photoDataURL ? `<img src="${photoDataURL}" style="width:100%;height:100%;object-fit:cover">` : '🐕';
+    pp.innerHTML = photoDataURL ? `<img src="${photoDataURL}" style="width:100%;height:100%;object-fit:cover">` : '<i class="fa-solid fa-dog"></i>';
     document.getElementById('previewName').textContent = name || 'Your Dog';
     const tags = [breed, age, gender, size].filter(Boolean).map(t => `<span class="preview-tag">${t}</span>`).join('');
     document.getElementById('previewTags').innerHTML = tags;
@@ -633,7 +634,7 @@
       ['Weight', document.getElementById('dogWeight').value.trim() || '—'],
       ['Location', document.getElementById('dogLocation').value.trim()],
       ['Traits', ticked.length ? ticked.join(', ') : 'None specified'],
-      ['Urgent', isUrgent ? '🔴 Yes' : '🟢 No'],
+      ['Urgent', isUrgent ? '<i class="fa-solid fa-circle" style="color: #f44336;"></i> Yes' : '<i class="fa-solid fa-circle" style="color: #4caf50;"></i> No'],
     ];
     document.getElementById('summaryContent').innerHTML = rows.map(([k,v]) =>
       `<div style="display:flex;gap:.5rem;border-bottom:1px solid var(--fog);padding:.4rem 0"><span style="min-width:90px;font-weight:600;color:var(--bark)">${k}</span><span>${v}</span></div>`
@@ -720,15 +721,15 @@
     removePhoto({ stopPropagation: () => {} });
     setUrgency(false);
     document.getElementById('submitBtn').disabled = false;
-    document.getElementById('submitBtn').innerHTML = '<span>🐾</span> Submit Listing';
+    document.getElementById('submitBtn').innerHTML = '<span><i class="fa-solid fa-paw"></i></span> Submit Listing';
     setStep(1);
   }
 
   function showToast(msg, type='info', ms=3000) {
     const t = document.createElement('div');
     t.className = `toast ${type}`;
-    const icons = { success:'✅', error:'❌', info:'ℹ️' };
-    t.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+    const icons = { success:'<i class="fa-solid fa-circle-check"></i>', error:'❌', info:'<i class="fa-solid fa-circle-info"></i>' };
+    t.innerHTML = `<span>${icons[type]||'<i class="fa-solid fa-circle-info"></i>'}</span><span>${msg}</span>`;
     document.getElementById('toastContainer').appendChild(t);
     setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 400); }, ms);
   }
@@ -738,3 +739,5 @@
 </script>
 </body>
 </html>
+
+

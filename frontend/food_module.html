@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PawDetect — Food & Diet Module</title>
@@ -231,7 +232,7 @@
   <!-- NAVBAR -->
   <nav class="navbar">
     <a href="home_page.html" class="nav-brand">
-      <div class="logo-paw">🐾</div>
+      <div class="logo-paw"><i class="fa-solid fa-paw"></i></div>
       <div class="logo-text">Paw<span>Detect</span></div>
     </a>
   </nav>
@@ -243,7 +244,7 @@
     </div>
     <!-- PAGE HEADER -->
     <div class="page-header">
-      <div class="page-eyebrow">🥩 Nutrition Guide</div>
+      <div class="page-eyebrow"><i class="fa-solid fa-drumstick-bite"></i> Nutrition Guide</div>
       <h1>Food &amp; <em>Diet</em> for Your Dog</h1>
       <p id="pageSubtitle">Breed-specific nutritional guidance — recommended foods, foods to avoid, and feeding schedules.</p>
     </div>
@@ -251,7 +252,7 @@
     <!-- CONTENT AREA -->
     <div id="contentArea">
       <div class="empty-state">
-        <div class="empty-icon">🐾</div>
+        <div class="empty-icon"><i class="fa-solid fa-paw"></i></div>
         <p>Search for a breed above or select one from the quick picks.</p>
       </div>
     </div>
@@ -272,7 +273,7 @@
     function showEmpty() {
       document.getElementById('contentArea').innerHTML = `
         <div class="empty-state">
-          <div class="empty-icon">🐾</div>
+          <div class="empty-icon"><i class="fa-solid fa-paw"></i></div>
           <p>No breed information selected.</p>
         </div>`;
     }
@@ -280,7 +281,7 @@
     function showEmpty() {
       document.getElementById('contentArea').innerHTML = `
         <div class="empty-state">
-          <div class="empty-icon">🐾</div>
+          <div class="empty-icon"><i class="fa-solid fa-paw"></i></div>
           <p>Search for a breed above or select one from the quick picks.</p>
         </div>`;
     }
@@ -312,7 +313,7 @@
     function showError(msg) {
       document.getElementById('contentArea').innerHTML = `
         <div class="empty-state">
-          <div class="empty-icon">⚠️</div>
+          <div class="empty-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
           <p>${msg}</p>
         </div>`;
       showToast(msg, 'error');
@@ -324,7 +325,7 @@
 
       let html = `<div class="food-module">
         <div class="module-breed-title">
-          <span class="module-breed-icon">🐕</span>
+          <span class="module-breed-icon"><i class="fa-solid fa-dog"></i></span>
           <div>
             <div class="module-breed-name">${breedName}</div>
             <div class="module-breed-sub">Food &amp; Nutrition Guide</div>
@@ -335,16 +336,16 @@
           <!-- Diet Type -->
           <div class="info-card">
             <div class="card-header">
-              <div class="card-icon-wrap icon-green">🥗</div>
+              <div class="card-icon-wrap icon-green"><i class="fa-solid fa-leaf"></i></div>
               <div><div class="card-title">Diet Type</div><div class="card-sub">Recommended food style</div></div>
             </div>
-            <div class="diet-badge">🌿 ${food.diet_type || 'Balanced diet'}</div>
+            <div class="diet-badge"><i class="fa-solid fa-leaf"></i> ${food.diet_type || 'Balanced diet'}</div>
           </div>
 
           <!-- Feeding Schedule -->
           <div class="info-card">
             <div class="card-header">
-              <div class="card-icon-wrap icon-blue">⏰</div>
+              <div class="card-icon-wrap icon-blue"><i class="fa-solid fa-clock"></i></div>
               <div><div class="card-title">Feeding Schedule</div><div class="card-sub">Daily routine</div></div>
             </div>
             <div class="schedule-grid">
@@ -362,7 +363,7 @@
           <!-- Recommended Foods -->
           <div class="info-card">
             <div class="card-header">
-              <div class="card-icon-wrap icon-green">✅</div>
+              <div class="card-icon-wrap icon-green"><i class="fa-solid fa-circle-check"></i></div>
               <div><div class="card-title">Recommended Foods</div><div class="card-sub">Safe &amp; healthy choices</div></div>
             </div>
             <ul class="food-list">
@@ -373,18 +374,18 @@
           <!-- Foods to Avoid -->
           <div class="info-card">
             <div class="card-header">
-              <div class="card-icon-wrap icon-red">🚫</div>
+              <div class="card-icon-wrap icon-red"><i class="fa-solid fa-ban"></i></div>
               <div><div class="card-title">Foods to Avoid</div><div class="card-sub">Keep these away</div></div>
             </div>
             <div class="avoid-tags">
-              ${avoid.map(f => `<span class="avoid-tag">⛔ ${f}</span>`).join('')}
+              ${avoid.map(f => `<span class="avoid-tag"><i class="fa-solid fa-circle-stop"></i> ${f}</span>`).join('')}
             </div>
           </div>
         </div>`;
 
       if (food.special_notes) {
         html += `<div class="info-note">
-          <span class="note-icon">💡</span>
+          <span class="note-icon"><i class="fa-solid fa-lightbulb"></i></span>
           <span><strong>Vet Tip:</strong> ${food.special_notes}</span>
         </div>`;
       }
@@ -397,11 +398,13 @@
     function showToast(msg, type = 'info', ms = 3000) {
       const t = document.createElement('div');
       t.className = `toast ${type}`;
-      const icons = { success:'✅', error:'❌', info:'ℹ️' };
-      t.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+      const icons = { success:'<i class="fa-solid fa-circle-check"></i>', error:'❌', info:'<i class="fa-solid fa-circle-info"></i>' };
+      t.innerHTML = `<span>${icons[type]||'<i class="fa-solid fa-circle-info"></i>'}</span><span>${msg}</span>`;
       document.getElementById('toastContainer').appendChild(t);
       setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 400); }, ms);
     }
   </script>
 </body>
 </html>
+
+

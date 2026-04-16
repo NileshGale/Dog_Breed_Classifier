@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — PawDetect</title>
@@ -25,8 +26,8 @@
             overflow: hidden;
         }
 
-        body::before { content:'🐾'; position:absolute; top:10%; left:10%; font-size:60px; opacity:.15; animation:float 6s ease-in-out infinite; pointer-events:none; }
-        body::after  { content:'🐾'; position:absolute; bottom:15%; right:12%; font-size:80px; opacity:.12; animation:float 7s ease-in-out infinite 1s; pointer-events:none; }
+        body::before { content: '\f1b0'; font-family: 'Font Awesome 6 Free'; font-weight: 900;; position:absolute; top:10%; left:10%; font-size:60px; opacity:.15; animation:float 6s ease-in-out infinite; pointer-events:none; }
+        body::after  { content: '\f1b0'; font-family: 'Font Awesome 6 Free'; font-weight: 900;; position:absolute; bottom:15%; right:12%; font-size:80px; opacity:.12; animation:float 7s ease-in-out infinite 1s; pointer-events:none; }
         .fp1 { position:absolute; top:30%; right:15%; font-size:50px; opacity:.1; animation:float 8s ease-in-out infinite .5s; pointer-events:none; }
         .fp2 { position:absolute; bottom:30%; left:8%; font-size:70px; opacity:.13; animation:float 9s ease-in-out infinite 1.5s; pointer-events:none; }
 
@@ -56,8 +57,8 @@
             animation:fadeInUp .8s ease; text-shadow:2px 2px 4px rgba(0,0,0,.1);
             letter-spacing:1px; text-align:center;
         }
-        h1::before { content:'🐾'; margin-right:10px; display:inline-block; animation:float 3s ease-in-out infinite; }
-        h1::after  { content:'🐶'; margin-left:10px; display:inline-block; animation:float 3s ease-in-out infinite .5s; }
+        h1::before { content: '\f1b0'; font-family: 'Font Awesome 6 Free'; font-weight: 900;; margin-right:10px; display:inline-block; animation:float 3s ease-in-out infinite; }
+        h1::after  { content: '\f6d3'; font-family: 'Font Awesome 6 Free'; font-weight: 900;; margin-left:10px; display:inline-block; animation:float 3s ease-in-out infinite .5s; }
 
         .container { animation:fadeInUp 1s ease .2s backwards; position:relative; z-index:10; width:100%; max-width:400px; padding:0 16px; }
 
@@ -139,10 +140,10 @@
     </style>
 </head>
 <body>
-    <div class="fp1">🐾</div>
-    <div class="fp2">🐾</div>
+    <div class="fp1"><i class="fa-solid fa-paw"></i></div>
+    <div class="fp2"><i class="fa-solid fa-paw"></i></div>
 
-    <a href="home_page.html" class="back-home">← 🏠 Home</a>
+    <a href="home_page.html" class="back-home">← <i class="fa-solid fa-house"></i> Home</a>
 
     <h1>PawDetect</h1>
 
@@ -163,14 +164,14 @@
                     <label>Password</label>
                     <input type="password" id="loginPassword" placeholder="Enter your password">
                 </div>
-                <button class="btn-primary" id="loginBtn" onclick="doLogin()">🔑 Login</button>
+                <button class="btn-primary" id="loginBtn" onclick="doLogin()"><i class="fa-solid fa-key"></i> Login</button>
                 <div class="divider-row" style="margin-top:14px">
                     <button class="btn-text" onclick="showPanel('panelForgot')">Forgot Password?</button>
                     <button class="btn-text" onclick="showPanel('panelForgotDummy')" style="display:none"></button>
                 </div>
                 <div class="or-line">OR</div>
                 <a href="register.html" style="text-decoration:none">
-                    <button class="btn-secondary">✨ Create New Account</button>
+                    <button class="btn-secondary"><i class="fa-solid fa-wand-magic-sparkles"></i> Create New Account</button>
                 </a>
             </div>
 
@@ -185,7 +186,7 @@
                     <label>Email Address</label>
                     <input type="email" id="forgotEmail" placeholder="Enter your email">
                 </div>
-                <button class="btn-primary" id="forgotBtn" onclick="sendForgotOTP()">📧 Send OTP</button>
+                <button class="btn-primary" id="forgotBtn" onclick="sendForgotOTP()"><i class="fa-solid fa-envelope"></i> Send OTP</button>
                 <div style="text-align:center;margin-top:14px">
                     <button class="btn-text" onclick="showPanel('panelLogin')">← Back to Login</button>
                 </div>
@@ -200,7 +201,7 @@
                 <div id="forgotOTPAlert"></div>
                 <div class="otp-inputs" id="otpBoxesForgot"></div>
                 <div class="timer" id="timerForgot"></div>
-                <button class="btn-primary" onclick="verifyForgotOTP()">✅ Verify OTP</button>
+                <button class="btn-primary" onclick="verifyForgotOTP()"><i class="fa-solid fa-circle-check"></i> Verify OTP</button>
                 <div style="text-align:center;margin-top:10px">
                     <button class="btn-text" id="resendForgotBtn" onclick="resendForgotOTP()">Resend OTP</button>
                 </div>
@@ -221,7 +222,7 @@
                     <label>Confirm Password</label>
                     <input type="password" id="confirmNewPassword" placeholder="Re-enter new password">
                 </div>
-                <button class="btn-primary" onclick="resetPassword()">🔒 Reset Password</button>
+                <button class="btn-primary" onclick="resetPassword()"><i class="fa-solid fa-lock"></i> Reset Password</button>
             </div>
         </div>
     </div>
@@ -270,7 +271,7 @@ async function doLogin() {
             showAlert('loginAlert', data.message);
         }
     } catch(e) { showAlert('loginAlert','Network error. Please try again.'); }
-    finally { btn.disabled = false; btn.textContent = '🔑 Login'; }
+    finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-key"></i> Login'; }
 }
 
 document.getElementById('loginPassword').addEventListener('keydown', e => {
@@ -304,7 +305,7 @@ async function sendForgotOTP() {
             showAlert('forgotAlert', data.message);
         }
     } catch(e) { showAlert('forgotAlert','Network error.'); }
-    finally { btn.disabled = false; btn.textContent = '📧 Send OTP'; }
+    finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-envelope"></i> Send OTP'; }
 }
 
 async function verifyForgotOTP() {
@@ -400,3 +401,5 @@ function startTimer(timerElId, seconds, resendBtnId) {
 </script>
 </body>
 </html>
+
+

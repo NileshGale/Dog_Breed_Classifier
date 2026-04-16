@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PawDetect — Behavior Module</title>
@@ -116,7 +117,7 @@
       position: relative; overflow: hidden;
     }
     .temperament-card::before {
-      content: '🧠'; position: absolute; right: 1.5rem; top: 50%;
+      content: '<i class="fa-solid fa-brain"></i>'; position: absolute; right: 1.5rem; top: 50%;
       transform: translateY(-50%); font-size: 4rem; opacity: .12;
     }
     .temperament-label { font-size: .72rem; font-weight: 500; color: var(--orange); text-transform: uppercase; letter-spacing: .1em; margin-bottom: .5rem; }
@@ -178,7 +179,7 @@
 
   <nav class="navbar">
     <a href="home_page.html" class="nav-brand">
-      <div class="logo-paw">🐾</div>
+      <div class="logo-paw"><i class="fa-solid fa-paw"></i></div>
       <div class="logo-text">Paw<span>Detect</span></div>
     </a>
   </nav>
@@ -189,14 +190,14 @@
       <a href="detect.html" class="btn-back">← Back to Detection</a>
     </div>
     <div class="page-header">
-      <div class="page-eyebrow">🐕 Behavior Guide</div>
+      <div class="page-eyebrow"><i class="fa-solid fa-dog"></i> Behavior Guide</div>
       <h1>Traits &amp; <em>Behavior</em> Profile</h1>
       <p>Understand your dog's temperament, energy levels, social traits, and training needs.</p>
     </div>
 
     <div id="contentArea">
       <div class="empty-state">
-        <div class="empty-icon">🐕</div>
+        <div class="empty-icon"><i class="fa-solid fa-dog"></i></div>
         <p>Search for a breed above or select one from the quick picks.</p>
       </div>
     </div>
@@ -217,7 +218,7 @@
     function showEmpty() {
       document.getElementById('contentArea').innerHTML = `
         <div class="empty-state">
-          <div class="empty-icon">🐕</div>
+          <div class="empty-icon"><i class="fa-solid fa-dog"></i></div>
           <p>No breed information selected.</p>
         </div>`;
     }
@@ -243,7 +244,7 @@
     }
 
     function showError(msg) {
-      document.getElementById('contentArea').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>${msg}</p></div>`;
+      document.getElementById('contentArea').innerHTML = `<div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-triangle-exclamation"></i></div><p>${msg}</p></div>`;
       showToast(msg, 'error');
     }
 
@@ -268,11 +269,11 @@
 
     function renderBehavior(breedName, beh) {
       const stats = [
-        { icon: '⚡', label: 'Energy Level',   value: beh.energy_level },
+        { icon: '<i class="fa-solid fa-bolt"></i>', label: 'Energy Level',   value: beh.energy_level },
         { icon: '🎓', label: 'Trainability',   value: beh.trainability },
         { icon: '🔊', label: 'Barking',         value: beh.barking_tendency },
         { icon: '🏃', label: 'Exercise Needs',  value: beh.exercise_needs },
-        { icon: '👶', label: 'Kids Friendly',   value: beh.good_with_children },
+        { icon: '<i class="fa-solid fa-child"></i>', label: 'Kids Friendly',   value: beh.good_with_children },
         { icon: '🐱', label: 'Pets Friendly',   value: beh.good_with_other_pets },
       ];
 
@@ -286,7 +287,7 @@
 
       let html = `<div class="behavior-module">
         <div class="module-breed-title">
-          <span class="module-breed-icon">🐕</span>
+          <span class="module-breed-icon"><i class="fa-solid fa-dog"></i></span>
           <div>
             <div class="module-breed-name">${breedName}</div>
             <div class="module-breed-sub">Behavior &amp; Personality Profile</div>
@@ -325,16 +326,16 @@
         <!-- Compatibility -->
         <div class="info-card">
           <div class="card-header">
-            <div class="card-icon-wrap icon-green">🏠</div>
+            <div class="card-icon-wrap icon-green"><i class="fa-solid fa-house"></i></div>
             <div><div class="card-title">Compatibility Overview</div><div class="card-sub">Is this breed right for you?</div></div>
           </div>
           <div class="compat-grid">
             <div class="compat-item">
-              <span class="compat-emoji">👶</span>
+              <span class="compat-emoji"><i class="fa-solid fa-child"></i></span>
               <div><div class="compat-label">With Kids</div><div class="compat-value">${beh.good_with_children || '—'}</div></div>
             </div>
             <div class="compat-item">
-              <span class="compat-emoji">🐾</span>
+              <span class="compat-emoji"><i class="fa-solid fa-paw"></i></span>
               <div><div class="compat-label">With Other Pets</div><div class="compat-value">${beh.good_with_other_pets || '—'}</div></div>
             </div>
             <div class="compat-item">
@@ -351,17 +352,17 @@
         <!-- Training Tips -->
         <div class="info-card">
           <div class="card-header">
-            <div class="card-icon-wrap icon-blue">💡</div>
+            <div class="card-icon-wrap icon-blue"><i class="fa-solid fa-lightbulb"></i></div>
             <div><div class="card-title">Training Tips</div><div class="card-sub">General guidance for any breed</div></div>
           </div>
           <ul class="tips-list">
-            ${trainingTips.map(tip => `<li><div class="tip-bullet">🐾</div>${tip}</li>`).join('')}
+            ${trainingTips.map(tip => `<li><div class="tip-bullet"><i class="fa-solid fa-paw"></i></div>${tip}</li>`).join('')}
           </ul>
         </div>`;
 
       if (beh.special_notes) {
         html += `<div class="info-note">
-          <span class="note-icon">💡</span>
+          <span class="note-icon"><i class="fa-solid fa-lightbulb"></i></span>
           <span><strong>Breed-Specific Tip:</strong> ${beh.special_notes}</span>
         </div>`;
       }
@@ -384,11 +385,13 @@
     function showToast(msg, type = 'info', ms = 3000) {
       const t = document.createElement('div');
       t.className = `toast ${type}`;
-      const icons = { success:'✅', error:'❌', info:'ℹ️' };
-      t.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+      const icons = { success:'<i class="fa-solid fa-circle-check"></i>', error:'❌', info:'<i class="fa-solid fa-circle-info"></i>' };
+      t.innerHTML = `<span>${icons[type]||'<i class="fa-solid fa-circle-info"></i>'}</span><span>${msg}</span>`;
       document.getElementById('toastContainer').appendChild(t);
       setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 400); }, ms);
     }
   </script>
 </body>
 </html>
+
+

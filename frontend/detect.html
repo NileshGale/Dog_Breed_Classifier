@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PawDetect — Identify Your Dog</title>
@@ -1757,26 +1758,26 @@
   <!-- NAVBAR -->
   <nav class="navbar">
     <a href="home_page.html" class="nav-brand">
-      <div class="logo-paw">🐾</div>
+      <div class="logo-paw"><i class="fa-solid fa-paw"></i></div>
       <div class="logo-text">Paw<span>Detect</span></div>
     </a>
     <div class="nav-right">
       <a href="adoption_module.html" class="nav-icon-btn" title="">
-        🏡<span class="tip">Adopt a Dog</span>
+        <i class="fa-solid fa-house-chimney"></i><span class="tip">Adopt a Dog</span>
       </a>
       <a href="list_your_dog.html" class="nav-icon-btn" title="">
-        🐶<span class="tip">List My Dog</span>
+        <i class="fa-solid fa-dog"></i><span class="tip">List My Dog</span>
       </a>
       <div class="nav-divider"></div>
-      <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()" title="My Account">👤</button>
+      <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()" title="My Account"><i class="fa-solid fa-user"></i></button>
       <div class="profile-dropdown" id="profileDropdown">
         <div class="dropdown-header">
           <div class="uname" id="ddName">…</div>
           <div class="uemail" id="ddEmail"></div>
         </div>
-        <button class="dropdown-item" onclick="openProfile()">👤 My Profile</button>
+        <button class="dropdown-item" onclick="openProfile()"><i class="fa-solid fa-user"></i> My Profile</button>
         <div class="dropdown-divider"></div>
-        <button class="dropdown-item logout" onclick="doLogout()">🚪 Logout</button>
+        <button class="dropdown-item logout" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
       </div>
     </div>
   </nav>
@@ -1810,19 +1811,19 @@
   <!-- BREED INFO SECTION -->
   <div class="breed-info-section" id="breedInfoSection">
     <div class="breed-info-header">
-      <h2 id="breedInfoTitle">🐾 Breed Insights</h2>
+      <h2 id="breedInfoTitle"><i class="fa-solid fa-paw"></i> Breed Insights</h2>
       <p id="breedInfoSubtitle">Everything you need to know about caring for this breed</p>
     </div>
 
     <div class="info-tabs">
       <button class="info-tab" onclick="goToModule('food')">
-        <span class="info-tab-icon">🍖</span> <span class="info-tab-label">Food & Diet</span>
+        <span class="info-tab-icon"><i class="fa-solid fa-drumstick-bite"></i></span> <span class="info-tab-label">Food & Diet</span>
       </button>
       <button class="info-tab" onclick="goToModule('vaccine')">
-        <span class="info-tab-icon">💉</span> <span class="info-tab-label">Vaccines</span>
+        <span class="info-tab-icon"><i class="fa-solid fa-syringe"></i></span> <span class="info-tab-label">Vaccines</span>
       </button>
       <button class="info-tab" onclick="goToModule('behavior')">
-        <span class="info-tab-icon">🐕</span> <span class="info-tab-label">Behavior</span>
+        <span class="info-tab-icon"><i class="fa-solid fa-dog"></i></span> <span class="info-tab-label">Behavior</span>
       </button>
     </div>
 
@@ -1895,7 +1896,7 @@
   <div class="modal-overlay" id="cameraModal">
     <div class="modal">
       <button class="modal-close" onclick="closeCamera()">✕</button>
-      <h3>🐾 Live Scanner</h3>
+      <h3><i class="fa-solid fa-paw"></i> Live Scanner</h3>
 
       <div class="cam-select-row" id="camSelectRow" style="display:none">
         <label>Camera:</label>
@@ -1923,7 +1924,7 @@
       <button class="retake-btn" id="retakeBtn" style="display:none" onclick="retake()">🔄 Retake Photo</button>
 
       <div class="modal-actions">
-        <button id="captureBtn" onclick="captureFrame()">📸 Capture &amp; Analyze</button>
+        <button id="captureBtn" onclick="captureFrame()"><i class="fa-solid fa-camera"></i> Capture &amp; Analyze</button>
         <button id="cancelBtn" onclick="closeCamera()">Cancel</button>
       </div>
     </div>
@@ -1937,8 +1938,8 @@
         Profile</h3>
 
       <div class="pm-tabs">
-        <button class="pm-tab active" onclick="switchTab('tabInfo',this)">👤 Info</button>
-        <button class="pm-tab" onclick="switchTab('tabEmail',this)">✉️ Change Email</button>
+        <button class="pm-tab active" onclick="switchTab('tabInfo',this)"><i class="fa-solid fa-user"></i> Info</button>
+        <button class="pm-tab" onclick="switchTab('tabEmail',this)"><i class="fa-solid fa-envelope"></i> Change Email</button>
       </div>
 
       <div class="pm-panel active" id="tabInfo">
@@ -1973,7 +1974,7 @@
         <div class="email-step" id="emailStep2">
           <p style="font-size:13px;color:#7a6a58;margin-bottom:8px">Enter the OTP sent to your current email:</p>
           <div class="pm-otp-inputs" id="ceOTPBoxes1"></div>
-          <button class="pm-btn" onclick="verifyCurrentOTP()">✅ Verify OTP</button>
+          <button class="pm-btn" onclick="verifyCurrentOTP()"><i class="fa-solid fa-circle-check"></i> Verify OTP</button>
           <button class="pm-btn secondary" onclick="goEmailStep(1)">← Back</button>
         </div>
         <div class="email-step" id="emailStep3">
@@ -1986,14 +1987,14 @@
         <div class="email-step" id="emailStep4">
           <p style="font-size:13px;color:#7a6a58;margin-bottom:8px">Enter the OTP sent to your new email:</p>
           <div class="pm-otp-inputs" id="ceOTPBoxes2"></div>
-          <button class="pm-btn" onclick="verifyNewEmailOTP()">✅ Confirm New Email</button>
+          <button class="pm-btn" onclick="verifyNewEmailOTP()"><i class="fa-solid fa-circle-check"></i> Confirm New Email</button>
           <button class="pm-btn secondary" onclick="goEmailStep(3)">← Back</button>
         </div>
         <div class="email-step" id="emailStep5" style="text-align:center;padding:20px 0">
-          <div style="font-size:46px;margin-bottom:10px">✅</div>
+          <div style="font-size:46px;margin-bottom:10px"><i class="fa-solid fa-circle-check"></i></div>
           <p style="font-weight:500;color:var(--moss)">Email updated successfully!</p>
           <p style="font-size:13px;color:#8a7a6a;margin-top:6px">Please login again with your new email.</p>
-          <button class="pm-btn" style="margin-top:14px" onclick="doLogout()">🔑 Go to Login</button>
+          <button class="pm-btn" style="margin-top:14px" onclick="doLogout()"><i class="fa-solid fa-key"></i> Go to Login</button>
         </div>
       </div>
     </div>
@@ -2030,8 +2031,8 @@
     function showToast(msg, type = 'info', ms = 3500) {
       const t = document.createElement('div');
       t.className = `toast ${type}`;
-      const icons = { success: '✅', error: '❌', info: 'ℹ️' };
-      t.innerHTML = `<span>${icons[type] || 'ℹ️'}</span><span>${msg}</span>`;
+      const icons = { success: '<i class="fa-solid fa-circle-check"></i>', error: '❌', info: '<i class="fa-solid fa-circle-info"></i>' };
+      t.innerHTML = `<span>${icons[type] || '<i class="fa-solid fa-circle-info"></i>'}</span><span>${msg}</span>`;
       document.getElementById('toastContainer').appendChild(t);
       setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 400); }, ms);
     }
@@ -2071,7 +2072,7 @@
       document.getElementById('cameraFeed').style.display = 'block';
       document.getElementById('camError').style.display = 'none';
       document.getElementById('captureBtn').disabled = false;
-      document.getElementById('captureBtn').textContent = '📸 Capture & Analyze';
+      document.getElementById('captureBtn').textContent = '<i class="fa-solid fa-camera"></i> Capture & Analyze';
       document.getElementById('captureBtn').onclick = captureFrame;
       document.getElementById('cameraModal').classList.add('open');
 
@@ -2161,7 +2162,7 @@
       document.getElementById('capturedBox').style.display = 'block';
       document.getElementById('cameraFeed').style.display = 'none';
       document.getElementById('retakeBtn').style.display = 'block';
-      document.getElementById('captureBtn').textContent = '✅ Save & Analyze';
+      document.getElementById('captureBtn').textContent = '<i class="fa-solid fa-circle-check"></i> Save & Analyze';
       document.getElementById('captureBtn').onclick = confirmCapture;
     }
 
@@ -2170,7 +2171,7 @@
       document.getElementById('capturedBox').style.display = 'none';
       document.getElementById('retakeBtn').style.display = 'none';
       document.getElementById('cameraFeed').style.display = 'block';
-      document.getElementById('captureBtn').textContent = '📸 Capture & Analyze';
+      document.getElementById('captureBtn').textContent = '<i class="fa-solid fa-camera"></i> Capture & Analyze';
       document.getElementById('captureBtn').onclick = captureFrame;
     }
 
@@ -2335,18 +2336,18 @@
         source === 'camera' ? '📷 Captured from camera' : '🖼️ Uploaded image';
 
       if (!prediction.is_dog) {
-        document.getElementById('resultBreed').textContent = '🐾 Not a Dog';
+        document.getElementById('resultBreed').textContent = '<i class="fa-solid fa-paw"></i> Not a Dog';
         document.getElementById('resultConf').textContent = '';
         document.getElementById('confFill').style.width = '0%';
         document.getElementById('resultTop3').innerHTML =
-          '<div class="result-not-dog">⚠️ No dog breed detected. Please upload a clear photo of a dog.</div>';
+          '<div class="result-not-dog"><i class="fa-solid fa-triangle-exclamation"></i> No dog breed detected. Please upload a clear photo of a dog.</div>';
         showToast("The image isn't a dog image.", "error");
         return;
       }
 
       const breed = prediction.breed || '—';
       const conf = prediction.confidence || 0;
-      document.getElementById('resultBreed').textContent = '🐕 ' + breed;
+      document.getElementById('resultBreed').textContent = '<i class="fa-solid fa-dog"></i> ' + breed;
       document.getElementById('resultConf').textContent = `Confidence: ${(conf * 100).toFixed(1)}%`;
       document.getElementById('confFill').style.width = Math.min(conf * 100, 100) + '%';
 
@@ -2496,7 +2497,7 @@
       const section = document.getElementById('breedInfoSection');
       section.classList.add('show');
       currentBreedName = breedName;
-      document.getElementById('breedInfoTitle').textContent = '🐾 ' + breedName + ' — Breed Insights';
+      document.getElementById('breedInfoTitle').textContent = '<i class="fa-solid fa-paw"></i> ' + breedName + ' — Breed Insights';
     }
 
     function goToModule(type) {
@@ -2515,7 +2516,7 @@
       let html = '';
       html += `<div class="info-card">
     <div class="info-card-header">
-      <div class="info-card-icon" style="background:#e8f5e9">🥩</div>
+      <div class="info-card-icon" style="background:#e8f5e9"><i class="fa-solid fa-drumstick-bite"></i></div>
       <div class="info-card-title">Diet Type</div>
     </div>
     <div class="info-card-body">
@@ -2525,7 +2526,7 @@
 
       html += `<div class="info-card">
     <div class="info-card-header">
-      <div class="info-card-icon" style="background:#e8f5e9">✅</div>
+      <div class="info-card-icon" style="background:#e8f5e9"><i class="fa-solid fa-circle-check"></i></div>
       <div class="info-card-title">Recommended Foods</div>
     </div>
     <div class="info-card-body"><ul>${food.recommended_foods.map(f => '<li>' + f + '</li>').join('')}</ul></div>
@@ -2533,7 +2534,7 @@
 
       html += `<div class="info-card">
     <div class="info-card-header">
-      <div class="info-card-icon" style="background:#ffebee">🚫</div>
+      <div class="info-card-icon" style="background:#ffebee"><i class="fa-solid fa-ban"></i></div>
       <div class="info-card-title">Foods to Avoid</div>
     </div>
     <div class="info-card-body"><ul>${food.foods_to_avoid.map(f => '<li>' + f + '</li>').join('')}</ul></div>
@@ -2541,7 +2542,7 @@
 
       html += `<div class="info-card">
     <div class="info-card-header">
-      <div class="info-card-icon" style="background:#e3f2fd">⏰</div>
+      <div class="info-card-icon" style="background:#e3f2fd"><i class="fa-solid fa-clock"></i></div>
       <div class="info-card-title">Feeding Schedule</div>
     </div>
     <div class="info-card-body">
@@ -2551,7 +2552,7 @@
   </div>`;
 
       if (food.special_notes) {
-        html += `<div class="info-note"><span class="info-note-icon">💡</span><span>${food.special_notes}</span></div>`;
+        html += `<div class="info-note"><span class="info-note-icon"><i class="fa-solid fa-lightbulb"></i></span><span>${food.special_notes}</span></div>`;
       }
       document.getElementById('panelFood').innerHTML = html;
     }
@@ -2561,7 +2562,7 @@
       let html = '';
       html += `<div class="info-card">
     <div class="info-card-header">
-      <div class="info-card-icon" style="background:#e3f2fd">🛡️</div>
+      <div class="info-card-icon" style="background:#e3f2fd"><i class="fa-solid fa-shield-dog"></i></div>
       <div class="info-card-title">Core Vaccines (Required)</div>
     </div>
     <div class="info-card-body">
@@ -2594,7 +2595,7 @@
   </div>`;
 
       if (vacc.special_notes) {
-        html += `<div class="info-note"><span class="info-note-icon">⚠️</span><span>${vacc.special_notes}</span></div>`;
+        html += `<div class="info-note"><span class="info-note-icon"><i class="fa-solid fa-triangle-exclamation"></i></span><span>${vacc.special_notes}</span></div>`;
       }
       document.getElementById('panelVaccine').innerHTML = html;
     }
@@ -2605,7 +2606,7 @@
 
       html += `<div class="info-card">
     <div class="info-card-header">
-      <div class="info-card-icon" style="background:#fff3e0">🧠</div>
+      <div class="info-card-icon" style="background:#fff3e0"><i class="fa-solid fa-brain"></i></div>
       <div class="info-card-title">Temperament</div>
     </div>
     <div class="info-card-body"><p>${beh.temperament}</p></div>
@@ -2613,11 +2614,11 @@
 
       html += `<div class="behavior-grid">`;
       const stats = [
-        { label: 'Energy Level', value: beh.energy_level, icon: '⚡' },
+        { label: 'Energy Level', value: beh.energy_level, icon: '<i class="fa-solid fa-bolt"></i>' },
         { label: 'Trainability', value: beh.trainability, icon: '🎓' },
         { label: 'Barking', value: beh.barking_tendency, icon: '🔊' },
         { label: 'Exercise Needs', value: beh.exercise_needs, icon: '🏃' },
-        { label: 'Good with Kids', value: beh.good_with_children, icon: '👶' },
+        { label: 'Good with Kids', value: beh.good_with_children, icon: '<i class="fa-solid fa-child"></i>' },
         { label: 'Good with Pets', value: beh.good_with_other_pets, icon: '🐱' },
       ];
       stats.forEach(s => {
@@ -2637,7 +2638,7 @@
   </div>`;
 
       if (beh.special_notes) {
-        html += `<div class="info-note"><span class="info-note-icon">💡</span><span>${beh.special_notes}</span></div>`;
+        html += `<div class="info-note"><span class="info-note-icon"><i class="fa-solid fa-lightbulb"></i></span><span>${beh.special_notes}</span></div>`;
       }
       document.getElementById('panelBehavior').innerHTML = html;
     }
@@ -2671,3 +2672,5 @@
 </body>
 
 </html>
+
+

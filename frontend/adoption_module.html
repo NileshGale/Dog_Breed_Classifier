@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PawDetect — Dog Adoption</title>
@@ -202,18 +203,18 @@
 <!-- NAVBAR -->
 <nav class="navbar">
   <a class="nav-brand" href="home_page.html">
-    <div class="logo-paw">🐾</div>
+    <div class="logo-paw"><i class="fa-solid fa-paw"></i></div>
     <span class="logo-text">Paw<span>Detect</span></span>
   </a>
   <div class="nav-actions">
     <a href="adoption_module.html" class="nav-icon-btn active">
-      🏡<span class="tip">Adopt a Dog</span>
+      <i class="fa-solid fa-house-chimney"></i><span class="tip">Adopt a Dog</span>
     </a>
     <a href="list_your_dog.html" class="nav-icon-btn">
-      🐶<span class="tip">List My Dog</span>
+      <i class="fa-solid fa-dog"></i><span class="tip">List My Dog</span>
     </a>
     <div class="nav-divider"></div>
-    <a href="detect.html" class="nav-profile-btn" title="My Account">👤</a>
+    <a href="detect.html" class="nav-profile-btn" title="My Account"><i class="fa-solid fa-user"></i></a>
   </div>
 </nav>
 
@@ -237,7 +238,7 @@
 
   <!-- HEADER -->
   <div class="page-header">
-    <div class="page-eyebrow">🏡 Find a Forever Home</div>
+    <div class="page-eyebrow"><i class="fa-solid fa-house-chimney"></i> Find a Forever Home</div>
     <h1>Adopt a <em>Dog</em></h1>
     <p>Browse dogs looking for loving homes. Each listing is posted by a verified owner. Contact them directly to begin the adoption journey.</p>
   </div>
@@ -245,7 +246,7 @@
   <!-- FILTERS -->
   <div class="filter-row">
     <div class="search-wrap">
-      <span class="search-icon">🔍</span>
+      <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
       <input type="text" class="search-bar" id="searchInput" placeholder="Search by name, breed…" oninput="filterCards()">
     </div>
     <select class="filter-select" id="ageFilter" onchange="filterCards()">
@@ -272,8 +273,8 @@
   <div class="stats-bar">
     <div class="stats-count"><strong id="visibleCount">6</strong> dogs available for adoption</div>
     <div class="view-toggle">
-      <button class="view-btn active" id="gridViewBtn" onclick="setView('grid')">⊞</button>
-      <button class="view-btn" id="listViewBtn" onclick="setView('list')">≡</button>
+      <button class="view-btn active" id="gridViewBtn" onclick="setView('grid')"><i class="fa-solid fa-grip"></i></button>
+      <button class="view-btn" id="listViewBtn" onclick="setView('list')"><i class="fa-solid fa-list"></i></button>
     </div>
   </div>
 
@@ -281,7 +282,7 @@
   <div class="cards-grid" id="cardsGrid"></div>
 
   <div class="empty-state" id="emptyState" style="display:none;">
-    <div class="empty-icon">🐾</div>
+    <div class="empty-icon"><i class="fa-solid fa-paw"></i></div>
     <div class="empty-title" id="emptyTitle">No dogs listed yet</div>
     <p id="emptyMsg">Be the first to <a href="list_your_dog.html" style="color:var(--teal);font-weight:600;">list a dog for adoption</a>.</p>
   </div>
@@ -318,17 +319,17 @@
   });
 
   function getEmoji(breed) {
-    if (!breed) return '🐕';
+    if (!breed) return '<i class="fa-solid fa-dog"></i>';
     const b = breed.toLowerCase();
-    if (b.includes('golden')) return '🐕';
-    if (b.includes('labrador') || b.includes('lab')) return '🐶';
+    if (b.includes('golden')) return '<i class="fa-solid fa-dog"></i>';
+    if (b.includes('labrador') || b.includes('lab')) return '<i class="fa-solid fa-dog"></i>';
     if (b.includes('shepherd')) return '🐺';
     if (b.includes('beagle')) return '🐩';
     if (b.includes('pomeranian')) return '🦊';
     if (b.includes('husky')) return '🐺';
     if (b.includes('poodle')) return '🐩';
-    if (b.includes('indie') || b.includes('street')) return '🐾';
-    return '🐕';
+    if (b.includes('indie') || b.includes('street')) return '<i class="fa-solid fa-paw"></i>';
+    return '<i class="fa-solid fa-dog"></i>';
   }
 
   function getInitials(name) {
@@ -366,15 +367,15 @@
       <div class="dog-card" style="animation-delay:${i * 0.06}s" onclick="openModal(${d.id})">
         <div class="dog-card-img">
           ${d.photo ? `<img src="${d.photo}" alt="${d.name}">` : `<span style="font-size:4rem">${getEmoji(d.breed)}</span>`}
-          <span class="dog-card-badge ${d.urgent ? 'urgent' : ''}">${d.urgent ? '🔴 Urgent' : '✅ Available'}</span>
+          <span class="dog-card-badge ${d.urgent ? 'urgent' : ''}">${d.urgent ? '<i class="fa-solid fa-circle" style="color: #f44336;"></i> Urgent' : '<i class="fa-solid fa-circle-check"></i> Available'}</span>
         </div>
         <div class="dog-card-body">
           <div class="dog-name">${d.name}</div>
           <span class="dog-breed-tag">${d.breed}</span>
           <div class="dog-meta">
-            <span class="dog-meta-item">🎂 ${d.age_label}</span>
-            <span class="dog-meta-item">${d.gender === 'Male' ? '♂' : '♀'} ${d.gender}</span>
-            <span class="dog-meta-item">📍 ${d.location}</span>
+            <span class="dog-meta-item"><i class="fa-solid fa-cake-candles"></i> ${d.age_label}</span>
+            <span class="dog-meta-item">${d.gender === 'Male' ? '<i class="fa-solid fa-mars"></i>' : '<i class="fa-solid fa-venus"></i>'} ${d.gender}</span>
+            <span class="dog-meta-item"><i class="fa-solid fa-location-dot"></i> ${d.location}</span>
           </div>
           <div class="dog-desc">${d.description}</div>
           <div class="dog-card-footer">
@@ -382,7 +383,7 @@
               <div class="owner-avatar">${getInitials(d.owner_name)}</div>
               <span class="owner-name">${d.owner_name}</span>
             </div>
-            <button class="contact-btn" onclick="event.stopPropagation(); contactOwner('${d.owner_email}', '${d.name}')">✉️ Contact</button>
+            <button class="contact-btn" onclick="event.stopPropagation(); contactOwner('${d.owner_email}', '${d.name}')"><i class="fa-solid fa-envelope"></i> Contact</button>
           </div>
         </div>
       </div>
@@ -429,8 +430,8 @@
             <span class="modal-tag tag-teal">${d.breed}</span>
             <span class="modal-tag tag-sand">${d.age_label}</span>
             <span class="modal-tag tag-teal">${d.size}</span>
-            ${d.vaccinated ? '<span class="modal-tag" style="background:#e8f5e9;color:#2e7d32">💉 Vaccinated</span>' : ''}
-            ${d.neutered ? '<span class="modal-tag" style="background:#fce4ec;color:#c62828">✂️ Neutered</span>' : ''}
+            ${d.vaccinated ? '<span class="modal-tag" style="background:#e8f5e9;color:#2e7d32"><i class="fa-solid fa-syringe"></i> Vaccinated</span>' : ''}
+            ${d.neutered ? '<span class="modal-tag" style="background:#fce4ec;color:#c62828"><i class="fa-solid fa-scissors"></i> Neutered</span>' : ''}
           </div>
         </div>
       </div>
@@ -438,12 +439,12 @@
       <div class="modal-section">
         <div class="modal-section-title">Details</div>
         <div class="modal-detail-grid">
-          <div class="modal-detail-item"><div class="detail-label">Gender</div><div class="detail-value">${d.gender === 'Male' ? '♂ Male' : '♀ Female'}</div></div>
+          <div class="modal-detail-item"><div class="detail-label">Gender</div><div class="detail-value">${d.gender === 'Male' ? '<i class="fa-solid fa-mars"></i> Male' : '<i class="fa-solid fa-venus"></i> Female'}</div></div>
           <div class="modal-detail-item"><div class="detail-label">Weight</div><div class="detail-value">${d.weight}</div></div>
-          <div class="modal-detail-item"><div class="detail-label">Good with Kids</div><div class="detail-value">${d.good_with_kids ? '✅ Yes' : '⚠️ No'}</div></div>
-          <div class="modal-detail-item"><div class="detail-label">Good with Pets</div><div class="detail-value">${d.good_with_pets ? '✅ Yes' : '⚠️ No'}</div></div>
-          <div class="modal-detail-item"><div class="detail-label">Location</div><div class="detail-value">📍 ${d.location}</div></div>
-          <div class="modal-detail-item"><div class="detail-label">Status</div><div class="detail-value">${d.urgent ? '🔴 Urgent' : '🟢 Available'}</div></div>
+          <div class="modal-detail-item"><div class="detail-label">Good with Kids</div><div class="detail-value">${d.good_with_kids ? '<i class="fa-solid fa-circle-check"></i> Yes' : '<i class="fa-solid fa-triangle-exclamation"></i> No'}</div></div>
+          <div class="modal-detail-item"><div class="detail-label">Good with Pets</div><div class="detail-value">${d.good_with_pets ? '<i class="fa-solid fa-circle-check"></i> Yes' : '<i class="fa-solid fa-triangle-exclamation"></i> No'}</div></div>
+          <div class="modal-detail-item"><div class="detail-label">Location</div><div class="detail-value"><i class="fa-solid fa-location-dot"></i> ${d.location}</div></div>
+          <div class="modal-detail-item"><div class="detail-label">Status</div><div class="detail-value">${d.urgent ? '<i class="fa-solid fa-circle" style="color: #f44336;"></i> Urgent' : '<i class="fa-solid fa-circle" style="color: #4caf50;"></i> Available'}</div></div>
         </div>
       </div>
 
@@ -463,7 +464,7 @@
             </div>
           </div>
           <a class="btn-email" href="mailto:${d.owner_email}?subject=Adoption Enquiry — ${d.name}&body=Hi ${d.owner_name.split(' ')[0]},%0A%0AI saw ${d.name}'s listing on PawDetect and I'm interested in adoption. Could we connect?%0A%0AThank you!">
-            ✉️ Send Email
+            <i class="fa-solid fa-envelope"></i> Send Email
           </a>
         </div>
       </div>
@@ -482,8 +483,8 @@
   function showToast(msg, type='info', ms=3000) {
     const t = document.createElement('div');
     t.className = `toast ${type}`;
-    const icons = { success:'✅', error:'❌', info:'ℹ️' };
-    t.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+    const icons = { success:'<i class="fa-solid fa-circle-check"></i>', error:'❌', info:'<i class="fa-solid fa-circle-info"></i>' };
+    t.innerHTML = `<span>${icons[type]||'<i class="fa-solid fa-circle-info"></i>'}</span><span>${msg}</span>`;
     document.getElementById('toastContainer').appendChild(t);
     setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 400); }, ms);
   }
@@ -494,3 +495,5 @@
 </script>
 </body>
 </html>
+
+

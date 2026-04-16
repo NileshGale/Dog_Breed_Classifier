@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PawDetect — Vaccination Module</title>
@@ -178,7 +179,7 @@
 
   <nav class="navbar">
     <a href="home_page.html" class="nav-brand">
-      <div class="logo-paw">🐾</div>
+      <div class="logo-paw"><i class="fa-solid fa-paw"></i></div>
       <div class="logo-text">Paw<span>Detect</span></div>
     </a>
   </nav>
@@ -189,7 +190,7 @@
       <a href="detect.html" class="btn-back">← Back to Detection</a>
     </div>
     <div class="page-header">
-      <div class="page-eyebrow">💉 Health Shield</div>
+      <div class="page-eyebrow"><i class="fa-solid fa-syringe"></i> Health Shield</div>
       <h1>Vaccination &amp; <em>Health</em> Guide</h1>
       <p>Core and optional vaccines, deworming schedules, and vet recommendations for every breed.</p>
     </div>
@@ -198,7 +199,7 @@
 
     <div id="contentArea">
       <div class="empty-state">
-        <div class="empty-icon">💉</div>
+        <div class="empty-icon"><i class="fa-solid fa-syringe"></i></div>
         <p>Search for a breed above or select one from the quick picks.</p>
       </div>
     </div>
@@ -219,7 +220,7 @@
     function showEmpty() {
       document.getElementById('contentArea').innerHTML = `
         <div class="empty-state">
-          <div class="empty-icon">💉</div>
+          <div class="empty-icon"><i class="fa-solid fa-syringe"></i></div>
           <p>No breed information selected.</p>
         </div>`;
     }
@@ -246,7 +247,7 @@
     }
 
     function showError(msg) {
-      document.getElementById('contentArea').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>${msg}</p></div>`;
+      document.getElementById('contentArea').innerHTML = `<div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-triangle-exclamation"></i></div><p>${msg}</p></div>`;
       showToast(msg, 'error');
     }
 
@@ -256,7 +257,7 @@
 
       let html = `<div class="vaccine-module">
         <div class="module-breed-title">
-          <span class="module-breed-icon">🐕</span>
+          <span class="module-breed-icon"><i class="fa-solid fa-dog"></i></span>
           <div>
             <div class="module-breed-name">${breedName}</div>
             <div class="module-breed-sub">Vaccination &amp; Health Schedule</div>
@@ -266,7 +267,7 @@
         <!-- Core Vaccines -->
         <div class="info-card">
           <div class="card-header">
-            <div class="card-icon-wrap icon-blue">🛡️</div>
+            <div class="card-icon-wrap icon-blue"><i class="fa-solid fa-shield-dog"></i></div>
             <div><div class="card-title">Core Vaccines</div><div class="card-sub">Required for all dogs — non-negotiable</div></div>
           </div>
           ${core.map(v => `
@@ -310,7 +311,7 @@
       // Vet checklist
       html += `<div class="info-card">
         <div class="card-header">
-          <div class="card-icon-wrap icon-green">📋</div>
+          <div class="card-icon-wrap icon-green"><i class="fa-solid fa-clipboard-list"></i></div>
           <div><div class="card-title">Vet Visit Checklist</div><div class="card-sub">Keep your pup protected</div></div>
         </div>
         <ul class="checklist">
@@ -324,7 +325,7 @@
 
       if (vacc.special_notes) {
         html += `<div class="info-note">
-          <span class="note-icon">⚠️</span>
+          <span class="note-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
           <span><strong>Breed-Specific Note:</strong> ${vacc.special_notes}</span>
         </div>`;
       }
@@ -337,11 +338,13 @@
     function showToast(msg, type = 'info', ms = 3000) {
       const t = document.createElement('div');
       t.className = `toast ${type}`;
-      const icons = { success:'✅', error:'❌', info:'ℹ️' };
-      t.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+      const icons = { success:'<i class="fa-solid fa-circle-check"></i>', error:'❌', info:'<i class="fa-solid fa-circle-info"></i>' };
+      t.innerHTML = `<span>${icons[type]||'<i class="fa-solid fa-circle-info"></i>'}</span><span>${msg}</span>`;
       document.getElementById('toastContainer').appendChild(t);
       setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 400); }, ms);
     }
   </script>
 </body>
 </html>
+
+
