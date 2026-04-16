@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" crossorigin="anonymous">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PawDetect — Identify Your Dog</title>
@@ -99,61 +99,47 @@
       position: relative;
     }
 
-    /* NAV ICON BUTTONS (adoption & list-dog) */
-    .nav-icon-btn {
-      position: relative;
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      border: 1.5px solid var(--fog);
-      background: #fff;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
+    /* NAV TABS */
+    .nav-tabs {
+      display: flex;
+      gap: 1.5rem;
+      margin-right: 1.2rem;
+    }
+
+    .nav-tab {
       text-decoration: none;
       color: var(--bark);
-      cursor: pointer;
-      transition: border-color .2s, background .2s, transform .2s, box-shadow .2s;
-      flex-shrink: 0;
-    }
-    .nav-icon-btn:hover {
-      border-color: var(--rust);
-      background: #fff8f4;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(181, 90, 42, .15);
-    }
-    .nav-icon-btn .tip {
-      position: absolute;
-      bottom: -34px;
-      left: 50%;
-      transform: translateX(-50%) translateY(4px);
-      background: var(--bark);
-      color: var(--cream);
-      font-size: .67rem;
-      font-weight: 500;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 0.5rem 0;
+      position: relative;
+      transition: color 0.2s;
       white-space: nowrap;
-      padding: .28rem .65rem;
-      border-radius: 7px;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity .15s, transform .15s;
-      z-index: 300;
-      font-family: 'DM Sans', sans-serif;
     }
-    .nav-icon-btn .tip::before {
+
+    .nav-tab:hover {
+      color: var(--rust);
+    }
+
+    .nav-tab::after {
       content: '';
       position: absolute;
-      top: -4px;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 4px solid transparent;
-      border-bottom-color: var(--bark);
-      border-top: none;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--rust);
+      transition: width 0.3s ease;
+      border-radius: 2px;
     }
-    .nav-icon-btn:hover .tip {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
+
+    .nav-tab:hover::after,
+    .nav-tab.active::after {
+      width: 100%;
+    }
+
+    .nav-tab.active {
+      color: var(--rust);
     }
 
     .nav-divider {
@@ -1762,12 +1748,11 @@
       <div class="logo-text">Paw<span>Detect</span></div>
     </a>
     <div class="nav-right">
-      <a href="adoption_module.html" class="nav-icon-btn" title="">
-        <i class="fa-solid fa-house-chimney"></i><span class="tip">Adopt a Dog</span>
-      </a>
-      <a href="list_your_dog.html" class="nav-icon-btn" title="">
-        <i class="fa-solid fa-dog"></i><span class="tip">List My Dog</span>
-      </a>
+      <div class="nav-tabs">
+        <a href="detect.html" class="nav-tab active">Detect Breed</a>
+        <a href="adoption_module.html" class="nav-tab">Adopt a Dog</a>
+        <a href="list_your_dog.html" class="nav-tab">List of Dog</a>
+      </div>
       <div class="nav-divider"></div>
       <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()" title="My Account"><i class="fa-solid fa-user"></i></button>
       <div class="profile-dropdown" id="profileDropdown">
@@ -1838,7 +1823,7 @@
     <!-- Scan Card -->
     <div class="card card-scan">
       <span class="card-tag">Live</span>
-      <div class="card-icon">📷</div>
+      <div class="card-icon"><i class="fa-solid fa-camera"></i></div>
       <h2>Scan with Camera</h2>
       <p>Use your device camera for real-time detection. Best for quick on-the-spot breed identification.</p>
       <div class="scan-area">
@@ -1865,12 +1850,12 @@
     <!-- Upload Card -->
     <div class="card card-upload">
       <span class="card-tag">Upload</span>
-      <div class="card-icon">🖼️</div>
+      <div class="card-icon"><i class="fa-solid fa-image"></i></div>
       <h2>Upload an Image</h2>
       <p>Select or drag-and-drop any photo of your dog. Supports JPG, PNG, and WEBP formats.</p>
       <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()"
         ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
-        <div class="upload-icon">⬆️</div>
+        <div class="upload-icon"><i class="fa-solid fa-upload"></i></div>
         <p><strong>Click to browse</strong> or drag &amp; drop</p>
         <p style="margin-top:.3rem;font-size:.72rem;">JPG · PNG · WEBP — up to 10 MB</p>
       </div>
@@ -1913,7 +1898,7 @@
         </div>
       </div>
       <div class="cam-error" id="camError">
-        <span style="font-size:2rem">📷</span>
+        <span style="font-size:2rem"><i class="fa-solid fa-camera"></i></span>
         <strong>Camera unavailable</strong>
         <span id="camErrorMsg">Please allow camera permission and try again.</span>
       </div>
@@ -2046,8 +2031,8 @@
         ? `Confidence: ${(confidence * 100).toFixed(1)}%` : '';
       document.getElementById('confFill').style.width = confidence != null
         ? Math.min(confidence * 100, 100) + '%' : '0%';
-      document.getElementById('resultSource').textContent =
-        source === 'camera' ? '📷 Captured from camera' : '🖼️ Uploaded image';
+      document.getElementById('resultSource').innerHTML =
+        source === 'camera' ? '<i class="fa-solid fa-camera"></i> Captured from camera' : '<i class="fa-solid fa-image"></i> Uploaded image';
       setSaving(false);
       document.getElementById('resultBanner').classList.add('show');
       document.getElementById('resultBanner').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -2072,7 +2057,7 @@
       document.getElementById('cameraFeed').style.display = 'block';
       document.getElementById('camError').style.display = 'none';
       document.getElementById('captureBtn').disabled = false;
-      document.getElementById('captureBtn').textContent = '<i class="fa-solid fa-camera"></i> Capture & Analyze';
+      document.getElementById('captureBtn').innerHTML = '<i class="fa-solid fa-camera"></i> Capture & Analyze';
       document.getElementById('captureBtn').onclick = captureFrame;
       document.getElementById('cameraModal').classList.add('open');
 
@@ -2162,7 +2147,7 @@
       document.getElementById('capturedBox').style.display = 'block';
       document.getElementById('cameraFeed').style.display = 'none';
       document.getElementById('retakeBtn').style.display = 'block';
-      document.getElementById('captureBtn').textContent = '<i class="fa-solid fa-circle-check"></i> Save & Analyze';
+      document.getElementById('captureBtn').innerHTML = '<i class="fa-solid fa-circle-check"></i> Save & Analyze';
       document.getElementById('captureBtn').onclick = confirmCapture;
     }
 
@@ -2171,7 +2156,7 @@
       document.getElementById('capturedBox').style.display = 'none';
       document.getElementById('retakeBtn').style.display = 'none';
       document.getElementById('cameraFeed').style.display = 'block';
-      document.getElementById('captureBtn').textContent = '<i class="fa-solid fa-camera"></i> Capture & Analyze';
+      document.getElementById('captureBtn').innerHTML = '<i class="fa-solid fa-camera"></i> Capture & Analyze';
       document.getElementById('captureBtn').onclick = captureFrame;
     }
 
@@ -2184,7 +2169,7 @@
       document.getElementById('resultBreed').textContent = 'Processing…';
       document.getElementById('resultConf').textContent = '';
       document.getElementById('confFill').style.width = '0%';
-      document.getElementById('resultSource').textContent = '📷 Captured from camera';
+      document.getElementById('resultSource').innerHTML = '<i class="fa-solid fa-camera"></i> Captured from camera';
       document.getElementById('resultTop3').innerHTML = '';
       setSaving(true);
       document.getElementById('resultBanner').classList.add('show');
@@ -2336,7 +2321,7 @@
         source === 'camera' ? '📷 Captured from camera' : '🖼️ Uploaded image';
 
       if (!prediction.is_dog) {
-        document.getElementById('resultBreed').textContent = '<i class="fa-solid fa-paw"></i> Not a Dog';
+        document.getElementById('resultBreed').innerHTML = '<i class="fa-solid fa-paw"></i> Not a Dog';
         document.getElementById('resultConf').textContent = '';
         document.getElementById('confFill').style.width = '0%';
         document.getElementById('resultTop3').innerHTML =
@@ -2347,7 +2332,7 @@
 
       const breed = prediction.breed || '—';
       const conf = prediction.confidence || 0;
-      document.getElementById('resultBreed').textContent = '<i class="fa-solid fa-dog"></i> ' + breed;
+      document.getElementById('resultBreed').innerHTML = '<i class="fa-solid fa-dog"></i> ' + breed;
       document.getElementById('resultConf').textContent = `Confidence: ${(conf * 100).toFixed(1)}%`;
       document.getElementById('confFill').style.width = Math.min(conf * 100, 100) + '%';
 
@@ -2497,7 +2482,7 @@
       const section = document.getElementById('breedInfoSection');
       section.classList.add('show');
       currentBreedName = breedName;
-      document.getElementById('breedInfoTitle').textContent = '<i class="fa-solid fa-paw"></i> ' + breedName + ' — Breed Insights';
+      document.getElementById('breedInfoTitle').innerHTML = '<i class="fa-solid fa-paw"></i> ' + breedName + ' - Breed Insights';
     }
 
     function goToModule(type) {
@@ -2615,11 +2600,11 @@
       html += `<div class="behavior-grid">`;
       const stats = [
         { label: 'Energy Level', value: beh.energy_level, icon: '<i class="fa-solid fa-bolt"></i>' },
-        { label: 'Trainability', value: beh.trainability, icon: '🎓' },
-        { label: 'Barking', value: beh.barking_tendency, icon: '🔊' },
-        { label: 'Exercise Needs', value: beh.exercise_needs, icon: '🏃' },
+        { label: 'Trainability', value: beh.trainability, icon: '<i class="fa-solid fa-graduation-cap"></i>' },
+        { label: 'Barking', value: beh.barking_tendency, icon: '<i class="fa-solid fa-volume-high"></i>' },
+        { label: 'Exercise Needs', value: beh.exercise_needs, icon: '<i class="fa-solid fa-person-running"></i>' },
         { label: 'Good with Kids', value: beh.good_with_children, icon: '<i class="fa-solid fa-child"></i>' },
-        { label: 'Good with Pets', value: beh.good_with_other_pets, icon: '🐱' },
+        { label: 'Good with Pets', value: beh.good_with_other_pets, icon: '<i class="fa-solid fa-paw"></i>' },
       ];
       stats.forEach(s => {
         html += `<div class="behavior-stat">
@@ -2631,7 +2616,7 @@
 
       html += `<div class="info-card" style="margin-top:.8rem">
     <div class="info-card-header">
-      <div class="info-card-icon" style="background:#e8f5e9">🤝</div>
+      <div class="info-card-icon" style="background:#e8f5e9"><i class="fa-solid fa-shield-dog"></i></div>
       <div class="info-card-title">Social Traits</div>
     </div>
     <div class="info-card-body"><p>${beh.social_traits}</p></div>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" crossorigin="anonymous">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PawDetect — Vaccination Module</title>
@@ -44,9 +44,57 @@
     }
     .nav-brand { display: flex; align-items: center; gap: .65rem; text-decoration: none; color: var(--bark); }
     .logo-paw { width: 36px; height: 36px; background: var(--bark); border-radius: 50% 50% 50% 20%; display: flex; align-items: center; justify-content: center; color: var(--cream); font-size: 1.1rem; }
-    .logo-text { font-family: 'Playfair Display', serif; font-size: 1.45rem; font-weight: 700; letter-spacing: -.02em; }
     .logo-text span { color: var(--rust); }
+    .nav-right { display: flex; align-items: center; gap: .5rem; position: relative; }
+
+    /* NAV TABS */
+    .nav-tabs { display: flex; gap: 1.5rem; margin-right: 1.2rem; }
+    .nav-tab {
+      text-decoration: none; color: var(--bark); font-size: 0.88rem; font-weight: 600;
+      padding: 0.5rem 0; position: relative; transition: color 0.2s; white-space: nowrap;
+    }
+    .nav-tab:hover { color: var(--rust); }
+    .nav-tab::after {
+      content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px;
+      background: var(--rust); transition: width 0.3s ease; border-radius: 2px;
+    }
+    .nav-tab:hover::after, .nav-tab.active::after { width: 100%; }
+    .nav-tab.active { color: var(--rust); }
+    .nav-divider { width: 1px; height: 26px; background: var(--fog); flex-shrink: 0; }
     .nav-back:hover { background: #ddd8cc; border-color: var(--sand); }
+
+    /* PROFILE BTN */
+    .profile-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--rust), var(--sand));
+      border: none; cursor: pointer; color: #fff; font-size: 1.1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: box-shadow .2s, transform .2s;
+      box-shadow: 0 2px 8px rgba(181,90,42,.3);
+    }
+    .profile-btn:hover { transform: scale(1.07); box-shadow: 0 4px 14px rgba(181,90,42,.4); }
+    .profile-dropdown {
+      position: absolute; top: calc(100% + 10px); right: 2.5rem;
+      background: #fff; border: 1.5px solid var(--fog); border-radius: 16px;
+      min-width: 200px; box-shadow: 0 12px 40px rgba(59,42,26,.14);
+      overflow: hidden; display: none; z-index: 200;
+      text-align: left;
+    }
+    .profile-dropdown.open { display: block; animation: dropIn .2s ease; }
+    @keyframes dropIn { from { opacity:0; transform:translateY(-8px) } to { opacity:1; transform:translateY(0) } }
+    .dropdown-header { padding: 14px 16px 10px; border-bottom: 1px solid var(--fog); text-align: left; }
+    .dropdown-header .uname { font-weight: 500; font-size: .9rem; color: var(--bark); }
+    .dropdown-header .uemail { font-size: .75rem; color: #9a8878; margin-top: 2px; }
+    .dropdown-item {
+      display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+      font-size: .88rem; color: var(--bark); cursor: pointer;
+      transition: background .15s; width: 100%; border: none; background: none;
+      font-family: 'DM Sans', sans-serif; text-decoration: none;
+    }
+    .dropdown-item:hover { background: var(--cream); }
+    .dropdown-item.logout { color: #c0392b; }
+    .dropdown-item.logout:hover { background: #fdf0ee; }
+    .dropdown-divider { height: 1px; background: var(--fog); }
 
     /* SECONDARY BACK BUTTON */
     .btn-back-wrap { margin-bottom: 2rem; animation: fadeUp .55s ease both; display: flex; justify-content: flex-start; }
@@ -182,6 +230,24 @@
       <div class="logo-paw"><i class="fa-solid fa-paw"></i></div>
       <div class="logo-text">Paw<span>Detect</span></div>
     </a>
+    <div class="nav-right">
+      <div class="nav-tabs">
+        <a href="detect.html" class="nav-tab">Detect Breed</a>
+        <a href="adoption_module.html" class="nav-tab">Adopt a Dog</a>
+        <a href="list_your_dog.html" class="nav-tab">List of Dog</a>
+      </div>
+      <div class="nav-divider"></div>
+      <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()" title="My Account"><i class="fa-solid fa-user"></i></button>
+      <div class="profile-dropdown" id="profileDropdown">
+        <div class="dropdown-header">
+            <div class="uname" id="ddName">…</div>
+            <div class="uemail" id="ddEmail"></div>
+        </div>
+        <button class="dropdown-item" onclick="openProfile()"><i class="fa-solid fa-user"></i> My Profile</button>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item logout" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+      </div>
+    </div>
   </nav>
 
   <div class="page-wrapper">
@@ -208,6 +274,22 @@
   <div id="toastContainer"></div>
 
   <script>
+    function toggleDropdown() { document.getElementById('profileDropdown').classList.toggle('open'); }
+    window.addEventListener('click', e => {
+      if (!e.target.closest('#profileBtn') && !e.target.closest('#profileDropdown')) {
+        document.getElementById('profileDropdown').classList.remove('open');
+      }
+    });
+    function openProfile() { window.location.href = 'register.html#profile'; }
+    function doLogout() { window.location.href = '../backend/api/logout.php'; }
+    fetch('../backend/api/login.php?check=1')
+      .then(r => r.json())
+      .then(data => {
+        if (data.logged_in) {
+            document.getElementById('ddName').textContent = data.user.full_name;
+            document.getElementById('ddEmail').textContent = data.user.email;
+        }
+      });
     // Check for breed in URL
     window.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams(window.location.search);
@@ -283,7 +365,7 @@
       if (optional.length > 0) {
         html += `<div class="info-card">
           <div class="card-header">
-            <div class="card-icon-wrap icon-purple">➕</div>
+            <div class="card-icon-wrap icon-purple"><i class="fa-solid fa-plus"></i></div>
             <div><div class="card-title">Optional / Lifestyle Vaccines</div><div class="card-sub">Recommended based on your dog's lifestyle</div></div>
           </div>
           ${optional.map(v => `
@@ -291,7 +373,7 @@
               <div class="vaccine-dot dot-purple"></div>
               <div>
                 <div class="vaccine-name">${v.name}</div>
-                <div class="vaccine-schedule"><span class="vaccine-when-badge">📅 ${v.when}</span></div>
+                <div class="vaccine-schedule"><span class="vaccine-when-badge"><i class="fa-solid fa-calendar-days"></i> ${v.when}</span></div>
               </div>
             </div>`).join('')}
         </div>`;
@@ -300,7 +382,7 @@
       // Deworming banner
       if (vacc.deworming) {
         html += `<div class="deworming-banner">
-          <span class="deworming-icon">🪱</span>
+          <span class="deworming-icon"><i class="fa-solid fa-bug-slash"></i></span>
           <div>
             <div class="deworming-title">Deworming Schedule</div>
             <div class="deworming-text">${vacc.deworming}</div>
@@ -315,11 +397,11 @@
           <div><div class="card-title">Vet Visit Checklist</div><div class="card-sub">Keep your pup protected</div></div>
         </div>
         <ul class="checklist">
-          <li><div class="check-icon">✓</div>Keep vaccination records updated and carry them to every vet visit</li>
-          <li><div class="check-icon">✓</div>Schedule annual wellness exams even if no vaccines are due</li>
-          <li><div class="check-icon">✓</div>Use tick/flea prevention year-round, especially in endemic areas</li>
-          <li><div class="check-icon">✓</div>Ask your vet about heartworm prevention medication</li>
-          <li><div class="check-icon">✓</div>Report any adverse reactions after vaccinations immediately</li>
+          <li><div class="check-icon"><i class="fa-solid fa-check"></i></div>Keep vaccination records updated and carry them to every vet visit</li>
+          <li><div class="check-icon"><i class="fa-solid fa-check"></i></div>Schedule annual wellness exams even if no vaccines are due</li>
+          <li><div class="check-icon"><i class="fa-solid fa-check"></i></div>Use tick/flea prevention year-round, especially in endemic areas</li>
+          <li><div class="check-icon"><i class="fa-solid fa-check"></i></div>Ask your vet about heartworm prevention medication</li>
+          <li><div class="check-icon"><i class="fa-solid fa-check"></i></div>Report any adverse reactions after vaccinations immediately</li>
         </ul>
       </div>`;
 
@@ -338,7 +420,7 @@
     function showToast(msg, type = 'info', ms = 3000) {
       const t = document.createElement('div');
       t.className = `toast ${type}`;
-      const icons = { success:'<i class="fa-solid fa-circle-check"></i>', error:'❌', info:'<i class="fa-solid fa-circle-info"></i>' };
+      const icons = { success:'<i class="fa-solid fa-circle-check"></i>', error:'<i class="fa-solid fa-circle-xmark"></i>', info:'<i class="fa-solid fa-circle-info"></i>' };
       t.innerHTML = `<span>${icons[type]||'<i class="fa-solid fa-circle-info"></i>'}</span><span>${msg}</span>`;
       document.getElementById('toastContainer').appendChild(t);
       setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 400); }, ms);

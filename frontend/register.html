@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" crossorigin="anonymous">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register — PawDetect</title>
@@ -76,8 +76,8 @@
         .pw-reqs { background:#f9f9f9; border-radius:8px; padding:10px 14px; margin-top:8px; font-size:12px; }
         .pw-reqs li { list-style:none; padding:2px 0; color:#e74c3c; }
         .pw-reqs li.ok { color:#27ae60; }
-        .pw-reqs li::before { content:'✗ '; }
-        .pw-reqs li.ok::before { content:'✓ '; }
+        .pw-reqs li::before { content:'\f00d'; font-family: 'Font Awesome 6 Free'; font-weight: 900; margin-right: 8px; }
+        .pw-reqs li.ok::before { content:'\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; margin-right: 8px; }
 
         .hint { font-size:11.5px; margin-top:4px; }
         .hint.ok  { color:#27ae60; }
@@ -120,7 +120,6 @@
             h1 { font-size:2rem; }
             .form-box { padding:26px 18px; }
         }
-    </style>
 </head>
 <body>
     <div class="fp1"><i class="fa-solid fa-paw"></i></div>
@@ -166,7 +165,6 @@
                     <input type="password" id="confirmPassword" placeholder="Re-enter your password">
                     <div class="hint" id="matchHint"></div>
                 </div>
-
                 <button class="btn-primary" id="regBtn" onclick="submitRegister()">Register →</button>
                 <div class="login-link">Already have an account? <a href="login_page.htm">Sign in</a></div>
             </div>
@@ -236,7 +234,7 @@ function checkMatch() {
     const cpw = document.getElementById('confirmPassword').value;
     const hint = document.getElementById('matchHint');
     if (!cpw) { hint.textContent = ''; hint.className = 'hint'; return; }
-    if (pw === cpw) { hint.textContent = '✓ Passwords match'; hint.className = 'hint ok'; }
+    if (pw === cpw) { hint.innerHTML = '<i class="fa-solid fa-check"></i> Passwords match'; hint.className = 'hint ok'; }
     else            { hint.textContent = '✗ Passwords do not match'; hint.className = 'hint err'; }
 }
 

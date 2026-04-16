@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" crossorigin="anonymous">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PawDetect — Dog Adoption</title>
@@ -42,43 +42,55 @@
     .nav-btn.primary { background: var(--bark); color: var(--cream); border-color: var(--bark); }
     .nav-btn.primary:hover { background: var(--rust); border-color: var(--rust); }
     .nav-actions { display: flex; align-items: center; gap: .5rem; }
+    .nav-right { display: flex; align-items: center; gap: .5rem; position: relative; }
 
-    /* NAV ICON BUTTONS */
+    /* NAV TABS */
+    .nav-tabs { display: flex; gap: 1.5rem; margin-right: 1.2rem; }
+    .nav-tab {
+      text-decoration: none; color: var(--bark); font-size: 0.88rem; font-weight: 600;
+      padding: 0.5rem 0; position: relative; transition: color 0.2s; white-space: nowrap;
+    }
+    .nav-tab:hover { color: var(--rust); }
+    .nav-tab::after {
+      content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px;
+      background: var(--rust); transition: width 0.3s ease; border-radius: 2px;
+    }
+    .nav-tab:hover::after, .nav-tab.active::after { width: 100%; }
+    .nav-tab.active { color: var(--rust); }
     .nav-divider { width: 1px; height: 26px; background: var(--fog); flex-shrink: 0; }
-    .nav-icon-btn {
-      position: relative; width: 40px; height: 40px; border-radius: 12px;
-      border: 1.5px solid var(--fog); background: #fff;
-      display: inline-flex; align-items: center; justify-content: center;
-      font-size: 1.1rem; text-decoration: none; color: var(--bark);
-      cursor: pointer; flex-shrink: 0;
-      transition: border-color .2s, background .2s, transform .2s, box-shadow .2s;
-    }
-    .nav-icon-btn:hover { border-color: var(--rust); background: #fff8f4; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(181,90,42,.15); }
-    .nav-icon-btn.active { background: linear-gradient(135deg, var(--rust), var(--sand)); border-color: var(--rust); color: #fff; box-shadow: 0 4px 14px rgba(181,90,42,.3); }
-    .nav-icon-btn .tip {
-      position: absolute; bottom: -34px; left: 50%;
-      transform: translateX(-50%) translateY(4px);
-      background: var(--bark); color: var(--cream); font-size: .67rem; font-weight: 500;
-      white-space: nowrap; padding: .28rem .65rem; border-radius: 7px;
-      pointer-events: none; opacity: 0;
-      transition: opacity .15s, transform .15s; z-index: 300;
-    }
-    .nav-icon-btn .tip::before {
-      content: ''; position: absolute; top: -4px; left: 50%; transform: translateX(-50%);
-      border: 4px solid transparent; border-bottom-color: var(--bark); border-top: none;
-    }
-    .nav-icon-btn:hover .tip { opacity: 1; transform: translateX(-50%) translateY(0); }
-    /* Profile icon — matches detect.html profile-btn style */
-    .nav-profile-btn {
+
+    /* PROFILE BTN */
+    .profile-btn {
       width: 40px; height: 40px; border-radius: 50%;
       background: linear-gradient(135deg, var(--rust), var(--sand));
       border: none; cursor: pointer; color: #fff; font-size: 1.1rem;
-      display: inline-flex; align-items: center; justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       transition: box-shadow .2s, transform .2s;
       box-shadow: 0 2px 8px rgba(181,90,42,.3);
-      text-decoration: none; flex-shrink: 0;
     }
-    .nav-profile-btn:hover { transform: scale(1.07); box-shadow: 0 4px 14px rgba(181,90,42,.4); }
+    .profile-btn:hover { transform: scale(1.07); box-shadow: 0 4px 14px rgba(181,90,42,.4); }
+    .profile-dropdown {
+      position: absolute; top: calc(100% + 10px); right: 2.5rem;
+      background: #fff; border: 1.5px solid var(--fog); border-radius: 16px;
+      min-width: 200px; box-shadow: 0 12px 40px rgba(59,42,26,.14);
+      overflow: hidden; display: none; z-index: 200;
+      text-align: left;
+    }
+    .profile-dropdown.open { display: block; animation: dropIn .2s ease; }
+    @keyframes dropIn { from { opacity:0; transform:translateY(-8px) } to { opacity:1; transform:translateY(0) } }
+    .dropdown-header { padding: 14px 16px 10px; border-bottom: 1px solid var(--fog); text-align: left; }
+    .dropdown-header .uname { font-weight: 500; font-size: .9rem; color: var(--bark); }
+    .dropdown-header .uemail { font-size: .75rem; color: #9a8878; margin-top: 2px; }
+    .dropdown-item {
+      display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+      font-size: .88rem; color: var(--bark); cursor: pointer;
+      transition: background .15s; width: 100%; border: none; background: none;
+      font-family: 'DM Sans', sans-serif; text-decoration: none;
+    }
+    .dropdown-item:hover { background: var(--cream); }
+    .dropdown-item.logout { color: #c0392b; }
+    .dropdown-item.logout:hover { background: #fdf0ee; }
+    .dropdown-divider { height: 1px; background: var(--fog); }
 
     /* TOAST */
     #toastContainer { position: fixed; top: 80px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
@@ -206,17 +218,25 @@
     <div class="logo-paw"><i class="fa-solid fa-paw"></i></div>
     <span class="logo-text">Paw<span>Detect</span></span>
   </a>
-  <div class="nav-actions">
-    <a href="adoption_module.html" class="nav-icon-btn active">
-      <i class="fa-solid fa-house-chimney"></i><span class="tip">Adopt a Dog</span>
-    </a>
-    <a href="list_your_dog.html" class="nav-icon-btn">
-      <i class="fa-solid fa-dog"></i><span class="tip">List My Dog</span>
-    </a>
-    <div class="nav-divider"></div>
-    <a href="detect.html" class="nav-profile-btn" title="My Account"><i class="fa-solid fa-user"></i></a>
-  </div>
-</nav>
+    <div class="nav-right">
+      <div class="nav-tabs">
+        <a href="detect.html" class="nav-tab">Detect Breed</a>
+        <a href="adoption_module.html" class="nav-tab active">Adopt a Dog</a>
+        <a href="list_your_dog.html" class="nav-tab">List of Dog</a>
+      </div>
+      <div class="nav-divider"></div>
+      <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()" title="My Account"><i class="fa-solid fa-user"></i></button>
+      <div class="profile-dropdown" id="profileDropdown">
+        <div class="dropdown-header">
+            <div class="uname" id="ddName">…</div>
+            <div class="uemail" id="ddEmail"></div>
+        </div>
+        <button class="dropdown-item" onclick="openProfile()"><i class="fa-solid fa-user"></i> My Profile</button>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item logout" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+      </div>
+    </div>
+  </nav>
 
 <div id="toastContainer"></div>
 
@@ -289,7 +309,23 @@
 
 </div>
 
-<script>
+  <script>
+    function toggleDropdown() { document.getElementById('profileDropdown').classList.toggle('open'); }
+    window.addEventListener('click', e => {
+      if (!e.target.closest('#profileBtn') && !e.target.closest('#profileDropdown')) {
+        document.getElementById('profileDropdown').classList.remove('open');
+      }
+    });
+    function openProfile() { window.location.href = 'register.html#profile'; }
+    function doLogout() { window.location.href = '../backend/api/logout.php'; }
+    fetch('../backend/api/login.php?check=1')
+      .then(r => r.json())
+      .then(data => {
+        if (data.logged_in) {
+            document.getElementById('ddName').textContent = data.user.full_name;
+            document.getElementById('ddEmail').textContent = data.user.email;
+        }
+      });
   // ── Load listings from localStorage (saved by list_your_dog.html) ──
   function loadListings() {
     try {
