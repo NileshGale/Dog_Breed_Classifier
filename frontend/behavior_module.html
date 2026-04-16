@@ -177,7 +177,7 @@
 <body>
 
   <nav class="navbar">
-    <a href="home_page.htm" class="nav-brand">
+    <a href="home_page.html" class="nav-brand">
       <div class="logo-paw">🐾</div>
       <div class="logo-text">Paw<span>Detect</span></div>
     </a>
@@ -230,7 +230,7 @@
       showLoading();
       const key = breedName.toLowerCase().replace(/\s+/g, '_');
       try {
-        const res = await fetch('breed_info.php?breed=' + encodeURIComponent(key));
+        const res = await fetch('../backend/api/breed_info.php?breed=' + encodeURIComponent(key));
         const data = await res.json();
         if (data.success && data.behavior) {
           renderBehavior(data.breed_name || breedName, data.behavior);

@@ -1,7 +1,7 @@
 <?php
 // save_scan.php — Save uploaded/camera image + prediction results
 // POST: image (base64 or file), source (upload|camera), predictions (JSON string)
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../core/config.php';
 
 requireLogin();
 

@@ -1,7 +1,7 @@
 <?php
 // register_otp.php — Registration + OTP verification (PHPMailer, no Composer)
 // Actions: register | verify_otp | resend_otp
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../core/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendJSON(false, 'Invalid request method.');

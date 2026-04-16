@@ -435,7 +435,7 @@ function checkAuthState() {
 
 function logout() {
     sessionStorage.clear();
-    fetch('logout.php').catch(() => {});
+    fetch('../backend/api/logout.php').catch(() => {});
     checkAuthState();
 }
 

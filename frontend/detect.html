@@ -1756,7 +1756,7 @@
 
   <!-- NAVBAR -->
   <nav class="navbar">
-    <a href="home_page.htm" class="nav-brand">
+    <a href="home_page.html" class="nav-brand">
       <div class="logo-paw">🐾</div>
       <div class="logo-text">Paw<span>Detect</span></div>
     </a>
@@ -2022,8 +2022,8 @@
     });
     function doLogout() {
       sessionStorage.clear();
-      fetch('logout.php').catch(() => { });
-      window.location.href = 'home_page.htm';
+      fetch('../backend/api/logout.php').catch(() => { });
+      window.location.href = 'home_page.html';
     }
 
     /* ═══ TOAST ══════════════════════════════════════════════════════ */
@@ -2300,14 +2300,14 @@
       const fd = new FormData();
       fd.append('image_base64', base64Data);
       fd.append('source', source);
-      try { return await (await fetch('save_scan.php', { method: 'POST', body: fd })).json(); }
+      try { return await (await fetch('../backend/api/save_scan.php', { method: 'POST', body: fd })).json(); }
       catch (e) { return null; }
     }
     async function saveImageFile(file) {
       const fd = new FormData();
       fd.append('image', file);
       fd.append('source', 'upload');
-      try { return await (await fetch('save_scan.php', { method: 'POST', body: fd })).json(); }
+      try { return await (await fetch('../backend/api/save_scan.php', { method: 'POST', body: fd })).json(); }
       catch (e) { return null; }
     }
 
@@ -2316,7 +2316,7 @@
       const fd = new FormData();
       fd.append('image_path', imagePath);
       fd.append('scan_id', scanId || 0);
-      try { return await (await fetch('predict.php', { method: 'POST', body: fd })).json(); }
+      try { return await (await fetch('../backend/api/predict.php', { method: 'POST', body: fd })).json(); }
       catch (e) { return null; }
     }
 
@@ -2411,7 +2411,7 @@
       fd.append('age', document.getElementById('pmAge').value);
       fd.append('gender', document.getElementById('pmGender').value);
       try {
-        const data = await (await fetch('profile.php', { method: 'POST', body: fd })).json();
+        const data = await (await fetch('../backend/api/profile.php', { method: 'POST', body: fd })).json();
         showPMAlert('infoAlert', data.message, data.success ? 'success' : 'error');
         if (data.success) {
           const n = document.getElementById('pmName').value.trim();
@@ -2437,7 +2437,7 @@
       showPMAlert('emailAlert', '');
       const fd = new FormData(); fd.append('action', 'request_email_change');
       try {
-        const d = await (await fetch('profile.php', { method: 'POST', body: fd })).json();
+        const d = await (await fetch('../backend/api/profile.php', { method: 'POST', body: fd })).json();
         if (d.success) { buildPMOTPBoxes('ceOTPBoxes1'); goEmailStep(2); }
         else showPMAlert('emailAlert', d.message, 'error');
       } catch (e) { showPMAlert('emailAlert', 'Network error.', 'error'); }
@@ -2448,7 +2448,7 @@
       if (otp.length !== 6) { showPMAlert('emailAlert', 'Enter the 6-digit OTP.', 'error'); return; }
       const fd = new FormData(); fd.append('action', 'verify_current_otp'); fd.append('otp', otp);
       try {
-        const d = await (await fetch('profile.php', { method: 'POST', body: fd })).json();
+        const d = await (await fetch('../backend/api/profile.php', { method: 'POST', body: fd })).json();
         if (d.success) goEmailStep(3); else showPMAlert('emailAlert', d.message, 'error');
       } catch (e) { showPMAlert('emailAlert', 'Network error.', 'error'); }
     }
@@ -2458,7 +2458,7 @@
       if (!ne) { showPMAlert('emailAlert', 'Enter a new email address.', 'error'); return; }
       const fd = new FormData(); fd.append('action', 'send_new_email_otp'); fd.append('new_email', ne);
       try {
-        const d = await (await fetch('profile.php', { method: 'POST', body: fd })).json();
+        const d = await (await fetch('../backend/api/profile.php', { method: 'POST', body: fd })).json();
         if (d.success) { buildPMOTPBoxes('ceOTPBoxes2'); goEmailStep(4); }
         else showPMAlert('emailAlert', d.message, 'error');
       } catch (e) { showPMAlert('emailAlert', 'Network error.', 'error'); }

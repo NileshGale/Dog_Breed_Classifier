@@ -1,7 +1,7 @@
 <?php
 // breed_info.php — Returns breed-specific food, vaccine, and behavior data
 // GET: ?breed=golden_retriever
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../core/config.php';
 
 requireLogin();
 
@@ -9,7 +9,7 @@ $breedParam = trim($_GET['breed'] ?? '');
 if (!$breedParam) sendJSON(false, 'No breed specified.');
 
 // Load breed data
-$dataFile = __DIR__ . '/breed_info_data.json';
+$dataFile = __DIR__ . '/../../assets/data/breed_info_data.json';
 if (!file_exists($dataFile)) sendJSON(false, 'Breed data file not found.');
 
 $allBreeds = json_decode(file_get_contents($dataFile), true);

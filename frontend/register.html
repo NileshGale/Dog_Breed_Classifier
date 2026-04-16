@@ -126,7 +126,7 @@
     <div class="fp2">🐾</div>
 
     <!-- Back to Home (no back-to-login) -->
-    <a href="home_page.htm" class="back-home">← 🏠 Home</a>
+    <a href="home_page.html" class="back-home">← 🏠 Home</a>
 
     <h1>Join PawDetect</h1>
 
@@ -264,7 +264,7 @@ async function submitRegister() {
     fd.append('confirmPassword', confirmPassword);
 
     try {
-        const res  = await fetch('register_otp.php', { method:'POST', body:fd });
+        const res  = await fetch('../backend/api/register_otp.php', { method:'POST', body:fd });
         const data = await res.json();
         if (data.success) {
             pendingEmail = email;
@@ -291,7 +291,7 @@ async function verifyOTP() {
     fd.append('otp', otp);
 
     try {
-        const res  = await fetch('register_otp.php', { method:'POST', body:fd });
+        const res  = await fetch('../backend/api/register_otp.php', { method:'POST', body:fd });
         const data = await res.json();
         if (data.success) {
             clearInterval(timerInterval);
@@ -308,7 +308,7 @@ async function resendOTP() {
     const fd = new FormData();
     fd.append('action','resend_otp'); fd.append('email', pendingEmail);
     try {
-        const res  = await fetch('register_otp.php', { method:'POST', body:fd });
+        const res  = await fetch('../backend/api/register_otp.php', { method:'POST', body:fd });
         const data = await res.json();
         if (data.success) {
             showAlert('otpAlert', 'New OTP sent!', 'info');
@@ -332,6 +332,7 @@ function buildOTPBoxes(containerId) {
             if (inp.value && i < 5) c.children[i+1].focus();
         });
         inp.addEventListener('keydown', e => {
+            if (e.key === 'Enter') verifyOTP();
             if (e.key === 'Backspace' && !inp.value && i > 0) c.children[i-1].focus();
         });
         c.appendChild(inp);

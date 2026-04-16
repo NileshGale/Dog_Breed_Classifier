@@ -1,7 +1,7 @@
 <?php
 // predict.php — Calls Python CNN script directly to predict dog breed
 // No Flask server needed — uses exec() to run dog_breed_detector.py
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../core/config.php';
 
 requireLogin();
 
@@ -13,12 +13,12 @@ $scanId    = intval($_POST['scan_id']   ?? 0);
 if (!$imagePath) sendJSON(false, 'No image path provided.');
 
 // ── Resolve absolute path on server ──────────────────────────────────
-$absPath = __DIR__ . '/' . ltrim($imagePath, '/');
+$absPath = __DIR__ . '/../../' . ltrim($imagePath, '/');
 if (!file_exists($absPath)) sendJSON(false, 'Image file not found: ' . $imagePath);
 
 // ── Call Python CNN script ───────────────────────────────────────────
 $pythonCmd = 'py -3.13';   // Use Python 3.13 via launcher to get tensorflow support
-$scriptPath = __DIR__ . '/dog_breed_detector.py';
+$scriptPath = __DIR__ . '/../scripts/dog_breed_detector.py';
 $escapedImgPath = escapeshellarg($absPath);
 
 $command = "$pythonCmd \"$scriptPath\" $escapedImgPath 2>&1";

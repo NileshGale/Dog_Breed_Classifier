@@ -1,6 +1,6 @@
 <?php
 // login.php — Login Backend
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../core/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') sendJSON(false, 'Invalid request method.');
 
@@ -39,6 +39,6 @@ sendJSON(true, 'Login successful!', [
     'user_id'   => $user['id'],
     'email'     => $user['email'],
     'full_name' => $user['full_name'],
-    'redirect'  => 'detect.html'
+    'redirect'  => 'frontend/detect.html'
 ]);
 ?>

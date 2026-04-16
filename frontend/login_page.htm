@@ -142,7 +142,7 @@
     <div class="fp1">🐾</div>
     <div class="fp2">🐾</div>
 
-    <a href="home_page.htm" class="back-home">← 🏠 Home</a>
+    <a href="home_page.html" class="back-home">← 🏠 Home</a>
 
     <h1>PawDetect</h1>
 
@@ -258,7 +258,7 @@ async function doLogin() {
     fd.append('email', email); fd.append('password', password);
 
     try {
-        const res  = await fetch('login.php', { method:'POST', body:fd });
+        const res  = await fetch('../backend/api/login.php', { method:'POST', body:fd });
         const data = await res.json();
         if (data.success) {
             sessionStorage.setItem('pawdetect_user_email', data.email);
@@ -292,7 +292,7 @@ async function sendForgotOTP() {
     fd.append('action','send_otp'); fd.append('email', email);
 
     try {
-        const res  = await fetch('forgot_password.php', { method:'POST', body:fd });
+        const res  = await fetch('../backend/api/forgot_password.php', { method:'POST', body:fd });
         const data = await res.json();
         if (data.success) {
             forgotEmailAddr = email;
@@ -315,7 +315,7 @@ async function verifyForgotOTP() {
     const fd = new FormData();
     fd.append('action','verify_otp'); fd.append('email', forgotEmailAddr); fd.append('otp', otp);
 
-    const res  = await fetch('forgot_password.php', { method:'POST', body:fd });
+    const res  = await fetch('../backend/api/forgot_password.php', { method:'POST', body:fd });
     const data = await res.json();
     if (data.success) { showPanel('panelNewPassword'); }
     else { showAlert('forgotOTPAlert', data.message); }
@@ -324,7 +324,7 @@ async function verifyForgotOTP() {
 async function resendForgotOTP() {
     const fd = new FormData();
     fd.append('action','send_otp'); fd.append('email', forgotEmailAddr);
-    const res  = await fetch('forgot_password.php', { method:'POST', body:fd });
+    const res  = await fetch('../backend/api/forgot_password.php', { method:'POST', body:fd });
     const data = await res.json();
     if (data.success) {
         startTimer('timerForgot', 600, 'resendForgotBtn');
@@ -342,7 +342,7 @@ async function resetPassword() {
 
     const fd = new FormData();
     fd.append('action','reset_password'); fd.append('password', pw); fd.append('confirmPassword', cpw);
-    const res  = await fetch('forgot_password.php', { method:'POST', body:fd });
+    const res  = await fetch('../backend/api/forgot_password.php', { method:'POST', body:fd });
     const data = await res.json();
     if (data.success) {
         showAlert('newPassAlert', data.message + ' Redirecting to login…', 'success');
@@ -363,6 +363,7 @@ function buildOTPBoxes(containerId) {
             if (/\d/.test(e.target.value) && i < 5) c.children[i+1].focus();
         });
         inp.addEventListener('keydown', e => {
+            if (e.key === 'Enter') verifyForgotOTP();
             if (e.key === 'Backspace' && !e.target.value && i > 0) c.children[i-1].focus();
         });
         c.appendChild(inp);

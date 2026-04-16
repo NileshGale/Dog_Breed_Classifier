@@ -1,7 +1,7 @@
 <?php
 // profile.php — Profile CRUD + Email Change with OTP
 // Actions: get | update | request_email_change | verify_email_otp | confirm_new_email
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../core/config.php';
 
 requireLogin();
 

@@ -18,7 +18,7 @@ define('SMTP_FROM',      'ranetanvi0203@gmail.com');
 define('SMTP_FROM_NAME', 'PawDetect');
 
 // ── Uploads ───────────────────────────────────────
-define('UPLOADS_DIR', __DIR__ . '/uploads/images/');
+define('UPLOADS_DIR', __DIR__ . '/../../uploads/images/');
 define('UPLOADS_URL', 'uploads/images/');
 
 // ── Session hardening ─────────────────────────────
@@ -58,9 +58,9 @@ function generateOTP() {
 }
 
 function sendOTPEmail(string $toEmail, string $otp, string $subject = 'Your OTP Code', string $purpose = 'verify your account') {
-    require_once __DIR__ . '/PHPMailer/src/Exception.php';
-    require_once __DIR__ . '/PHPMailer/src/PHPMailer.php';
-    require_once __DIR__ . '/PHPMailer/src/SMTP.php';
+    require_once __DIR__ . '/../../vendor/PHPMailer/src/Exception.php';
+    require_once __DIR__ . '/../../vendor/PHPMailer/src/PHPMailer.php';
+    require_once __DIR__ . '/../../vendor/PHPMailer/src/SMTP.php';
 
     $mail = new PHPMailer\PHPMailer\PHPMailer(true);
     try {
