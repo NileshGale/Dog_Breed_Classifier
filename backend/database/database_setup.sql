@@ -86,5 +86,26 @@ CREATE TABLE scan_history (
     INDEX idx_scanned_at (scanned_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-SELECT 'PawDetect database created successfully!' AS Status;
-DESCRIBE users;
+-- ── Dog Listings (History for adoption module) ────────────────────
+CREATE TABLE dog_listings (
+    id            INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id       INT(11) UNSIGNED NOT NULL,
+    name          VARCHAR(150)  NOT NULL,
+    breed         VARCHAR(150)  NOT NULL,
+    age_label     VARCHAR(100),
+    gender        VARCHAR(20),
+    size          VARCHAR(20),
+    weight        VARCHAR(50),
+    location      VARCHAR(255),
+    description   TEXT,
+    photo_path    VARCHAR(500),
+    traits        TEXT,              -- JSON string of traits (vaccinated, neutered, etc.)
+    special_needs TEXT,
+    is_urgent     TINYINT(1) DEFAULT 0,
+    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_user_id (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+SELECT 'PawDetect database updated with dog_listings!' AS Status;
+DESCRIBE dog_listings;

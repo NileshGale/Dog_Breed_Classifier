@@ -170,6 +170,23 @@
     .field-err { font-size: .72rem; color: var(--rust); display: none; }
     .field-err.visible { display: block; }
 
+    /* AUTOCOMPLETE */
+    .autocomplete-wrapper { position: relative; width: 100%; }
+    .autocomplete-list {
+      position: absolute; top: calc(100% + 5px); left: 0; right: 0;
+      background: #fff; border: 1.5px solid var(--fog); border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(59,42,26,.12); z-index: 1000;
+      max-height: 250px; overflow-y: auto; display: none;
+    }
+    .autocomplete-list.show { display: block; animation: dropIn .2s ease; }
+    .autocomplete-item {
+      padding: .75rem 1rem; cursor: pointer; font-size: .88rem; color: var(--bark);
+      transition: background .15s; display: flex; align-items: center; gap: .6rem;
+    }
+    .autocomplete-item:hover, .autocomplete-item.selected { background: var(--teal-light); color: var(--teal); }
+    .autocomplete-item i { font-size: .8rem; opacity: .6; }
+    .autocomplete-no-results { padding: 1rem; font-size: .82rem; color: #9a8a7a; text-align: center; }
+
     /* CHECKBOX GRID */
     .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
     .check-item { display: flex; align-items: center; gap: .55rem; padding: .7rem .9rem; border: 1.5px solid var(--fog); border-radius: 12px; cursor: pointer; transition: border-color .2s, background .2s; user-select: none; }
@@ -333,7 +350,10 @@
         </div>
         <div class="field-group">
           <label class="field-label">Breed <span class="req">*</span></label>
-          <input class="field-input" id="dogBreed" type="text" placeholder="e.g. Labrador Mix" oninput="livePreview()">
+          <div class="autocomplete-wrapper">
+            <input class="field-input" id="dogBreed" type="text" placeholder="e.g. Labrador Mix" oninput="handleBreedInput(this)" onfocus="handleBreedInput(this)">
+            <div class="autocomplete-list" id="breedResults"></div>
+          </div>
           <span class="field-err" id="errDogBreed">Please enter the breed.</span>
         </div>
       </div>
@@ -379,8 +399,8 @@
         <div class="field-group" style="margin-bottom:0">
           <label class="field-label">About Your Dog <span class="req">*</span></label>
           <textarea class="field-textarea" id="dogDesc" placeholder="Describe your dog's personality, habits, what makes them special, and any special needs…" oninput="livePreview()"></textarea>
-          <span class="field-err" id="errDogDesc">Please write a short description.</span>
-          <div class="field-hint" style="margin-top:.3rem">Min. 30 characters. Be warm and honest — it helps find the right family!</div>
+          <span class="field-err" id="errDogDesc">Please write a short description (min. 5 characters).</span>
+          <div class="field-hint" style="margin-top:.3rem">Min. 5 characters. Be warm and honest — it helps find the right family!</div>
         </div>
       </div>
     </div>
@@ -519,19 +539,39 @@
     function toggleDropdown() { document.getElementById('profileDropdown').classList.toggle('open'); }
     window.addEventListener('click', e => {
       if (!e.target.closest('#profileBtn') && !e.target.closest('#profileDropdown')) {
-        document.getElementById('profileDropdown').classList.remove('open');
+        const dd = document.getElementById('profileDropdown');
+        if (dd) dd.classList.remove('open');
       }
     });
-    function openProfile() { window.location.href = 'register.html#profile'; }
-    function doLogout() { window.location.href = '../backend/api/logout.php'; }
-    fetch('../backend/api/login.php?check=1')
-      .then(r => r.json())
-      .then(data => {
-        if (data.logged_in) {
+
+    function openProfile() { window.location.href = 'detect.html?openProfile=1'; }
+    function doLogout() {
+      sessionStorage.clear();
+      fetch('../backend/api/logout.php').finally(() => {
+        window.location.href = 'home_page.html';
+      });
+    }
+
+    // Populate profile instantly
+    const userEmail = sessionStorage.getItem('pawdetect_user_email');
+    const userName = sessionStorage.getItem('pawdetect_user_name');
+    if (userEmail) {
+      document.getElementById('ddName').textContent = userName || 'User';
+      document.getElementById('ddEmail').textContent = userEmail;
+    } else {
+      fetch('../backend/api/login.php?check=1')
+        .then(r => r.json())
+        .then(data => {
+          if (data.logged_in) {
             document.getElementById('ddName').textContent = data.user.full_name;
             document.getElementById('ddEmail').textContent = data.user.email;
-        }
-      });
+            sessionStorage.setItem('pawdetect_user_email', data.user.email);
+            sessionStorage.setItem('pawdetect_user_name', data.user.full_name);
+          } else {
+            window.location.href = 'home_page.html';
+          }
+        });
+    }
   let isUrgent = false;
   let photoDataURL = null;
 
@@ -561,18 +601,69 @@
       document.getElementById('photoPreview').src = photoDataURL;
       document.getElementById('photoArea').classList.add('has-photo');
       livePreview();
+      saveDraft();
       showToast('Photo uploaded!', 'success');
     };
     reader.readAsDataURL(file);
   }
   function removePhoto(e) {
-    e.stopPropagation();
+    if (e && e.stopPropagation) e.stopPropagation();
     photoDataURL = null;
     document.getElementById('photoPreview').src = '';
     document.getElementById('photoArea').classList.remove('has-photo');
     document.getElementById('photoInput').value = '';
     livePreview();
   }
+
+  // ── Breed Autocomplete ──────────────────────────
+  const BREED_LIST = [
+    "Australian Shepherd", "Beagle", "Border Collie", "Boxer", "Bulldog", "Chihuahua", 
+    "Cocker Spaniel", "Dachshund", "Doberman", "French Bulldog", "German Shepherd", 
+    "Golden Retriever", "Great Dane", "Labrador Retriever", "Maltese", "Pit Bull Terrier", 
+    "Pomeranian", "Poodle", "Rottweiler", "Saint Bernard", "Siberian Husky", "Shih Tzu", "Yorkshire Terrier"
+  ];
+
+  function handleBreedInput(input) {
+    const val = input.value.trim().toLowerCase();
+    const results = document.getElementById('breedResults');
+    results.innerHTML = '';
+    
+    if (!val) {
+      results.classList.remove('show');
+      return;
+    }
+
+    const matches = BREED_LIST.filter(b => b.toLowerCase().includes(val));
+    
+    if (matches.length > 0) {
+      matches.forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'autocomplete-item';
+        div.innerHTML = `<i class="fa-solid fa-dog"></i> ${m}`;
+        div.onclick = () => selectBreed(m);
+        results.appendChild(div);
+      });
+      results.classList.add('show');
+    } else {
+      results.innerHTML = `<div class="autocomplete-no-results">No standard breed found for "${input.value}"</div>`;
+      results.classList.add('show');
+    }
+    livePreview();
+  }
+
+  function selectBreed(name) {
+    document.getElementById('dogBreed').value = name;
+    document.getElementById('breedResults').classList.remove('show');
+    livePreview();
+  }
+
+  window.addEventListener('click', e => {
+    const wrap = e.target.closest('.autocomplete-wrapper');
+    if (!wrap) {
+      const dd = document.getElementById('breedResults');
+      if (dd) dd.classList.remove('show');
+    }
+  });
 
   // ── Live preview ─────────────────────────────────
   function livePreview() {
@@ -633,7 +724,7 @@
     check('dogBreed', 'errDogBreed', document.getElementById('dogBreed').value.trim().length > 0);
     check('dogGender', 'errDogGender', document.getElementById('dogGender').value !== '');
     check('dogLocation', 'errDogLocation', document.getElementById('dogLocation').value.trim().length > 0);
-    check('dogDesc', 'errDogDesc', document.getElementById('dogDesc').value.trim().length >= 30);
+    check('dogDesc', 'errDogDesc', document.getElementById('dogDesc').value.trim().length >= 5);
     return ok;
   }
 
@@ -722,23 +813,47 @@
       listed_at:     new Date().toISOString(),
     };
 
-    // ── Save to localStorage ──────────────────────────────────────────
-    try {
-      const existing = JSON.parse(localStorage.getItem('pawdetect_listings') || '[]');
-      existing.push(listing);
-      localStorage.setItem('pawdetect_listings', JSON.stringify(existing));
-    } catch(e) {
-      showToast('Could not save listing locally.', 'error');
-    }
+    const fd = new FormData();
+    fd.append('action', 'save_listing');
+    fd.append('name', document.getElementById('dogName').value.trim());
+    fd.append('breed', document.getElementById('dogBreed').value.trim());
+    fd.append('age_label', ageRaw || 'Unknown');
+    fd.append('gender', document.getElementById('dogGender').value);
+    fd.append('size', document.getElementById('dogSize').value || 'Medium');
+    fd.append('weight', document.getElementById('dogWeight').value.trim() || '—');
+    fd.append('location', document.getElementById('dogLocation').value.trim());
+    fd.append('description', document.getElementById('dogDesc').value.trim());
+    fd.append('special_needs', document.getElementById('dogSpecialNeeds').value.trim());
+    fd.append('urgent', isUrgent);
+    fd.append('vaccinated', document.getElementById('chkVaccinated').checked);
+    fd.append('neutered', document.getElementById('chkNeutered').checked);
+    fd.append('good_with_kids', document.getElementById('chkKids').checked);
+    fd.append('good_with_pets', document.getElementById('chkPets').checked);
+    fd.append('housed', document.getElementById('chkHoused').checked);
+    fd.append('microchipped', document.getElementById('chkMicrochipped').checked);
+    if (photoDataURL) fd.append('photo', photoDataURL);
 
-    setTimeout(() => {
-      document.getElementById('successEmail').textContent = listing.owner_email;
-      document.getElementById('formStep3').style.display = 'none';
-      document.getElementById('pageHeader').style.display = 'none';
-      document.getElementById('progressTrack').style.display = 'none';
-      document.getElementById('successScreen').classList.add('visible');
-      showToast('Listing saved! Visible on the Adoption page.', 'success', 5000);
-    }, 1000);
+    fetch('../backend/api/profile.php', { method: 'POST', body: fd })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('successEmail').textContent = document.getElementById('ownerEmail').value.trim();
+          document.getElementById('formStep3').style.display = 'none';
+          document.getElementById('pageHeader').style.display = 'none';
+          document.getElementById('progressTrack').style.display = 'none';
+          document.getElementById('successScreen').classList.add('visible');
+          showToast('Listing saved to database!', 'success', 5000);
+        } else {
+          showToast(data.message || 'Submission failed.', 'error');
+          btn.disabled = false;
+          btn.innerHTML = '<span><i class="fa-solid fa-paw"></i></span> Submit Listing';
+        }
+      })
+      .catch(e => {
+        showToast('Network error while submitting.', 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<span><i class="fa-solid fa-paw"></i></span> Submit Listing';
+      });
   }
 
   function resetForm() {

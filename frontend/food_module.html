@@ -330,19 +330,37 @@
     function toggleDropdown() { document.getElementById('profileDropdown').classList.toggle('open'); }
     window.addEventListener('click', e => {
       if (!e.target.closest('#profileBtn') && !e.target.closest('#profileDropdown')) {
-        document.getElementById('profileDropdown').classList.remove('open');
+        const dd = document.getElementById('profileDropdown');
+        if (dd) dd.classList.remove('open');
       }
     });
-    function openProfile() { window.location.href = 'register.html#profile'; }
-    function doLogout() { window.location.href = '../backend/api/logout.php'; }
-    fetch('../backend/api/login.php?check=1')
-      .then(r => r.json())
-      .then(data => {
-        if (data.logged_in) {
+
+    function openProfile() { window.location.href = 'detect.html?openProfile=1'; }
+    function doLogout() {
+      sessionStorage.clear();
+      fetch('../backend/api/logout.php').finally(() => {
+        window.location.href = 'home_page.html';
+      });
+    }
+
+    // Populate profile instantly
+    const userEmail = sessionStorage.getItem('pawdetect_user_email');
+    const userName = sessionStorage.getItem('pawdetect_user_name');
+    if (userEmail) {
+      document.getElementById('ddName').textContent = userName || 'User';
+      document.getElementById('ddEmail').textContent = userEmail;
+    } else {
+      fetch('../backend/api/login.php?check=1')
+        .then(r => r.json())
+        .then(data => {
+          if (data.logged_in) {
             document.getElementById('ddName').textContent = data.user.full_name;
             document.getElementById('ddEmail').textContent = data.user.email;
-        }
-      });
+            sessionStorage.setItem('pawdetect_user_email', data.user.email);
+            sessionStorage.setItem('pawdetect_user_name', data.user.full_name);
+          }
+        });
+    }
     // Check for breed in URL
     window.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams(window.location.search);

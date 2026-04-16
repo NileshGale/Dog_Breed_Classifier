@@ -114,12 +114,31 @@
 
     /* FILTERS */
     .filter-row { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.6rem; flex-wrap: wrap; animation: fadeUp .65s ease both; }
-    .search-wrap { position: relative; flex: 1; min-width: 200px; }
-    .search-bar { width: 100%; padding: .75rem 1rem .75rem 2.7rem; border: 2px solid var(--fog); border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: .92rem; background: #fff; color: var(--bark); transition: border-color .2s, box-shadow .2s; }
-    .search-bar:focus { outline: none; border-color: var(--teal); box-shadow: 0 4px 20px rgba(0,121,107,.12); }
-    .search-icon { position: absolute; left: .9rem; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 1rem; }
+    .search-wrap { border: 2px solid var(--fog); border-radius: 14px; background: #fff; display: flex; align-items: center; padding: 0 1rem; flex: 1; transition: border-color .25s, box-shadow .25s; min-width: 200px; position: relative; }
+    .search-wrap:focus-within { border-color: var(--teal); box-shadow: 0 0 0 4px var(--teal-light); }
+    .search-icon { position: relative; left: 0; transform: none; color: #9a8a7a; margin-right: .2rem; }
+    .search-bar { border: none !important; padding: .75rem 0 !important; font-family: 'DM Sans', sans-serif; font-size: .92rem; width: 100%; color: var(--bark); background: transparent !important; box-shadow: none !important; }
+    .search-bar:focus { outline: none; }
+
     .filter-select { padding: .72rem 1rem; border: 2px solid var(--fog); border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: .85rem; background: #fff; color: var(--bark); cursor: pointer; transition: border-color .2s; }
     .filter-select:focus { outline: none; border-color: var(--teal); }
+
+    /* AUTOCOMPLETE */
+    .autocomplete-wrapper { position: relative; width: 100%; flex: 1; }
+    .autocomplete-list {
+      position: absolute; top: calc(100% + 10px); left: -45px; right: -15px;
+      background: #fff; border: 1.5px solid var(--fog); border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(59,42,26,.12); z-index: 1000;
+      max-height: 250px; overflow-y: auto; display: none;
+    }
+    .autocomplete-list.show { display: block; animation: dropIn .2s ease; }
+    .autocomplete-item {
+      padding: .75rem 1rem; cursor: pointer; font-size: .88rem; color: var(--bark);
+      transition: background .15s; display: flex; align-items: center; gap: .6rem;
+    }
+    .autocomplete-item:hover { background: var(--teal-light); color: var(--teal); }
+    .autocomplete-item i { font-size: .8rem; opacity: .6; }
+    .autocomplete-no-results { padding: 1rem; font-size: .82rem; color: #9a8a7a; text-align: center; }
 
     /* STATS BAR */
     .stats-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.6rem; animation: fadeUp .7s ease both; }
@@ -267,7 +286,10 @@
   <div class="filter-row">
     <div class="search-wrap">
       <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
-      <input type="text" class="search-bar" id="searchInput" placeholder="Search by name, breed…" oninput="filterCards()">
+      <div class="autocomplete-wrapper">
+        <input type="text" class="search-bar" id="searchInput" placeholder="Search by name, breed…" oninput="handleSearchInput(this)" onfocus="handleSearchInput(this)">
+        <div class="autocomplete-list" id="breedResults"></div>
+      </div>
     </div>
     <select class="filter-select" id="ageFilter" onchange="filterCards()">
       <option value="">All Ages</option>
@@ -313,57 +335,69 @@
     function toggleDropdown() { document.getElementById('profileDropdown').classList.toggle('open'); }
     window.addEventListener('click', e => {
       if (!e.target.closest('#profileBtn') && !e.target.closest('#profileDropdown')) {
-        document.getElementById('profileDropdown').classList.remove('open');
+        const dd = document.getElementById('profileDropdown');
+        if (dd) dd.classList.remove('open');
       }
     });
-    function openProfile() { window.location.href = 'register.html#profile'; }
-    function doLogout() { window.location.href = '../backend/api/logout.php'; }
-    fetch('../backend/api/login.php?check=1')
-      .then(r => r.json())
-      .then(data => {
-        if (data.logged_in) {
+
+    function openProfile() { window.location.href = 'detect.html?openProfile=1'; }
+    function doLogout() {
+      sessionStorage.clear();
+      fetch('../backend/api/logout.php').finally(() => {
+        window.location.href = 'home_page.html';
+      });
+    }
+
+    // Populate profile instantly
+    const userEmail = sessionStorage.getItem('pawdetect_user_email');
+    const userName = sessionStorage.getItem('pawdetect_user_name');
+    if (userEmail) {
+      document.getElementById('ddName').textContent = userName || 'User';
+      document.getElementById('ddEmail').textContent = userEmail;
+    } else {
+      // Fallback/Verify with API
+      fetch('../backend/api/login.php?check=1')
+        .then(r => r.json())
+        .then(data => {
+          if (data.logged_in) {
             document.getElementById('ddName').textContent = data.user.full_name;
             document.getElementById('ddEmail').textContent = data.user.email;
-        }
-      });
-  // ── Load listings from localStorage (saved by list_your_dog.html) ──
-  function loadListings() {
+            sessionStorage.setItem('pawdetect_user_email', data.user.email);
+            sessionStorage.setItem('pawdetect_user_name', data.user.full_name);
+          } else {
+             window.location.href = 'home_page.html';
+          }
+        });
+    }
+  let dogs = [];
+  let filtered = [];
+
+  async function fetchListings() {
     try {
-      const raw = localStorage.getItem('pawdetect_listings');
-      return raw ? JSON.parse(raw) : [];
-    } catch(e) { return []; }
+      const res = await fetch('../backend/api/profile.php?action=get_public_listings');
+      const data = await res.json();
+      if (data.success) {
+        dogs = data.listings;
+        filtered = [...dogs];
+        filterCards();
+      } else {
+        showToast(data.message || 'Error loading listings.', 'error');
+      }
+    } catch (e) {
+      showToast('Network error while loading dogs.', 'error');
+    }
   }
-
-  let dogs = loadListings();
-
-  // ── Listen for new listings saved in another tab / same tab ────────
-  window.addEventListener('storage', (e) => {
-    if (e.key === 'pawdetect_listings') {
-      dogs = loadListings();
-      filterCards();
-      showToast('New listing added!', 'success');
-    }
-  });
-
-  // ── Also re-check when tab regains focus (same-tab navigation) ─────
-  window.addEventListener('focus', () => {
-    const fresh = loadListings();
-    if (fresh.length !== dogs.length) {
-      dogs = fresh;
-      filterCards();
-    }
-  });
 
   function getEmoji(breed) {
     if (!breed) return '<i class="fa-solid fa-dog"></i>';
     const b = breed.toLowerCase();
     if (b.includes('golden')) return '<i class="fa-solid fa-dog"></i>';
     if (b.includes('labrador') || b.includes('lab')) return '<i class="fa-solid fa-dog"></i>';
-    if (b.includes('shepherd')) return '🐺';
-    if (b.includes('beagle')) return '🐩';
-    if (b.includes('pomeranian')) return '🦊';
-    if (b.includes('husky')) return '🐺';
-    if (b.includes('poodle')) return '🐩';
+    if (b.includes('shepherd')) return '<i class="fa-solid fa-dog"></i>';
+    if (b.includes('beagle')) return '<i class="fa-solid fa-dog"></i>';
+    if (b.includes('pomeranian')) return '<i class="fa-solid fa-dog"></i>';
+    if (b.includes('husky')) return '<i class="fa-solid fa-dog"></i>';
+    if (b.includes('poodle')) return '<i class="fa-solid fa-dog"></i>';
     if (b.includes('indie') || b.includes('street')) return '<i class="fa-solid fa-paw"></i>';
     return '<i class="fa-solid fa-dog"></i>';
   }
@@ -399,32 +433,85 @@
     }
     empty.style.display = 'none';
 
-    grid.innerHTML = list.map((d, i) => `
-      <div class="dog-card" style="animation-delay:${i * 0.06}s" onclick="openModal(${d.id})">
-        <div class="dog-card-img">
-          ${d.photo ? `<img src="${d.photo}" alt="${d.name}">` : `<span style="font-size:4rem">${getEmoji(d.breed)}</span>`}
-          <span class="dog-card-badge ${d.urgent ? 'urgent' : ''}">${d.urgent ? '<i class="fa-solid fa-circle" style="color: #f44336;"></i> Urgent' : '<i class="fa-solid fa-circle-check"></i> Available'}</span>
-        </div>
-        <div class="dog-card-body">
-          <div class="dog-name">${d.name}</div>
-          <span class="dog-breed-tag">${d.breed}</span>
-          <div class="dog-meta">
-            <span class="dog-meta-item"><i class="fa-solid fa-cake-candles"></i> ${d.age_label}</span>
-            <span class="dog-meta-item">${d.gender === 'Male' ? '<i class="fa-solid fa-mars"></i>' : '<i class="fa-solid fa-venus"></i>'} ${d.gender}</span>
-            <span class="dog-meta-item"><i class="fa-solid fa-location-dot"></i> ${d.location}</span>
+    grid.innerHTML = list.map((d, i) => {
+      const photo = d.photo_path ? `../${d.photo_path}` : null;
+      const urgent = parseInt(d.is_urgent) === 1;
+      return `
+        <div class="dog-card" style="animation-delay:${i * 0.06}s" onclick="openModal(${d.id})">
+          <div class="dog-card-img">
+            ${photo ? `<img src="${photo}" alt="${d.name}">` : `<span style="font-size:4rem">${getEmoji(d.breed)}</span>`}
+            <span class="dog-card-badge ${urgent ? 'urgent' : ''}">${urgent ? '<i class="fa-solid fa-circle" style="color: #f44336;"></i> Urgent' : '<i class="fa-solid fa-circle-check"></i> Available'}</span>
           </div>
-          <div class="dog-desc">${d.description}</div>
-          <div class="dog-card-footer">
-            <div class="owner-mini">
-              <div class="owner-avatar">${getInitials(d.owner_name)}</div>
-              <span class="owner-name">${d.owner_name}</span>
+          <div class="dog-card-body">
+            <div class="dog-name">${d.name}</div>
+            <span class="dog-breed-tag">${d.breed}</span>
+            <div class="dog-meta">
+              <span class="dog-meta-item"><i class="fa-solid fa-cake-candles"></i> ${d.age_label}</span>
+              <span class="dog-meta-item">${d.gender === 'Male' ? '<i class="fa-solid fa-mars"></i>' : '<i class="fa-solid fa-venus"></i>'} ${d.gender}</span>
+              <span class="dog-meta-item"><i class="fa-solid fa-location-dot"></i> ${d.location}</span>
             </div>
-            <button class="contact-btn" onclick="event.stopPropagation(); contactOwner('${d.owner_email}', '${d.name}')"><i class="fa-solid fa-envelope"></i> Contact</button>
+            <div class="dog-desc">${d.description}</div>
+            <div class="dog-card-footer">
+              <div class="owner-mini">
+                <div class="owner-avatar">${getInitials(d.owner_name)}</div>
+                <span class="owner-name">${d.owner_name}</span>
+              </div>
+              <button class="contact-btn" onclick="event.stopPropagation(); contactOwner('${d.owner_email}', '${d.name}')"><i class="fa-solid fa-envelope"></i> Contact</button>
+            </div>
           </div>
-        </div>
-      </div>
-    `).join('');
+        </div>`;
+    }).join('');
   }
+
+  // --- Breed Autocomplete ---
+  const BREED_LIST = [
+    "Australian Shepherd", "Beagle", "Border Collie", "Boxer", "Bulldog", "Chihuahua", 
+    "Cocker Spaniel", "Dachshund", "Doberman", "French Bulldog", "German Shepherd", 
+    "Golden Retriever", "Great Dane", "Labrador Retriever", "Maltese", "Pit Bull Terrier", 
+    "Pomeranian", "Poodle", "Rottweiler", "Saint Bernard", "Siberian Husky", "Shih Tzu", "Yorkshire Terrier"
+  ];
+
+  function handleSearchInput(input) {
+    const val = input.value.trim().toLowerCase();
+    const results = document.getElementById('breedResults');
+    results.innerHTML = '';
+    
+    if (!val) {
+      results.classList.remove('show');
+      filterCards();
+      return;
+    }
+
+    const matches = BREED_LIST.filter(b => b.toLowerCase().includes(val));
+    
+    if (matches.length > 0) {
+      matches.forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'autocomplete-item';
+        div.innerHTML = `<i class="fa-solid fa-dog"></i> ${m}`;
+        div.onclick = () => selectBreed(m);
+        results.appendChild(div);
+      });
+      results.classList.add('show');
+    } else {
+      results.classList.remove('show');
+    }
+    filterCards();
+  }
+
+  function selectBreed(name) {
+    document.getElementById('searchInput').value = name;
+    document.getElementById('breedResults').classList.remove('show');
+    filterCards();
+  }
+
+  window.addEventListener('click', e => {
+    const wrap = e.target.closest('.autocomplete-wrapper');
+    if (!wrap) {
+      const dd = document.getElementById('breedResults');
+      if (dd) dd.classList.remove('show');
+    }
+  });
 
   function filterCards() {
     const q = document.getElementById('searchInput').value.toLowerCase();
@@ -451,14 +538,25 @@
   }
 
   function openModal(id) {
-    const d = dogs.find(x => x.id === id);
+    const d = dogs.find(x => x.id == id);
     if (!d) return;
+    const photo = d.photo_path ? `../${d.photo_path}` : null;
+    const urgent = parseInt(d.is_urgent) === 1;
+    
+    // Parse traits from JSON
+    let traits = [];
+    try { traits = JSON.parse(d.traits || '[]'); } catch(e) { traits = []; }
+    const hasTrait = (t) => {
+        // Handle both simple strings and objects if needed
+        return traits.includes(t);
+    };
+
     document.getElementById('modalTitle').textContent = d.name;
     document.getElementById('modalSubtitle').textContent = `${d.breed} • ${d.age_label} • ${d.gender}`;
     document.getElementById('modalBody').innerHTML = `
       <div class="modal-dog-header">
         <div class="modal-dog-photo">
-          ${d.photo ? `<img src="${d.photo}" alt="${d.name}">` : `<span>${getEmoji(d.breed)}</span>`}
+          ${photo ? `<img src="${photo}" alt="${d.name}">` : `<span>${getEmoji(d.breed)}</span>`}
         </div>
         <div class="modal-dog-info">
           <h2>${d.name}</h2>
@@ -466,8 +564,9 @@
             <span class="modal-tag tag-teal">${d.breed}</span>
             <span class="modal-tag tag-sand">${d.age_label}</span>
             <span class="modal-tag tag-teal">${d.size}</span>
-            ${d.vaccinated ? '<span class="modal-tag" style="background:#e8f5e9;color:#2e7d32"><i class="fa-solid fa-syringe"></i> Vaccinated</span>' : ''}
-            ${d.neutered ? '<span class="modal-tag" style="background:#fce4ec;color:#c62828"><i class="fa-solid fa-scissors"></i> Neutered</span>' : ''}
+            ${hasTrait('Vaccinated') ? '<span class="modal-tag" style="background:#e8f5e9;color:#2e7d32"><i class="fa-solid fa-syringe"></i> Vaccinated</span>' : ''}
+            ${hasTrait('Neutered') ? '<span class="modal-tag" style="background:#fce4ec;color:#c62828"><i class="fa-solid fa-scissors"></i> Neutered</span>' : ''}
+            ${hasTrait('Kids') ? '<span class="modal-tag" style="background:#e3f2fd;color:#1565c0"><i class="fa-solid fa-child"></i> Kid Friendly</span>' : ''}
           </div>
         </div>
       </div>
@@ -476,17 +575,18 @@
         <div class="modal-section-title">Details</div>
         <div class="modal-detail-grid">
           <div class="modal-detail-item"><div class="detail-label">Gender</div><div class="detail-value">${d.gender === 'Male' ? '<i class="fa-solid fa-mars"></i> Male' : '<i class="fa-solid fa-venus"></i> Female'}</div></div>
-          <div class="modal-detail-item"><div class="detail-label">Weight</div><div class="detail-value">${d.weight}</div></div>
-          <div class="modal-detail-item"><div class="detail-label">Good with Kids</div><div class="detail-value">${d.good_with_kids ? '<i class="fa-solid fa-circle-check"></i> Yes' : '<i class="fa-solid fa-triangle-exclamation"></i> No'}</div></div>
-          <div class="modal-detail-item"><div class="detail-label">Good with Pets</div><div class="detail-value">${d.good_with_pets ? '<i class="fa-solid fa-circle-check"></i> Yes' : '<i class="fa-solid fa-triangle-exclamation"></i> No'}</div></div>
+          <div class="modal-detail-item"><div class="detail-label">Weight</div><div class="detail-value">${d.weight || 'Unknown'}</div></div>
+          <div class="modal-detail-item"><div class="detail-label">Good with Kids</div><div class="detail-value">${hasTrait('Kids') ? '<i class="fa-solid fa-circle-check"></i> Yes' : '<i class="fa-solid fa-circle-info"></i> Not specified'}</div></div>
+          <div class="modal-detail-item"><div class="detail-label">Good with Pets</div><div class="detail-value">${hasTrait('Pets') ? '<i class="fa-solid fa-circle-check"></i> Yes' : '<i class="fa-solid fa-circle-info"></i> Not specified'}</div></div>
           <div class="modal-detail-item"><div class="detail-label">Location</div><div class="detail-value"><i class="fa-solid fa-location-dot"></i> ${d.location}</div></div>
-          <div class="modal-detail-item"><div class="detail-label">Status</div><div class="detail-value">${d.urgent ? '<i class="fa-solid fa-circle" style="color: #f44336;"></i> Urgent' : '<i class="fa-solid fa-circle" style="color: #4caf50;"></i> Available'}</div></div>
+          <div class="modal-detail-item"><div class="detail-label">Status</div><div class="detail-value">${urgent ? '<i class="fa-solid fa-circle" style="color: #f44336;"></i> Urgent' : '<i class="fa-solid fa-circle" style="color: #4caf50;"></i> Available'}</div></div>
         </div>
       </div>
 
       <div class="modal-section">
         <div class="modal-section-title">About ${d.name}</div>
         <div class="modal-desc">${d.description}</div>
+        ${d.special_needs ? `<div style="margin-top:1rem;padding:.8rem;background:#fff5f5;border-radius:12px;font-size:.82rem;color:#c62828;border:1px solid #ffcdd2"><i class="fa-solid fa-circle-exclamation"></i> <strong>Special Needs:</strong> ${d.special_needs}</div>` : ''}
       </div>
 
       <div class="contact-box">
@@ -525,9 +625,8 @@
     setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 400); }, ms);
   }
 
-  // Init — render listings from localStorage
-  filtered = [...dogs];
-  renderCards(dogs);
+  // Init — fetch listings from database
+  fetchListings();
 </script>
 </body>
 </html>

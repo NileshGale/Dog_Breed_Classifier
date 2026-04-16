@@ -190,5 +190,134 @@ if ($action === 'verify_new_email_otp') {
     sendJSON(true, 'Email updated successfully!', ['new_email' => $newEmail]);
 }
 
+// ── SAVE dog listing ───────────────────────────────────────────────
+if ($action === 'save_listing') {
+    $name     = trim($_POST['name'] ?? '');
+    $breed    = trim($_POST['breed'] ?? '');
+    $age      = trim($_POST['age_label'] ?? '');
+    $gender   = trim($_POST['gender'] ?? '');
+    $size     = trim($_POST['size'] ?? '');
+    $weight   = trim($_POST['weight'] ?? '');
+    $loc      = trim($_POST['location'] ?? '');
+    $desc     = trim($_POST['description'] ?? '');
+    $needs    = trim($_POST['special_needs'] ?? '');
+    $urgent   = ($_POST['urgent'] === 'true' || $_POST['urgent'] === '1') ? 1 : 0;
+    
+    // traits JSON
+    $traits = json_encode([
+        'vaccinated'     => ($_POST['vaccinated'] ?? 'false') === 'true',
+        'neutered'       => ($_POST['neutered'] ?? 'false') === 'true',
+        'good_with_kids' => ($_POST['good_with_kids'] ?? 'false') === 'true',
+        'good_with_pets' => ($_POST['good_with_pets'] ?? 'false') === 'true',
+        'housed'         => ($_POST['housed'] ?? 'false') === 'true',
+        'microchipped'   => ($_POST['microchipped'] ?? 'false') === 'true'
+    ]);
+
+    if (!$name || !$breed) sendJSON(false, 'Name and Breed are required.');
+
+    $savedPath = null;
+    if (!empty($_POST['photo'])) {
+        $base64 = $_POST['photo'];
+        if (strpos($base64, ',') !== false) [, $base64] = explode(',', $base64, 2);
+        $imageData = base64_decode($base64);
+        if ($imageData) {
+            if (!is_dir(UPLOADS_DIR)) mkdir(UPLOADS_DIR, 0755, true);
+            $filename  = 'list_' . $_SESSION['user_id'] . '_' . time() . '.jpg';
+            $filepath  = UPLOADS_DIR . $filename;
+            if (file_put_contents($filepath, $imageData) !== false) {
+                $savedPath = UPLOADS_URL . $filename;
+            }
+        }
+    }
+
+    $conn = getDB();
+    $stmt = $conn->prepare("INSERT INTO dog_listings (user_id, name, breed, age_label, gender, size, weight, location, description, photo_path, traits, special_needs, is_urgent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("isssssssssssi", $_SESSION['user_id'], $name, $breed, $age, $gender, $size, $weight, $loc, $desc, $savedPath, $traits, $needs, $urgent);
+    
+    if ($stmt->execute()) {
+        $stmt->close(); $conn->close();
+        sendJSON(true, 'Listing submitted successfully!');
+    } else {
+        $err = $stmt->error; $stmt->close(); $conn->close();
+        sendJSON(false, 'Database error: ' . $err);
+    }
+}
+
+// ── GET dog history ───────────────────────────────────────────────
+if ($action === 'get_history') {
+    $conn = getDB();
+    $stmt = $conn->prepare("SELECT id, name, breed, photo_path, created_at, is_urgent FROM dog_listings WHERE user_id = ? ORDER BY created_at DESC");
+    $stmt->bind_param("i", $_SESSION['user_id']);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    $history = [];
+    while ($row = $res->fetch_assoc()) {
+        $history[] = $row;
+    }
+    $stmt->close(); $conn->close();
+    sendJSON(true, 'OK', ['history' => $history]);
+}
+
+// ── GET all adoption listings (Public) ──────────────────────────
+if ($action === 'get_public_listings') {
+    $conn = getDB();
+    // Join with users to get owner details
+    $sql = "SELECT d.*, u.full_name as owner_name, u.email as owner_email 
+            FROM dog_listings d 
+            JOIN users u ON d.user_id = u.id 
+            ORDER BY d.created_at DESC";
+            
+    $res = $conn->query($sql);
+    $listings = [];
+    while ($row = $res->fetch_assoc()) {
+        $listings[] = $row;
+    }
+    $conn->close();
+    sendJSON(true, 'OK', ['listings' => $listings]);
+}
+
+// ── DELETE dog listing ─────────────────────────────────────────────
+if ($action === 'delete_listing') {
+    $id = intval($_POST['listing_id'] ?? 0);
+    if ($id <= 0) sendJSON(false, 'Invalid listing ID.');
+
+    $conn = getDB();
+    // 1. Fetch photo_path and user_id to verify ownership
+    $stmt = $conn->prepare("SELECT user_id, photo_path FROM dog_listings WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    if ($res->num_rows === 0) {
+        $stmt->close(); $conn->close();
+        sendJSON(false, 'Listing not found.');
+    }
+    $row = $res->fetch_assoc();
+    $stmt->close();
+
+    // 2. Ownership check
+    if (intval($row['user_id']) !== intval($_SESSION['user_id'])) {
+        $conn->close();
+        sendJSON(false, 'Unauthorized access.');
+    }
+
+    // 3. Delete file
+    if ($row['photo_path']) {
+        $fullPath = __DIR__ . '/../../' . $row['photo_path'];
+        if (file_exists($fullPath)) @unlink($fullPath);
+    }
+
+    // 4. Delete from DB
+    $del = $conn->prepare("DELETE FROM dog_listings WHERE id = ?");
+    $del->bind_param("i", $id);
+    
+    if ($del->execute()) {
+        $del->close(); $conn->close();
+        sendJSON(true, 'Listing deleted successfully!');
+    } else {
+        $err = $del->error; $del->close(); $conn->close();
+        sendJSON(false, 'Database error: ' . $err);
+    }
+}
+
 sendJSON(false, 'Invalid action.');
 ?>

@@ -1363,18 +1363,55 @@
     }
 
     @keyframes pulse-ring {
-
       0%,
       100% {
         transform: scale(1);
         opacity: 1
       }
-
       50% {
         transform: scale(1.08);
         opacity: .7
       }
     }
+
+    /* HISTORY TAB */
+    .history-list { max-height: 380px; overflow-y: auto; padding-right: 4px; }
+    .history-list::-webkit-scrollbar { width: 4px; }
+    .history-list::-webkit-scrollbar-thumb { background: var(--fog); border-radius: 10px; }
+    .history-card {
+      background: #fdf8f3; border: 1.5px solid var(--fog); border-radius: 14px;
+      padding: 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px;
+      transition: all .2s ease; position: relative;
+    }
+    .history-card:hover { border-color: var(--sand); background: #fff; transform: translateX(2px); }
+    .history-thumb { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; background: var(--fog); flex-shrink: 0; }
+    .history-info { flex: 1; min-width: 0; }
+    .history-name { font-weight: 600; font-size: 14px; color: var(--bark); margin-bottom: 2px; }
+    .history-breed { font-size: 12px; color: #8a7a6a; display: flex; align-items: center; gap: 4px; }
+    .history-date { font-size: 10px; color: #bbb; margin-top: 6px; }
+    .history-badge { font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: 600; text-transform: uppercase; float: right; }
+    .badge-urgent { background: #fdf2f2; color: #e02424; border: 1px solid #fbd5d5; }
+    .history-delete {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #fff;
+      border: 1.5px solid var(--fog);
+      color: #ea4335;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: all .2s ease;
+      font-size: 13px;
+    }
+    .history-card:hover .history-delete { opacity: 1; right: 16px; }
+    .history-delete:hover { background: #fdf2f2; border-color: #fbd5d5; color: #e02424; }
 
     /* ═══ BREED INFO SECTION ═══════════════════════════════════════ */
     .breed-info-section {
@@ -1924,7 +1961,8 @@
 
       <div class="pm-tabs">
         <button class="pm-tab active" onclick="switchTab('tabInfo',this)"><i class="fa-solid fa-user"></i> Info</button>
-        <button class="pm-tab" onclick="switchTab('tabEmail',this)"><i class="fa-solid fa-envelope"></i> Change Email</button>
+        <button class="pm-tab" onclick="switchTab('tabEmail',this)"><i class="fa-solid fa-envelope"></i> Email</button>
+        <button class="pm-tab" onclick="switchTab('tabHistory',this)"><i class="fa-solid fa-clock-rotate-left"></i> History</button>
       </div>
 
       <div class="pm-panel active" id="tabInfo">
@@ -1982,6 +2020,15 @@
           <button class="pm-btn" style="margin-top:14px" onclick="doLogout()"><i class="fa-solid fa-key"></i> Go to Login</button>
         </div>
       </div>
+
+      <div class="pm-panel" id="tabHistory">
+        <div id="historyList" class="history-list">
+           <div style="text-align:center;padding:40px 20px;color:#bbb">
+             <i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem;margin-bottom:10px"></i>
+             <p style="font-size:13px">Loading your dog history…</p>
+           </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1998,18 +2045,30 @@
     document.getElementById('ddEmail').textContent = userEmail;
     document.getElementById('currentEmailDisplay').textContent = userEmail;
 
-    function toggleDropdown() {
-      document.getElementById('profileDropdown').classList.toggle('open');
-    }
-    document.addEventListener('click', e => {
-      const dd = document.getElementById('profileDropdown');
-      const pb = document.getElementById('profileBtn');
-      if (!dd.contains(e.target) && !pb.contains(e.target)) dd.classList.remove('open');
+    function toggleDropdown() { document.getElementById('profileDropdown').classList.toggle('open'); }
+    window.addEventListener('click', e => {
+      if (!e.target.closest('#profileBtn') && !e.target.closest('#profileDropdown')) {
+        const dd = document.getElementById('profileDropdown');
+        if (dd) dd.classList.remove('open');
+      }
     });
+
+    function openProfile() {
+      const modal = document.getElementById('profileModal');
+      if (modal) {
+        modal.classList.add('visible');
+        document.getElementById('ddName').textContent = sessionStorage.getItem('pawdetect_user_name') || 'User';
+        document.getElementById('ddEmail').textContent = sessionStorage.getItem('pawdetect_user_email') || '';
+      } else {
+        window.location.href = 'detect.html?openProfile=1';
+      }
+    }
+
     function doLogout() {
       sessionStorage.clear();
-      fetch('../backend/api/logout.php').catch(() => { });
-      window.location.href = 'home_page.html';
+      fetch('../backend/api/logout.php').finally(() => {
+        window.location.href = 'home_page.html';
+      });
     }
 
     /* ═══ TOAST ══════════════════════════════════════════════════════ */
@@ -2373,6 +2432,65 @@
       document.querySelectorAll('.pm-tab').forEach(t => t.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
       btn.classList.add('active');
+      if (tabId === 'tabHistory') renderMyDogHistory();
+    }
+
+    async function renderMyDogHistory() {
+      const list = document.getElementById('historyList');
+      try {
+        const res = await fetch('../backend/api/profile.php?action=get_history');
+        const data = await res.json();
+        if (data.success && data.history) {
+          if (data.history.length === 0) {
+            list.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#bbb">
+              <i class="fa-solid fa-paw" style="font-size:2.5rem;margin-bottom:12px;opacity:.3"></i>
+              <p style="font-size:14px">You haven't listed any dogs yet.</p>
+              <a href="list_your_dog.html" style="color:var(--rust);text-decoration:none;font-weight:600;font-size:13px;display:inline-block;margin-top:8px">List your first dog →</a>
+            </div>`;
+            return;
+          }
+          let html = '';
+          data.history.forEach(d => {
+            const date = new Date(d.created_at).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+            const photo = d.photo_path ? `../${d.photo_path}` : 'https://placehold.co/100x100?text=No+Photo';
+            html += `<div class="history-card">
+              <img src="${photo}" class="history-thumb" alt="${d.name}">
+              <div class="history-info">
+                <div class="history-name">${d.name} ${d.is_urgent ? '<span class="history-badge badge-urgent">Urgent</span>' : ''}</div>
+                <div class="history-breed"><i class="fa-solid fa-dog" style="font-size:10px"></i> ${d.breed}</div>
+                <div class="history-date">Listed on ${date}</div>
+              </div>
+              <button class="history-delete" onclick="deleteListing(${d.id}, '${d.name.replace(/'/g, "\\'")}')" title="Delete listing">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>`;
+          });
+          list.innerHTML = html;
+        } else {
+          list.innerHTML = `<div style="text-align:center;padding:40px;color:#c0392b;font-size:13px">Failed to load history: ${data.message}</div>`;
+        }
+      } catch (e) {
+        list.innerHTML = `<div style="text-align:center;padding:40px;color:#c0392b;font-size:13px">Network error while fetching history.</div>`;
+      }
+    }
+
+    async function deleteListing(id, name) {
+      const fd = new FormData();
+      fd.append('action', 'delete_listing');
+      fd.append('listing_id', id);
+
+      try {
+        const res = await fetch('../backend/api/profile.php', { method: 'POST', body: fd });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Listing deleted successfully.', 'success');
+          renderMyDogHistory();
+        } else {
+          showToast(data.message || 'Delete failed.', 'error');
+        }
+      } catch (e) {
+        showToast('Network error while deleting.', 'error');
+      }
     }
 
     async function loadProfile() {
@@ -2628,8 +2746,14 @@
       document.getElementById('panelBehavior').innerHTML = html;
     }
 
-    // --- State Restoration ---
+    // --- State Restoration & Params ---
     window.addEventListener('DOMContentLoaded', () => {
+      // Auto-open profile if param present
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('openProfile')) {
+        openProfile();
+      }
+
       const saved = sessionStorage.getItem('last_prediction');
       if (saved) {
         try {
