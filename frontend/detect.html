@@ -423,6 +423,9 @@
       overflow: hidden;
       transition: transform .35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow .35s, border-color .3s;
       animation: fadeUp .8s ease both;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
     }
 
     .card:nth-child(3) {
@@ -537,6 +540,11 @@
       transition: background .2s, border-color .2s;
       position: relative;
       z-index: 1;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
 
     .scan-area:hover {
@@ -603,7 +611,7 @@
       justify-content: center;
       gap: .5rem;
       width: 100%;
-      margin-top: 1.5rem;
+      margin-top: auto;
       padding: .9rem 1rem;
       border: none;
       border-radius: 14px;
@@ -654,6 +662,11 @@
       position: relative;
       z-index: 1;
       cursor: pointer;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
 
     .upload-zone:hover,
