@@ -212,24 +212,23 @@
                     <a href="list_your_dog.html" class="nav-tab">List Your Dog</a>
                 </nav>
 
-                <div id="userProfile" style="position: relative;">
-                    <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()">
-                        <i class="fa-solid fa-user"></i>
-                    </button>
-                    <div class="profile-dropdown" id="profileDropdown">
-                        <div class="dropdown-header">
-                            <div class="uname" id="ddName">User</div>
-                            <div class="uemail" id="ddEmail">email@example.com</div>
+                    <div class="nav-btns">
+                        <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()">
+                            <i class="fa-solid fa-user"></i>
+                        </button>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="dropdown-header">
+                                <div class="uname" id="ddName">User</div>
+                                <div class="uemail" id="ddEmail">...</div>
+                            </div>
+                            <button class="dropdown-item" onclick="openProfile()">
+                                <i class="fa-solid fa-circle-user"></i> My Profile
+                            </button>
+                            <button class="dropdown-item logout" onclick="doLogout()">
+                                <i class="fa-solid fa-right-from-bracket"></i> Logout
+                            </button>
                         </div>
-                        <button class="dropdown-item" onclick="openProfile()">
-                            <i class="fa-solid fa-circle-user"></i> My Profile
-                        </button>
-                        <hr style="border: none; border-top: 1px solid rgba(0,0,0,0.06);">
-                        <button class="dropdown-item logout" onclick="logout()">
-                            <i class="fa-solid fa-right-from-bracket"></i> Logout
-                        </button>
                     </div>
-                </div>
             </div>
         </div>
     </header>
@@ -290,27 +289,86 @@
         </div>
     </footer>
 
+    <!-- PROFILE MODAL -->
+    <div class="profile-modal" id="profileModal">
+      <div class="pm-box">
+        <button class="pm-close" onclick="closeProfile()">✕</button>
+        <h3 style="font-family:'Outfit',serif;font-weight:700;font-size:1.5rem;color:var(--bark);margin-bottom:1.25rem">My Profile</h3>
+  
+        <div class="pm-tabs">
+          <button class="pm-tab active" onclick="switchTab('tabInfo',this)"><i class="fa-solid fa-user"></i> Info</button>
+          <button class="pm-tab" onclick="switchTab('tabEmail',this)"><i class="fa-solid fa-envelope"></i> Email</button>
+          <button class="pm-tab" onclick="switchTab('tabHistory',this)"><i class="fa-solid fa-clock-rotate-left"></i> History</button>
+        </div>
+  
+        <div class="pm-panel active" id="tabInfo">
+          <div class="pm-alert" id="infoAlert"></div>
+          <div class="pm-field"><label>Full Name</label><input type="text" id="pmName" placeholder="Your full name"></div>
+          <div class="pm-field"><label>Mobile Number</label><input type="tel" id="pmMobile" placeholder="+91 XXXXXXXXXX"></div>
+          <div class="pm-field"><label>Age</label><input type="number" id="pmAge" min="1" max="120" placeholder="Your age"></div>
+          <div class="pm-field">
+            <label>Gender</label>
+            <select id="pmGender">
+              <option value="">Prefer not to say</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+              <option value="prefer_not_to_say">Prefer not to say</option>
+            </select>
+          </div>
+          <button class="pm-btn" onclick="saveProfile()">💾 Save Changes</button>
+        </div>
+  
+        <div class="pm-panel" id="tabEmail">
+          <div class="pm-alert" id="emailAlert"></div>
+          <div class="email-step active" id="emailStep1">
+            <p style="font-size:13px;color:#7a6a58;margin-bottom:10px">We'll send an OTP to your <strong>current email</strong> to verify it's you.</p>
+            <p style="font-size:13px;font-weight:500;margin-bottom:14px">Current: <span id="currentEmailDisplay"></span></p>
+            <button class="pm-btn" onclick="requestEmailChange()">📧 Send Verification OTP</button>
+          </div>
+          <div class="email-step" id="emailStep2">
+            <p style="font-size:13px;color:#7a6a58;margin-bottom:8px">Enter the OTP sent to your current email:</p>
+            <div class="pm-otp-inputs" id="ceOTPBoxes1"></div>
+            <button class="pm-btn" onclick="verifyCurrentOTP()"><i class="fa-solid fa-circle-check"></i> Verify OTP</button>
+            <button class="pm-btn secondary" onclick="goEmailStep(1)">← Back</button>
+          </div>
+          <div class="email-step" id="emailStep3">
+            <p style="font-size:13px;color:#7a6a58;margin-bottom:10px">Enter your new email address:</p>
+            <div class="pm-field"><label>New Email</label><input type="email" id="newEmailInput" placeholder="new@email.com"></div>
+            <button class="pm-btn" onclick="sendNewEmailOTP()">📧 Send OTP to New Email</button>
+            <button class="pm-btn secondary" onclick="goEmailStep(1)">← Start Over</button>
+          </div>
+          <div class="email-step" id="emailStep4">
+            <p style="font-size:13px;color:#7a6a58;margin-bottom:8px">Enter the OTP sent to your new email:</p>
+            <div class="pm-otp-inputs" id="ceOTPBoxes2"></div>
+            <button class="pm-btn" onclick="verifyNewEmailOTP()"><i class="fa-solid fa-circle-check"></i> Confirm New Email</button>
+            <button class="pm-btn secondary" onclick="goEmailStep(3)">← Back</button>
+          </div>
+          <div class="email-step" id="emailStep5" style="text-align:center;padding:20px 0">
+            <div style="font-size:46px;margin-bottom:10px"><i class="fa-solid fa-circle-check"></i></div>
+            <p style="font-weight:500;color:var(--moss)">Email updated successfully!</p>
+            <p style="font-size:13px;color:#8a7a6a;margin-top:6px">Please login again with your new email.</p>
+            <button class="pm-btn" style="margin-top:14px" onclick="doLogout()"><i class="fa-solid fa-key"></i> Go to Login</button>
+          </div>
+        </div>
+  
+        <div class="pm-panel" id="tabHistory">
+          <div id="historyList" class="history-list">
+             <div style="text-align:center;padding:40px 20px;color:#bbb">
+               <i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem;margin-bottom:10px"></i>
+               <p style="font-size:13px">Loading your dog history…</p>
+             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer"></div>
+
+    <script src="../assets/js/main.js"></script>
     <script>
-        // Init Auth
-        const email = sessionStorage.getItem('pawdetect_user_email');
-        const name = sessionStorage.getItem('pawdetect_user_name');
-        if (email) {
-            document.getElementById('ddName').textContent = name || 'User';
-            document.getElementById('ddEmail').textContent = email;
-        } else {
-            window.location.href = 'home_page.html';
-        }
 
-        function toggleDropdown() {
-            document.getElementById('profileDropdown').classList.toggle('open');
-        }
-
-        function logout() {
-            sessionStorage.clear();
-            window.location.href = 'home_page.html';
-        }
-
-        function openProfile() { window.location.href = 'detect.html?openProfile=1'; }
 
         let allDogs = [];
 

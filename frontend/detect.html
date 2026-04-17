@@ -1903,52 +1903,8 @@
   <!-- TOAST CONTAINER -->
   <div id="toastContainer"></div>
 
+  <script src="../assets/js/main.js"></script>
   <script>
-    /* ═══ AUTH ═══════════════════════════════════════════════════════ */
-    const userEmail = sessionStorage.getItem('pawdetect_user_email') || '';
-    const userName = sessionStorage.getItem('pawdetect_user_name') || 'User';
-    if (!userEmail) window.location.href = 'login_page.htm';
-
-    document.getElementById('ddName').textContent = userName;
-    document.getElementById('ddEmail').textContent = userEmail;
-    document.getElementById('currentEmailDisplay').textContent = userEmail;
-
-    function toggleDropdown() { document.getElementById('profileDropdown').classList.toggle('open'); }
-    window.addEventListener('click', e => {
-      if (!e.target.closest('#profileBtn') && !e.target.closest('#profileDropdown')) {
-        const dd = document.getElementById('profileDropdown');
-        if (dd) dd.classList.remove('open');
-      }
-    });
-
-    function openProfile() {
-      const modal = document.getElementById('profileModal');
-      if (modal) {
-        modal.classList.add('visible');
-        document.getElementById('ddName').textContent = sessionStorage.getItem('pawdetect_user_name') || 'User';
-        document.getElementById('ddEmail').textContent = sessionStorage.getItem('pawdetect_user_email') || '';
-      } else {
-        window.location.href = 'detect.html?openProfile=1';
-      }
-    }
-
-    function doLogout() {
-      sessionStorage.clear();
-      fetch('../backend/api/logout.php').finally(() => {
-        window.location.href = 'home_page.html';
-      });
-    }
-
-    /* ═══ TOAST ══════════════════════════════════════════════════════ */
-    function showToast(msg, type = 'info', ms = 3500) {
-      const t = document.createElement('div');
-      t.className = `toast ${type}`;
-      const icons = { success: '<i class="fa-solid fa-circle-check"></i>', error: '❌', info: '<i class="fa-solid fa-circle-info"></i>' };
-      t.innerHTML = `<span>${icons[type] || '<i class="fa-solid fa-circle-info"></i>'}</span><span>${msg}</span>`;
-      document.getElementById('toastContainer').appendChild(t);
-      setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 400); }, ms);
-    }
-
     /* ═══ RESULT BANNER ══════════════════════════════════════════════ */
     function showResult(imgSrc, breed, confidence, source) {
       document.getElementById('resultThumb').src = imgSrc || '';
@@ -2287,181 +2243,9 @@
       }
     }
 
-    /* ═══ PROFILE MODAL ══════════════════════════════════════════════ */
-    function openProfile() {
-      document.getElementById('profileDropdown').classList.remove('open');
-      loadProfile();
-      document.getElementById('profileModal').classList.add('open');
-    }
-    function closeProfile() { document.getElementById('profileModal').classList.remove('open'); }
-
-    function switchTab(tabId, btn) {
-      document.querySelectorAll('.pm-panel').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.pm-tab').forEach(t => t.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      btn.classList.add('active');
-      if (tabId === 'tabHistory') renderMyDogHistory();
-    }
-
-    async function renderMyDogHistory() {
-      const list = document.getElementById('historyList');
-      try {
-        const res = await fetch('../backend/api/profile.php?action=get_history');
-        const data = await res.json();
-        if (data.success && data.history) {
-          if (data.history.length === 0) {
-            list.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#bbb">
-              <i class="fa-solid fa-paw" style="font-size:2.5rem;margin-bottom:12px;opacity:.3"></i>
-              <p style="font-size:14px">You haven't listed any dogs yet.</p>
-              <a href="list_your_dog.html" style="color:var(--rust);text-decoration:none;font-weight:600;font-size:13px;display:inline-block;margin-top:8px">List your first dog →</a>
-            </div>`;
-            return;
-          }
-          let html = '';
-          data.history.forEach(d => {
-            const date = new Date(d.created_at).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
-            const photo = d.photo_path ? `../${d.photo_path}` : 'https://placehold.co/100x100?text=No+Photo';
-            html += `<div class="history-card">
-              <img src="${photo}" class="history-thumb" alt="${d.name}">
-              <div class="history-info">
-                <div class="history-name">${d.name} ${d.is_urgent ? '<span class="history-badge badge-urgent">Urgent</span>' : ''}</div>
-                <div class="history-breed"><i class="fa-solid fa-dog" style="font-size:10px"></i> ${d.breed}</div>
-                <div class="history-date">Listed on ${date}</div>
-              </div>
-              <button class="history-delete" onclick="deleteListing(${d.id}, '${d.name.replace(/'/g, "\\'")}')" title="Delete listing">
-                <i class="fa-solid fa-trash-can"></i>
-              </button>
-            </div>`;
-          });
-          list.innerHTML = html;
-        } else {
-          list.innerHTML = `<div style="text-align:center;padding:40px;color:#c0392b;font-size:13px">Failed to load history: ${data.message}</div>`;
-        }
-      } catch (e) {
-        list.innerHTML = `<div style="text-align:center;padding:40px;color:#c0392b;font-size:13px">Network error while fetching history.</div>`;
-      }
-    }
-
-    async function deleteListing(id, name) {
-      const fd = new FormData();
-      fd.append('action', 'delete_listing');
-      fd.append('listing_id', id);
-
-      try {
-        const res = await fetch('../backend/api/profile.php', { method: 'POST', body: fd });
-        const data = await res.json();
-        if (data.success) {
-          showToast('Listing deleted successfully.', 'success');
-          renderMyDogHistory();
-        } else {
-          showToast(data.message || 'Delete failed.', 'error');
-        }
-      } catch (e) {
-        showToast('Network error while deleting.', 'error');
-      }
-    }
-
-    async function loadProfile() {
-      try {
-        const data = await (await fetch('profile.php?action=get')).json();
-        if (data.success && data.user) {
-          const u = data.user;
-          document.getElementById('pmName').value = u.full_name || '';
-          document.getElementById('pmMobile').value = u.mobile || '';
-          document.getElementById('pmAge').value = u.age || '';
-          document.getElementById('pmGender').value = u.gender || '';
-        }
-      } catch (e) { }
-    }
-
-    async function saveProfile() {
-      showPMAlert('infoAlert', '');
-      const fd = new FormData();
-      fd.append('action', 'update');
-      fd.append('full_name', document.getElementById('pmName').value.trim());
-      fd.append('mobile', document.getElementById('pmMobile').value.trim());
-      fd.append('age', document.getElementById('pmAge').value);
-      fd.append('gender', document.getElementById('pmGender').value);
-      try {
-        const data = await (await fetch('../backend/api/profile.php', { method: 'POST', body: fd })).json();
-        showPMAlert('infoAlert', data.message, data.success ? 'success' : 'error');
-        if (data.success) {
-          const n = document.getElementById('pmName').value.trim();
-          sessionStorage.setItem('pawdetect_user_name', n);
-          document.getElementById('ddName').textContent = n;
-        }
-      } catch (e) { showPMAlert('infoAlert', 'Network error.', 'error'); }
-    }
-
-    function showPMAlert(id, msg, type = 'error') {
-      const el = document.getElementById(id);
-      if (!msg) { el.className = 'pm-alert'; el.textContent = ''; return; }
-      el.className = `pm-alert show ${type}`; el.textContent = msg;
-    }
-
-    /* ═══ EMAIL CHANGE ═══════════════════════════════════════════════ */
-    function goEmailStep(n) {
-      document.querySelectorAll('.email-step').forEach(s => s.classList.remove('active'));
-      document.getElementById('emailStep' + n).classList.add('active');
-      showPMAlert('emailAlert', '');
-    }
-    async function requestEmailChange() {
-      showPMAlert('emailAlert', '');
-      const fd = new FormData(); fd.append('action', 'request_email_change');
-      try {
-        const d = await (await fetch('../backend/api/profile.php', { method: 'POST', body: fd })).json();
-        if (d.success) { buildPMOTPBoxes('ceOTPBoxes1'); goEmailStep(2); }
-        else showPMAlert('emailAlert', d.message, 'error');
-      } catch (e) { showPMAlert('emailAlert', 'Network error.', 'error'); }
-    }
-    async function verifyCurrentOTP() {
-      showPMAlert('emailAlert', '');
-      const otp = getPMOTPValue('ceOTPBoxes1');
-      if (otp.length !== 6) { showPMAlert('emailAlert', 'Enter the 6-digit OTP.', 'error'); return; }
-      const fd = new FormData(); fd.append('action', 'verify_current_otp'); fd.append('otp', otp);
-      try {
-        const d = await (await fetch('../backend/api/profile.php', { method: 'POST', body: fd })).json();
-        if (d.success) goEmailStep(3); else showPMAlert('emailAlert', d.message, 'error');
-      } catch (e) { showPMAlert('emailAlert', 'Network error.', 'error'); }
-    }
-    async function sendNewEmailOTP() {
-      showPMAlert('emailAlert', '');
-      const ne = document.getElementById('newEmailInput').value.trim();
-      if (!ne) { showPMAlert('emailAlert', 'Enter a new email address.', 'error'); return; }
-      const fd = new FormData(); fd.append('action', 'send_new_email_otp'); fd.append('new_email', ne);
-      try {
-        const d = await (await fetch('../backend/api/profile.php', { method: 'POST', body: fd })).json();
-        if (d.success) { buildPMOTPBoxes('ceOTPBoxes2'); goEmailStep(4); }
-        else showPMAlert('emailAlert', d.message, 'error');
-      } catch (e) { showPMAlert('emailAlert', 'Network error.', 'error'); }
-    }
-    async function verifyNewEmailOTP() {
-      showPMAlert('emailAlert', '');
-      const otp = getPMOTPValue('ceOTPBoxes2');
-      if (otp.length !== 6) { showPMAlert('emailAlert', 'Enter the 6-digit OTP.', 'error'); return; }
-      const fd = new FormData(); fd.append('action', 'verify_new_email_otp'); fd.append('otp', otp);
-      try {
-        const d = await (await fetch('profile.php', { method: 'POST', body: fd })).json();
-        if (d.success) goEmailStep(5); else showPMAlert('emailAlert', d.message, 'error');
-      } catch (e) { showPMAlert('emailAlert', 'Network error.', 'error'); }
-    }
-
-    function buildPMOTPBoxes(cid) {
-      const c = document.getElementById(cid); c.innerHTML = '';
-      for (let i = 0; i < 6; i++) {
-        const inp = document.createElement('input');
-        inp.type = 'text'; inp.maxLength = 1; inp.inputMode = 'numeric';
-        inp.addEventListener('input', () => { inp.value = inp.value.replace(/\D/g, ''); if (inp.value && i < 5) c.children[i + 1].focus(); });
-        inp.addEventListener('keydown', e => { if (e.key === 'Backspace' && !inp.value && i > 0) c.children[i - 1].focus(); });
-        c.appendChild(inp);
-      }
-      setTimeout(() => c.children[0].focus(), 50);
-    }
-    function getPMOTPValue(cid) { return [...document.getElementById(cid).children].map(i => i.value).join(''); }
 
     /* ═══ BREED INFO MODULES ═════════════════════════════════════════ */
     let currentBreedInfo = null;
-
     let currentBreedName = '';
 
     async function fetchBreedInfo(breedName) {
@@ -2494,7 +2278,6 @@
       <span class="info-tag tag-green">${food.diet_type}</span>
     </div>
   </div>`;
-
       html += `<div class="info-card">
     <div class="info-card-header">
       <div class="info-card-icon" style="background:#e8f5e9"><i class="fa-solid fa-circle-check"></i></div>
@@ -2502,7 +2285,6 @@
     </div>
     <div class="info-card-body"><ul>${food.recommended_foods.map(f => '<li>' + f + '</li>').join('')}</ul></div>
   </div>`;
-
       html += `<div class="info-card">
     <div class="info-card-header">
       <div class="info-card-icon" style="background:#ffebee"><i class="fa-solid fa-ban"></i></div>
@@ -2510,7 +2292,6 @@
     </div>
     <div class="info-card-body"><ul>${food.foods_to_avoid.map(f => '<li>' + f + '</li>').join('')}</ul></div>
   </div>`;
-
       html += `<div class="info-card">
     <div class="info-card-header">
       <div class="info-card-icon" style="background:#e3f2fd"><i class="fa-solid fa-clock"></i></div>
@@ -2521,7 +2302,6 @@
       <p style="margin-top:.3rem"><strong>Portion Tip:</strong> ${food.portion_tip}</p>
     </div>
   </div>`;
-
       if (food.special_notes) {
         html += `<div class="info-note"><span class="info-note-icon"><i class="fa-solid fa-lightbulb"></i></span><span>${food.special_notes}</span></div>`;
       }
@@ -2542,7 +2322,6 @@
       ).join('')}</table>
     </div>
   </div>`;
-
       if (vacc.optional_vaccines && vacc.optional_vaccines.length > 0) {
         html += `<div class="info-card">
       <div class="info-card-header">
@@ -2556,7 +2335,6 @@
       </div>
     </div>`;
       }
-
       html += `<div class="info-card">
     <div class="info-card-header">
       <div class="info-card-icon" style="background:#fff3e0">🪱</div>
@@ -2564,7 +2342,6 @@
     </div>
     <div class="info-card-body"><p>${vacc.deworming}</p></div>
   </div>`;
-
       if (vacc.special_notes) {
         html += `<div class="info-note"><span class="info-note-icon"><i class="fa-solid fa-triangle-exclamation"></i></span><span>${vacc.special_notes}</span></div>`;
       }
@@ -2574,7 +2351,6 @@
     function renderBehaviorPanel(beh) {
       if (!beh) return;
       let html = '';
-
       html += `<div class="info-card">
     <div class="info-card-header">
       <div class="info-card-icon" style="background:#fff3e0"><i class="fa-solid fa-brain"></i></div>
@@ -2582,7 +2358,6 @@
     </div>
     <div class="info-card-body"><p>${beh.temperament}</p></div>
   </div>`;
-
       html += `<div class="behavior-grid">`;
       const stats = [
         { label: 'Energy Level', value: beh.energy_level, icon: '<i class="fa-solid fa-bolt"></i>' },
@@ -2599,7 +2374,6 @@
     </div>`;
       });
       html += `</div>`;
-
       html += `<div class="info-card" style="margin-top:.8rem">
     <div class="info-card-header">
       <div class="info-card-icon" style="background:#e8f5e9"><i class="fa-solid fa-shield-dog"></i></div>
@@ -2607,38 +2381,22 @@
     </div>
     <div class="info-card-body"><p>${beh.social_traits}</p></div>
   </div>`;
-
       if (beh.special_notes) {
         html += `<div class="info-note"><span class="info-note-icon"><i class="fa-solid fa-lightbulb"></i></span><span>${beh.special_notes}</span></div>`;
       }
       document.getElementById('panelBehavior').innerHTML = html;
     }
 
-    // --- State Restoration & Params ---
     window.addEventListener('DOMContentLoaded', () => {
-      // Auto-open profile if param present
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('openProfile')) {
-        openProfile();
-      }
-
       const saved = sessionStorage.getItem('last_prediction');
       if (saved) {
         try {
           const state = JSON.parse(saved);
           if (Date.now() - state.timestamp < 30 * 60 * 1000) {
             displayPrediction(state.prediction, state.imgSrc, state.source);
-            
-            // Explicitly show results banner and scroll to it
             const banner = document.getElementById('resultBanner');
-            if (banner) {
-               banner.classList.add('show');
-               // banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-
-            if (state.prediction.is_dog) {
-                document.getElementById('breedInfoSection').classList.add('show');
-            }
+            if (banner) banner.classList.add('show');
+            if (state.prediction.is_dog) document.getElementById('breedInfoSection').classList.add('show');
           }
         } catch (e) {
           console.error("Failed to restore state", e);
