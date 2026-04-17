@@ -1,634 +1,395 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PawDetect — Dog Adoption Center</title>
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" crossorigin="anonymous">
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PawDetect — Dog Adoption</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --cream: #f5f0e8;
-      --bark: #3b2a1a;
-      --moss: #4a6741;
-      --sand: #c9a96e;
-      --rust: #b55a2a;
-      --fog: #e8e0d4;
-      --leaf: #7a9e6e;
-      --teal: #00796b;
-      --teal-light: #e0f2f1;
-      --teal-mid: #b2dfdb;
-    }
-    body {
-      background-color: var(--cream);
-      font-family: 'DM Sans', sans-serif;
-      color: var(--bark); min-height: 100vh; overflow-x: hidden;
-    }
-    body::before {
-      content: ''; position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none; z-index: 0;
-    }
+    <link rel="stylesheet" href="../assets/css/index.css">
+    
+    <style>
+        .filter-section {
+            background: white;
+            padding: 32px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            margin-bottom: 40px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
+            position: sticky;
+            top: 100px;
+            z-index: 900;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+        }
 
-    /* NAVBAR */
-    .navbar { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,.92); backdrop-filter: blur(12px); border-bottom: 1.5px solid var(--fog); padding: 0 2.5rem; display: flex; align-items: center; justify-content: space-between; height: 64px; box-shadow: 0 2px 12px rgba(59,42,26,.07); }
-    .nav-brand { display: flex; align-items: center; gap: .65rem; text-decoration: none; color: var(--bark); }
-    .logo-paw { width: 36px; height: 36px; background: var(--bark); border-radius: 50% 50% 50% 20%; display: flex; align-items: center; justify-content: center; color: var(--cream); font-size: 1.1rem; }
-    .logo-text { font-family: 'Playfair Display', serif; font-size: 1.45rem; font-weight: 700; letter-spacing: -.02em; }
-    .logo-text span { color: var(--rust); }
-    .nav-btn { display: inline-flex; align-items: center; gap: .5rem; text-decoration: none; color: var(--bark); font-size: .85rem; font-weight: 500; padding: .5rem 1.1rem; background: #fff; border: 1.5px solid var(--fog); border-radius: 10px; transition: all .2s; }
-    .nav-btn:hover { border-color: var(--sand); background: var(--cream); }
-    .nav-btn.primary { background: var(--bark); color: var(--cream); border-color: var(--bark); }
-    .nav-btn.primary:hover { background: var(--rust); border-color: var(--rust); }
-    .nav-actions { display: flex; align-items: center; gap: .5rem; }
-    .nav-right { display: flex; align-items: center; gap: .5rem; position: relative; }
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
 
-    /* NAV TABS */
-    .nav-tabs { display: flex; gap: 1.5rem; margin-right: 1.2rem; }
-    .nav-tab {
-      text-decoration: none; color: var(--bark); font-size: 0.88rem; font-weight: 600;
-      padding: 0.5rem 0; position: relative; transition: color 0.2s; white-space: nowrap;
-    }
-    .nav-tab:hover { color: var(--rust); }
-    .nav-tab::after {
-      content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px;
-      background: var(--rust); transition: width 0.3s ease; border-radius: 2px;
-    }
-    .nav-tab:hover::after, .nav-tab.active::after { width: 100%; }
-    .nav-tab.active { color: var(--rust); }
-    .nav-divider { width: 1px; height: 26px; background: var(--fog); flex-shrink: 0; }
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
 
-    /* PROFILE BTN */
-    .profile-btn {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--rust), var(--sand));
-      border: none; cursor: pointer; color: #fff; font-size: 1.1rem;
-      display: flex; align-items: center; justify-content: center;
-      transition: box-shadow .2s, transform .2s;
-      box-shadow: 0 2px 8px rgba(181,90,42,.3);
-    }
-    .profile-btn:hover { transform: scale(1.07); box-shadow: 0 4px 14px rgba(181,90,42,.4); }
-    .profile-dropdown {
-      position: absolute; top: calc(100% + 10px); right: 2.5rem;
-      background: #fff; border: 1.5px solid var(--fog); border-radius: 16px;
-      min-width: 200px; box-shadow: 0 12px 40px rgba(59,42,26,.14);
-      overflow: hidden; display: none; z-index: 200;
-      text-align: left;
-    }
-    .profile-dropdown.open { display: block; animation: dropIn .2s ease; }
-    @keyframes dropIn { from { opacity:0; transform:translateY(-8px) } to { opacity:1; transform:translateY(0) } }
-    .dropdown-header { padding: 14px 16px 10px; border-bottom: 1px solid var(--fog); text-align: left; }
-    .dropdown-header .uname { font-weight: 500; font-size: .9rem; color: var(--bark); }
-    .dropdown-header .uemail { font-size: .75rem; color: #9a8878; margin-top: 2px; }
-    .dropdown-item {
-      display: flex; align-items: center; gap: 10px; padding: 12px 16px;
-      font-size: .88rem; color: var(--bark); cursor: pointer;
-      transition: background .15s; width: 100%; border: none; background: none;
-      font-family: 'DM Sans', sans-serif; text-decoration: none;
-    }
-    .dropdown-item:hover { background: var(--cream); }
-    .dropdown-item.logout { color: #c0392b; }
-    .dropdown-item.logout:hover { background: #fdf0ee; }
-    .dropdown-divider { height: 1px; background: var(--fog); }
+        .select-control {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: white;
+            font-family: inherit;
+            cursor: pointer;
+        }
 
-    /* TOAST */
-    #toastContainer { position: fixed; top: 80px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
-    .toast { padding: 13px 18px; border-radius: 14px; font-size: .86rem; font-weight: 500; box-shadow: 0 8px 30px rgba(0,0,0,.15); max-width: 300px; display: flex; align-items: center; gap: 10px; animation: toastIn .35s cubic-bezier(0.34,1.56,0.64,1) both; }
-    .toast.hide { animation: toastOut .3s ease forwards; }
-    .toast.success { background: #1e8449; color: #fff; }
-    .toast.error { background: #c0392b; color: #fff; }
-    .toast.info { background: var(--bark); color: var(--cream); }
-    @keyframes toastIn { from { opacity:0; transform:translateX(60px) } to { opacity:1; transform:translateX(0) } }
-    @keyframes toastOut { from { opacity:1; transform:translateX(0) } to { opacity:0; transform:translateX(60px) } }
+        .dog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 32px;
+            margin-bottom: 60px;
+        }
 
-    /* LAYOUT */
-    .page-wrapper { position: relative; z-index: 1; max-width: 1000px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+        .dog-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: var(--transition);
+            position: relative;
+        }
 
-    /* HEADER */
-    .page-header { text-align: center; margin-bottom: 2.4rem; animation: fadeUp .6s ease both; }
-    .page-eyebrow { display: inline-flex; align-items: center; gap: .5rem; background: linear-gradient(135deg, var(--teal-light), var(--teal-mid)); color: var(--teal); font-size: .72rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; padding: .35rem 1rem; border-radius: 100px; margin-bottom: 1rem; }
-    .page-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem,4vw,2.8rem); letter-spacing: -.03em; margin-bottom: .5rem; }
-    .page-header h1 em { font-style: italic; color: var(--teal); }
-    .page-header p { font-size: .92rem; color: #7a6a58; font-weight: 300; max-width: 500px; margin: 0 auto; line-height: 1.7; }
+        .dog-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
 
-    /* FILTERS */
-    .filter-row { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.6rem; flex-wrap: wrap; animation: fadeUp .65s ease both; }
-    .search-wrap { border: 2px solid var(--fog); border-radius: 14px; background: #fff; display: flex; align-items: center; padding: 0 1rem; flex: 1; transition: border-color .25s, box-shadow .25s; min-width: 200px; position: relative; }
-    .search-wrap:focus-within { border-color: var(--teal); box-shadow: 0 0 0 4px var(--teal-light); }
-    .search-icon { position: relative; left: 0; transform: none; color: #9a8a7a; margin-right: .2rem; }
-    .search-bar { border: none !important; padding: .75rem 0 !important; font-family: 'DM Sans', sans-serif; font-size: .92rem; width: 100%; color: var(--bark); background: transparent !important; box-shadow: none !important; }
-    .search-bar:focus { outline: none; }
+        .card-image {
+            width: 100%;
+            height: 240px;
+            position: relative;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
 
-    .filter-select { padding: .72rem 1rem; border: 2px solid var(--fog); border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: .85rem; background: #fff; color: var(--bark); cursor: pointer; transition: border-color .2s; }
-    .filter-select:focus { outline: none; border-color: var(--teal); }
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
 
-    /* AUTOCOMPLETE */
-    .autocomplete-wrapper { position: relative; width: 100%; flex: 1; }
-    .autocomplete-list {
-      position: absolute; top: calc(100% + 10px); left: -45px; right: -15px;
-      background: #fff; border: 1.5px solid var(--fog); border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(59,42,26,.12); z-index: 1000;
-      max-height: 250px; overflow-y: auto; display: none;
-    }
-    .autocomplete-list.show { display: block; animation: dropIn .2s ease; }
-    .autocomplete-item {
-      padding: .75rem 1rem; cursor: pointer; font-size: .88rem; color: var(--bark);
-      transition: background .15s; display: flex; align-items: center; gap: .6rem;
-    }
-    .autocomplete-item:hover { background: var(--teal-light); color: var(--teal); }
-    .autocomplete-item i { font-size: .8rem; opacity: .6; }
-    .autocomplete-no-results { padding: 1rem; font-size: .82rem; color: #9a8a7a; text-align: center; }
+        .dog-card:hover .card-image img {
+            transform: scale(1.1);
+        }
 
-    /* STATS BAR */
-    .stats-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.6rem; animation: fadeUp .7s ease both; }
-    .stats-count { font-size: .88rem; color: #7a6a58; }
-    .stats-count strong { color: var(--bark); font-weight: 600; }
-    .view-toggle { display: flex; gap: .3rem; background: #fff; border: 1.5px solid var(--fog); border-radius: 10px; padding: .2rem; }
-    .view-btn { padding: .4rem .7rem; border: none; background: none; border-radius: 8px; cursor: pointer; font-size: .9rem; transition: background .2s; }
-    .view-btn.active { background: var(--bark); color: var(--cream); }
+        .urgency-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #e74c3c;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+            z-index: 10;
+        }
 
-    /* CARDS GRID */
-    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.4rem; }
-    .cards-grid.list-view { grid-template-columns: 1fr; }
+        .card-content {
+            padding: 24px;
+        }
 
-    /* DOG CARD */
-    .dog-card { background: #fff; border: 1.5px solid var(--fog); border-radius: 20px; overflow: hidden; transition: transform .3s, box-shadow .3s; animation: fadeUp .5s ease both; cursor: pointer; }
-    .dog-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(59,42,26,.14); }
-    .dog-card-img { width: 100%; height: 200px; object-fit: cover; background: linear-gradient(135deg, #f0e8dc, #e8ddd0); display: flex; align-items: center; justify-content: center; font-size: 4rem; position: relative; }
-    .dog-card-img img { width: 100%; height: 100%; object-fit: cover; }
-    .dog-card-badge { position: absolute; top: .8rem; right: .8rem; background: var(--teal); color: #fff; font-size: .65rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; padding: .25rem .65rem; border-radius: 100px; }
-    .dog-card-badge.urgent { background: var(--rust); }
-    .dog-card-body { padding: 1.2rem 1.3rem; }
-    .dog-name { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--bark); margin-bottom: .25rem; }
-    .dog-breed-tag { display: inline-block; background: var(--teal-light); color: var(--teal); font-size: .72rem; font-weight: 500; padding: .2rem .65rem; border-radius: 100px; margin-bottom: .8rem; }
-    .dog-meta { display: flex; gap: 1rem; margin-bottom: .9rem; }
-    .dog-meta-item { display: flex; align-items: center; gap: .35rem; font-size: .78rem; color: #7a6a58; }
-    .dog-desc { font-size: .82rem; color: #7a6a58; line-height: 1.6; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .dog-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: .9rem; border-top: 1.5px solid var(--fog); }
-    .owner-mini { display: flex; align-items: center; gap: .5rem; }
-    .owner-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--sand), var(--rust)); display: flex; align-items: center; justify-content: center; font-size: .7rem; color: #fff; font-weight: 600; }
-    .owner-name { font-size: .78rem; color: #7a6a58; }
-    .contact-btn { display: inline-flex; align-items: center; gap: .4rem; padding: .45rem .9rem; background: var(--bark); color: var(--cream); border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: .78rem; font-weight: 500; cursor: pointer; transition: background .2s, transform .15s; text-decoration: none; }
-    .contact-btn:hover { background: var(--rust); transform: scale(1.03); }
+        .dog-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--text-main);
+        }
 
-    /* LIST VIEW CARD */
-    .cards-grid.list-view .dog-card { display: flex; flex-direction: row; }
-    .cards-grid.list-view .dog-card-img { width: 160px; height: auto; flex-shrink: 0; border-radius: 0; }
-    .cards-grid.list-view .dog-card-body { flex: 1; }
+        .dog-breed {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-    /* MODAL OVERLAY */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(30,20,10,.5); backdrop-filter: blur(6px); z-index: 500; display: none; align-items: center; justify-content: center; padding: 1.5rem; }
-    .modal-overlay.open { display: flex; animation: fadeIn .2s ease; }
-    @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-    .modal { background: #fff; border-radius: 24px; max-width: 560px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 30px 80px rgba(0,0,0,.25); animation: modalUp .3s cubic-bezier(0.34,1.4,0.64,1) both; }
-    @keyframes modalUp { from { opacity:0; transform:translateY(30px) scale(.97) } to { opacity:1; transform:translateY(0) scale(1) } }
-    .modal-header { padding: 1.8rem 1.8rem 1.2rem; border-bottom: 1.5px solid var(--fog); display: flex; align-items: flex-start; justify-content: space-between; }
-    .modal-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--bark); }
-    .modal-subtitle { font-size: .82rem; color: #9a8a7a; margin-top: .15rem; }
-    .modal-close { background: var(--fog); border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-size: .9rem; display: flex; align-items: center; justify-content: center; transition: background .2s; flex-shrink: 0; }
-    .modal-close:hover { background: #ddd; }
-    .modal-body { padding: 1.6rem 1.8rem; }
-    .modal-dog-header { display: flex; gap: 1.2rem; margin-bottom: 1.5rem; align-items: flex-start; }
-    .modal-dog-photo { width: 90px; height: 90px; border-radius: 16px; background: linear-gradient(135deg, var(--teal-light), var(--teal-mid)); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; overflow: hidden; flex-shrink: 0; }
-    .modal-dog-photo img { width: 100%; height: 100%; object-fit: cover; }
-    .modal-dog-info h2 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--bark); margin-bottom: .3rem; }
-    .modal-tags { display: flex; gap: .4rem; flex-wrap: wrap; }
-    .modal-tag { display: inline-block; padding: .2rem .6rem; border-radius: 100px; font-size: .7rem; font-weight: 500; }
-    .tag-teal { background: var(--teal-light); color: var(--teal); }
-    .tag-sand { background: #fdf3e3; color: var(--rust); }
-    .modal-section { margin-bottom: 1.3rem; }
-    .modal-section-title { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: #9a8a7a; margin-bottom: .7rem; }
-    .modal-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
-    .modal-detail-item { background: var(--cream); border-radius: 12px; padding: .7rem .9rem; }
-    .detail-label { font-size: .68rem; color: #9a8a7a; margin-bottom: .2rem; }
-    .detail-value { font-size: .88rem; font-weight: 500; color: var(--bark); }
-    .modal-desc { font-size: .88rem; color: #6a5a4a; line-height: 1.7; }
-    .contact-box { background: linear-gradient(135deg, var(--teal-light), var(--teal-mid)); border: 1.5px solid #80cbc4; border-radius: 16px; padding: 1.2rem 1.4rem; }
-    .contact-box-title { font-size: .8rem; font-weight: 600; color: var(--teal); margin-bottom: .75rem; text-transform: uppercase; letter-spacing: .08em; }
-    .contact-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-    .contact-info { display: flex; align-items: center; gap: .6rem; }
-    .contact-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--teal); display: flex; align-items: center; justify-content: center; color: #fff; font-size: .85rem; font-weight: 600; flex-shrink: 0; }
-    .contact-owner-name { font-size: .9rem; font-weight: 600; color: var(--bark); }
-    .contact-email { font-size: .78rem; color: var(--teal); }
-    .btn-email { display: inline-flex; align-items: center; gap: .45rem; padding: .6rem 1.2rem; background: var(--teal); color: #fff; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: .82rem; font-weight: 500; cursor: pointer; transition: background .2s, transform .15s; text-decoration: none; }
-    .btn-email:hover { background: #00695c; transform: scale(1.03); }
+        .dog-info-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
 
-    /* EMPTY */
-    .empty-state { text-align: center; padding: 4rem 1rem; color: #9a8a7a; animation: fadeUp .4s ease both; }
-    .empty-icon { font-size: 3.5rem; margin-bottom: 1rem; }
-    .empty-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--bark); margin-bottom: .5rem; }
+        .info-tag {
+            background: var(--bg-main);
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+        }
 
-    @keyframes fadeUp { from { opacity:0; transform:translateY(18px) } to { opacity:1; transform:translateY(0) } }
-    @media (max-width: 600px) {
-      .navbar { padding: 0 1rem; }
-      .page-wrapper { padding: 2rem 1rem 3rem; }
-      .modal-detail-grid { grid-template-columns: 1fr; }
-      .cards-grid.list-view .dog-card { flex-direction: column; }
-      .cards-grid.list-view .dog-card-img { width: 100%; height: 180px; }
-    }
-  </style>
+        .card-footer {
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .owner-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .owner-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .contact-btn {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        #emptyState {
+            text-align: center;
+            padding: 60px;
+            display: none;
+        }
+    </style>
 </head>
-<body>
+<body style="padding-top: 100px;">
 
-<!-- NAVBAR -->
-<nav class="navbar">
-  <a class="nav-brand" href="home_page.html">
-    <div class="logo-paw"><i class="fa-solid fa-paw"></i></div>
-    <span class="logo-text">Paw<span>Detect</span></span>
-  </a>
-    <div class="nav-right">
-      <div class="nav-tabs">
-        <a href="detect.html" class="nav-tab">Detect Breed</a>
-        <a href="adoption_module.html" class="nav-tab active">Adopt a Dog</a>
-        <a href="list_your_dog.html" class="nav-tab">List of Dog</a>
-      </div>
-      <div class="nav-divider"></div>
-      <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()" title="My Account"><i class="fa-solid fa-user"></i></button>
-      <div class="profile-dropdown" id="profileDropdown">
-        <div class="dropdown-header">
-            <div class="uname" id="ddName">…</div>
-            <div class="uemail" id="ddEmail"></div>
+    <!-- Reuse the same header structure -->
+    <header id="mainHeader">
+        <div class="nav-container">
+            <a href="home_page.html" class="nav-brand">
+                <div class="logo-paw"><i class="fa-solid fa-paw"></i></div>
+                <div class="logo-text">Paw<span>Detect</span></div>
+            </a>
+
+            <div class="nav-right">
+                <nav class="nav-tabs">
+                    <a href="detect.html" class="nav-tab">Detect Breed</a>
+                    <a href="adoption_module.html" class="nav-tab active">Adopt a Dog</a>
+                    <a href="list_your_dog.html" class="nav-tab">My Listings</a>
+                </nav>
+
+                <div id="userProfile" style="position: relative;">
+                    <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()">
+                        <i class="fa-solid fa-user"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="dropdown-header">
+                            <div class="uname" id="ddName">User</div>
+                            <div class="uemail" id="ddEmail">email@example.com</div>
+                        </div>
+                        <button class="dropdown-item" onclick="openProfile()">
+                            <i class="fa-solid fa-circle-user"></i> My Profile
+                        </button>
+                        <hr style="border: none; border-top: 1px solid rgba(0,0,0,0.06);">
+                        <button class="dropdown-item logout" onclick="logout()">
+                            <i class="fa-solid fa-right-from-bracket"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <button class="dropdown-item" onclick="openProfile()"><i class="fa-solid fa-user"></i> My Profile</button>
-        <div class="dropdown-divider"></div>
-        <button class="dropdown-item logout" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
-      </div>
+    </header>
+
+    <div class="container">
+        <div class="scroll-reveal active" style="text-align: center; margin-bottom: 60px;">
+            <h1 style="font-size: 3rem; margin-bottom: 12px;">Adopt a <span>Friend</span></h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+                Giving a home to a dog is the most rewarding thing you can do. Browse our available dogs below.
+            </p>
+        </div>
+
+        <div class="filter-section scroll-reveal active">
+            <div class="filter-group">
+                <label>Search</label>
+                <div style="position: relative;">
+                    <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                    <input type="text" id="searchInput" class="select-control" style="padding-left: 44px;" placeholder="Name or breed..." oninput="filterDogs()">
+                </div>
+            </div>
+            <div class="filter-group">
+                <label>Gender</label>
+                <select id="genderFilter" class="select-control" onchange="filterDogs()">
+                    <option value="all">All Genders</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Size</label>
+                <select id="sizeFilter" class="select-control" onchange="filterDogs()">
+                    <option value="all">All Sizes</option>
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                </select>
+            </div>
+            <button class="btn btn-outline" style="height: 42px;" onclick="resetFilters()">Reset</button>
+        </div>
+
+        <div id="dogGrid" class="dog-grid scroll-reveal active">
+            <!-- Dogs will be loaded here -->
+        </div>
+
+        <div id="emptyState" class="scroll-reveal">
+            <i class="fa-solid fa-dog" style="font-size: 4rem; color: var(--border-color); margin-bottom: 24px;"></i>
+            <h3>No dogs match your criteria</h3>
+            <p style="color: var(--text-muted);">Try adjusting your filters or search terms.</p>
+        </div>
     </div>
-  </nav>
 
-<div id="toastContainer"></div>
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 PawDetect — Empowering Dog Lovers Worldwide</p>
+            <p style="margin-top: 1rem; font-size: 0.8rem;">
+                Made with <i class="fa-solid fa-heart" style="color: #ff8c42;"></i> for the Dog Community
+            </p>
+        </div>
+    </footer>
 
-<!-- MODAL -->
-<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
-  <div class="modal" id="modal">
-    <div class="modal-header">
-      <div>
-        <div class="modal-title" id="modalTitle">Dog Name</div>
-        <div class="modal-subtitle" id="modalSubtitle">Breed • Age</div>
-      </div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
-    <div class="modal-body" id="modalBody"></div>
-  </div>
-</div>
+    <script>
+        // Init Auth
+        const email = sessionStorage.getItem('pawdetect_user_email');
+        const name = sessionStorage.getItem('pawdetect_user_name');
+        if (email) {
+            document.getElementById('ddName').textContent = name || 'User';
+            document.getElementById('ddEmail').textContent = email;
+        } else {
+            window.location.href = 'home_page.html';
+        }
 
-<div class="page-wrapper">
+        function toggleDropdown() {
+            document.getElementById('profileDropdown').classList.toggle('open');
+        }
 
-  <!-- HEADER -->
-  <div class="page-header">
-    <div class="page-eyebrow"><i class="fa-solid fa-house-chimney"></i> Find a Forever Home</div>
-    <h1>Adopt a <em>Dog</em></h1>
-    <p>Browse dogs looking for loving homes. Each listing is posted by a verified owner. Contact them directly to begin the adoption journey.</p>
-  </div>
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'home_page.html';
+        }
 
-  <!-- FILTERS -->
-  <div class="filter-row">
-    <div class="search-wrap">
-      <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
-      <div class="autocomplete-wrapper">
-        <input type="text" class="search-bar" id="searchInput" placeholder="Search by name, breed…" oninput="handleSearchInput(this)" onfocus="handleSearchInput(this)">
-        <div class="autocomplete-list" id="breedResults"></div>
-      </div>
-    </div>
-    <select class="filter-select" id="ageFilter" onchange="filterCards()">
-      <option value="">All Ages</option>
-      <option value="puppy">Puppy (0–1 yr)</option>
-      <option value="young">Young (1–3 yrs)</option>
-      <option value="adult">Adult (3–8 yrs)</option>
-      <option value="senior">Senior (8+ yrs)</option>
-    </select>
-    <select class="filter-select" id="sizeFilter" onchange="filterCards()">
-      <option value="">All Sizes</option>
-      <option value="small">Small</option>
-      <option value="medium">Medium</option>
-      <option value="large">Large</option>
-    </select>
-    <select class="filter-select" id="genderFilter" onchange="filterCards()">
-      <option value="">All Genders</option>
-      <option value="male">Male</option>
-      <option value="female">Female</option>
-    </select>
-  </div>
+        function openProfile() { window.location.href = 'detect.html?openProfile=1'; }
 
-  <!-- STATS BAR -->
-  <div class="stats-bar">
-    <div class="stats-count"><strong id="visibleCount">6</strong> dogs available for adoption</div>
-    <div class="view-toggle">
-      <button class="view-btn active" id="gridViewBtn" onclick="setView('grid')"><i class="fa-solid fa-grip"></i></button>
-      <button class="view-btn" id="listViewBtn" onclick="setView('list')"><i class="fa-solid fa-list"></i></button>
-    </div>
-  </div>
+        let allDogs = [];
 
-  <!-- CARDS -->
-  <div class="cards-grid" id="cardsGrid"></div>
+        async function fetchDogs() {
+            try {
+                const res = await fetch('../backend/api/profile.php?action=get_public_listings');
+                const data = await res.json();
+                if (data.success) {
+                    allDogs = data.listings;
+                    renderDogs(allDogs);
+                }
+            } catch (e) {
+                console.error('Failed to fetch dogs', e);
+            }
+        }
 
-  <div class="empty-state" id="emptyState" style="display:none;">
-    <div class="empty-icon"><i class="fa-solid fa-paw"></i></div>
-    <div class="empty-title" id="emptyTitle">No dogs listed yet</div>
-    <p id="emptyMsg">Be the first to <a href="list_your_dog.html" style="color:var(--teal);font-weight:600;">list a dog for adoption</a>.</p>
-  </div>
+        function renderDogs(dogs) {
+            const grid = document.getElementById('dogGrid');
+            const empty = document.getElementById('emptyState');
+            
+            if (dogs.length === 0) {
+                grid.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
 
-</div>
+            grid.style.display = 'grid';
+            empty.style.display = 'none';
 
-  <script>
-    function toggleDropdown() { document.getElementById('profileDropdown').classList.toggle('open'); }
-    window.addEventListener('click', e => {
-      if (!e.target.closest('#profileBtn') && !e.target.closest('#profileDropdown')) {
-        const dd = document.getElementById('profileDropdown');
-        if (dd) dd.classList.remove('open');
-      }
-    });
+            grid.innerHTML = dogs.map((dog, idx) => `
+                <div class="dog-card scroll-reveal active" style="animation-delay: ${idx * 0.1}s">
+                    ${dog.is_urgent == 1 ? '<div class="urgency-badge">URGENT</div>' : ''}
+                    <div class="card-image">
+                        ${dog.photo_path ? `<img src="../${dog.photo_path}" alt="${dog.name}">` : `<i class="fa-solid fa-dog" style="font-size: 3rem; color: white;"></i>`}
+                    </div>
+                    <div class="card-content">
+                        <div class="dog-name">${dog.name}</div>
+                        <div class="dog-breed"><i class="fa-solid fa-paw"></i> ${dog.breed}</div>
+                        <div class="dog-info-tags">
+                            <span class="info-tag">${dog.age_label}</span>
+                            <span class="info-tag">${dog.gender}</span>
+                            <span class="info-tag">${dog.size}</span>
+                            <span class="info-tag"><i class="fa-solid fa-location-dot"></i> ${dog.location}</span>
+                        </div>
+                        <div class="card-footer">
+                            <div class="owner-info">
+                                <div class="owner-avatar">${dog.owner_name ? dog.owner_name.charAt(0).toUpperCase() : 'U'}</div>
+                                <div style="font-size: 0.8rem; font-weight: 600;">${dog.owner_name || 'User'}</div>
+                            </div>
+                            <a href="mailto:${dog.owner_email}?subject=Interested in adopting ${dog.name}" class="btn btn-primary contact-btn">
+                                <i class="fa-solid fa-envelope"></i> Contact
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-    function openProfile() { window.location.href = 'detect.html?openProfile=1'; }
-    function doLogout() {
-      sessionStorage.clear();
-      fetch('../backend/api/logout.php').finally(() => {
-        window.location.href = 'home_page.html';
-      });
-    }
+        function filterDogs() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const gender = document.getElementById('genderFilter').value.toLowerCase();
+            const size = document.getElementById('sizeFilter').value.toLowerCase();
 
-    // Populate profile instantly
-    const userEmail = sessionStorage.getItem('pawdetect_user_email');
-    const userName = sessionStorage.getItem('pawdetect_user_name');
-    if (userEmail) {
-      document.getElementById('ddName').textContent = userName || 'User';
-      document.getElementById('ddEmail').textContent = userEmail;
-    } else {
-      // Fallback/Verify with API
-      fetch('../backend/api/login.php?check=1')
-        .then(r => r.json())
-        .then(data => {
-          if (data.logged_in) {
-            document.getElementById('ddName').textContent = data.user.full_name;
-            document.getElementById('ddEmail').textContent = data.user.email;
-            sessionStorage.setItem('pawdetect_user_email', data.user.email);
-            sessionStorage.setItem('pawdetect_user_name', data.user.full_name);
-          } else {
-             window.location.href = 'home_page.html';
-          }
+            const filtered = allDogs.filter(dog => {
+                const matchesSearch = dog.name.toLowerCase().includes(search) || dog.breed.toLowerCase().includes(search);
+                const matchesGender = gender === 'all' || dog.gender.toLowerCase() === gender;
+                const matchesSize = size === 'all' || dog.size.toLowerCase() === size;
+                return matchesSearch && matchesGender && matchesSize;
+            });
+
+            renderDogs(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('genderFilter').value = 'all';
+            document.getElementById('sizeFilter').value = 'all';
+            renderDogs(allDogs);
+        }
+
+        // Header Scroll Effect
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('mainHeader');
+            if (window.scrollY > 50) header.classList.add('scrolled');
+            else header.classList.remove('scrolled');
         });
-    }
-  let dogs = [];
-  let filtered = [];
 
-  async function fetchListings() {
-    try {
-      const res = await fetch('../backend/api/profile.php?action=get_public_listings');
-      const data = await res.json();
-      if (data.success) {
-        dogs = data.listings;
-        filtered = [...dogs];
-        filterCards();
-      } else {
-        showToast(data.message || 'Error loading listings.', 'error');
-      }
-    } catch (e) {
-      showToast('Network error while loading dogs.', 'error');
-    }
-  }
-
-  function getEmoji(breed) {
-    if (!breed) return '<i class="fa-solid fa-dog"></i>';
-    const b = breed.toLowerCase();
-    if (b.includes('golden')) return '<i class="fa-solid fa-dog"></i>';
-    if (b.includes('labrador') || b.includes('lab')) return '<i class="fa-solid fa-dog"></i>';
-    if (b.includes('shepherd')) return '<i class="fa-solid fa-dog"></i>';
-    if (b.includes('beagle')) return '<i class="fa-solid fa-dog"></i>';
-    if (b.includes('pomeranian')) return '<i class="fa-solid fa-dog"></i>';
-    if (b.includes('husky')) return '<i class="fa-solid fa-dog"></i>';
-    if (b.includes('poodle')) return '<i class="fa-solid fa-dog"></i>';
-    if (b.includes('indie') || b.includes('street')) return '<i class="fa-solid fa-paw"></i>';
-    return '<i class="fa-solid fa-dog"></i>';
-  }
-
-  function getInitials(name) {
-    if (!name) return '??';
-    return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-  }
-
-  let currentView = 'grid';
-  let filtered = [...dogs];
-
-  function renderCards(list) {
-    const grid = document.getElementById('cardsGrid');
-    const empty = document.getElementById('emptyState');
-    document.getElementById('visibleCount').textContent = list.length;
-
-    if (list.length === 0) {
-      grid.innerHTML = '';
-      empty.style.display = 'block';
-      const isFiltered = document.getElementById('searchInput').value ||
-                         document.getElementById('ageFilter').value ||
-                         document.getElementById('sizeFilter').value ||
-                         document.getElementById('genderFilter').value;
-      if (isFiltered) {
-        document.getElementById('emptyTitle').textContent = 'No dogs match your filters';
-        document.getElementById('emptyMsg').innerHTML = 'Try adjusting or clearing your filters.';
-      } else if (dogs.length === 0) {
-        document.getElementById('emptyTitle').textContent = 'No dogs listed yet';
-        document.getElementById('emptyMsg').innerHTML = 'Be the first to <a href="list_your_dog.html" style="color:var(--teal);font-weight:600;">list a dog for adoption</a>.';
-      }
-      return;
-    }
-    empty.style.display = 'none';
-
-    grid.innerHTML = list.map((d, i) => {
-      const photo = d.photo_path ? `../${d.photo_path}` : null;
-      const urgent = parseInt(d.is_urgent) === 1;
-      return `
-        <div class="dog-card" style="animation-delay:${i * 0.06}s" onclick="openModal(${d.id})">
-          <div class="dog-card-img">
-            ${photo ? `<img src="${photo}" alt="${d.name}">` : `<span style="font-size:4rem">${getEmoji(d.breed)}</span>`}
-            <span class="dog-card-badge ${urgent ? 'urgent' : ''}">${urgent ? '<i class="fa-solid fa-circle" style="color: #f44336;"></i> Urgent' : '<i class="fa-solid fa-circle-check"></i> Available'}</span>
-          </div>
-          <div class="dog-card-body">
-            <div class="dog-name">${d.name}</div>
-            <span class="dog-breed-tag">${d.breed}</span>
-            <div class="dog-meta">
-              <span class="dog-meta-item"><i class="fa-solid fa-cake-candles"></i> ${d.age_label}</span>
-              <span class="dog-meta-item">${d.gender === 'Male' ? '<i class="fa-solid fa-mars"></i>' : '<i class="fa-solid fa-venus"></i>'} ${d.gender}</span>
-              <span class="dog-meta-item"><i class="fa-solid fa-location-dot"></i> ${d.location}</span>
-            </div>
-            <div class="dog-desc">${d.description}</div>
-            <div class="dog-card-footer">
-              <div class="owner-mini">
-                <div class="owner-avatar">${getInitials(d.owner_name)}</div>
-                <span class="owner-name">${d.owner_name}</span>
-              </div>
-              <button class="contact-btn" onclick="event.stopPropagation(); contactOwner('${d.owner_email}', '${d.name}')"><i class="fa-solid fa-envelope"></i> Contact</button>
-            </div>
-          </div>
-        </div>`;
-    }).join('');
-  }
-
-  // --- Breed Autocomplete ---
-  const BREED_LIST = [
-    "Australian Shepherd", "Beagle", "Border Collie", "Boxer", "Bulldog", "Chihuahua", 
-    "Cocker Spaniel", "Dachshund", "Doberman", "French Bulldog", "German Shepherd", 
-    "Golden Retriever", "Great Dane", "Labrador Retriever", "Maltese", "Pit Bull Terrier", 
-    "Pomeranian", "Poodle", "Rottweiler", "Saint Bernard", "Siberian Husky", "Shih Tzu", "Yorkshire Terrier"
-  ];
-
-  function handleSearchInput(input) {
-    const val = input.value.trim().toLowerCase();
-    const results = document.getElementById('breedResults');
-    results.innerHTML = '';
-    
-    if (!val) {
-      results.classList.remove('show');
-      filterCards();
-      return;
-    }
-
-    const matches = BREED_LIST.filter(b => b.toLowerCase().includes(val));
-    
-    if (matches.length > 0) {
-      matches.forEach(m => {
-        const div = document.createElement('div');
-        div.className = 'autocomplete-item';
-        div.innerHTML = `<i class="fa-solid fa-dog"></i> ${m}`;
-        div.onclick = () => selectBreed(m);
-        results.appendChild(div);
-      });
-      results.classList.add('show');
-    } else {
-      results.classList.remove('show');
-    }
-    filterCards();
-  }
-
-  function selectBreed(name) {
-    document.getElementById('searchInput').value = name;
-    document.getElementById('breedResults').classList.remove('show');
-    filterCards();
-  }
-
-  window.addEventListener('click', e => {
-    const wrap = e.target.closest('.autocomplete-wrapper');
-    if (!wrap) {
-      const dd = document.getElementById('breedResults');
-      if (dd) dd.classList.remove('show');
-    }
-  });
-
-  function filterCards() {
-    const q = document.getElementById('searchInput').value.toLowerCase();
-    const age = document.getElementById('ageFilter').value;
-    const size = document.getElementById('sizeFilter').value.toLowerCase();
-    const gender = document.getElementById('genderFilter').value.toLowerCase();
-
-    filtered = dogs.filter(d => {
-      const matchQ = !q || d.name.toLowerCase().includes(q) || d.breed.toLowerCase().includes(q);
-      const matchAge = !age || d.age_cat === age;
-      const matchSize = !size || d.size.toLowerCase() === size;
-      const matchGender = !gender || d.gender.toLowerCase() === gender;
-      return matchQ && matchAge && matchSize && matchGender;
-    });
-    renderCards(filtered);
-  }
-
-  function setView(view) {
-    currentView = view;
-    const grid = document.getElementById('cardsGrid');
-    document.getElementById('gridViewBtn').classList.toggle('active', view === 'grid');
-    document.getElementById('listViewBtn').classList.toggle('active', view === 'list');
-    grid.classList.toggle('list-view', view === 'list');
-  }
-
-  function openModal(id) {
-    const d = dogs.find(x => x.id == id);
-    if (!d) return;
-    const photo = d.photo_path ? `../${d.photo_path}` : null;
-    const urgent = parseInt(d.is_urgent) === 1;
-    
-    // Parse traits from JSON
-    let traits = [];
-    try { traits = JSON.parse(d.traits || '[]'); } catch(e) { traits = []; }
-    const hasTrait = (t) => {
-        // Handle both simple strings and objects if needed
-        return traits.includes(t);
-    };
-
-    document.getElementById('modalTitle').textContent = d.name;
-    document.getElementById('modalSubtitle').textContent = `${d.breed} • ${d.age_label} • ${d.gender}`;
-    document.getElementById('modalBody').innerHTML = `
-      <div class="modal-dog-header">
-        <div class="modal-dog-photo">
-          ${photo ? `<img src="${photo}" alt="${d.name}">` : `<span>${getEmoji(d.breed)}</span>`}
-        </div>
-        <div class="modal-dog-info">
-          <h2>${d.name}</h2>
-          <div class="modal-tags">
-            <span class="modal-tag tag-teal">${d.breed}</span>
-            <span class="modal-tag tag-sand">${d.age_label}</span>
-            <span class="modal-tag tag-teal">${d.size}</span>
-            ${hasTrait('Vaccinated') ? '<span class="modal-tag" style="background:#e8f5e9;color:#2e7d32"><i class="fa-solid fa-syringe"></i> Vaccinated</span>' : ''}
-            ${hasTrait('Neutered') ? '<span class="modal-tag" style="background:#fce4ec;color:#c62828"><i class="fa-solid fa-scissors"></i> Neutered</span>' : ''}
-            ${hasTrait('Kids') ? '<span class="modal-tag" style="background:#e3f2fd;color:#1565c0"><i class="fa-solid fa-child"></i> Kid Friendly</span>' : ''}
-          </div>
-        </div>
-      </div>
-
-      <div class="modal-section">
-        <div class="modal-section-title">Details</div>
-        <div class="modal-detail-grid">
-          <div class="modal-detail-item"><div class="detail-label">Gender</div><div class="detail-value">${d.gender === 'Male' ? '<i class="fa-solid fa-mars"></i> Male' : '<i class="fa-solid fa-venus"></i> Female'}</div></div>
-          <div class="modal-detail-item"><div class="detail-label">Weight</div><div class="detail-value">${d.weight || 'Unknown'}</div></div>
-          <div class="modal-detail-item"><div class="detail-label">Good with Kids</div><div class="detail-value">${hasTrait('Kids') ? '<i class="fa-solid fa-circle-check"></i> Yes' : '<i class="fa-solid fa-circle-info"></i> Not specified'}</div></div>
-          <div class="modal-detail-item"><div class="detail-label">Good with Pets</div><div class="detail-value">${hasTrait('Pets') ? '<i class="fa-solid fa-circle-check"></i> Yes' : '<i class="fa-solid fa-circle-info"></i> Not specified'}</div></div>
-          <div class="modal-detail-item"><div class="detail-label">Location</div><div class="detail-value"><i class="fa-solid fa-location-dot"></i> ${d.location}</div></div>
-          <div class="modal-detail-item"><div class="detail-label">Status</div><div class="detail-value">${urgent ? '<i class="fa-solid fa-circle" style="color: #f44336;"></i> Urgent' : '<i class="fa-solid fa-circle" style="color: #4caf50;"></i> Available'}</div></div>
-        </div>
-      </div>
-
-      <div class="modal-section">
-        <div class="modal-section-title">About ${d.name}</div>
-        <div class="modal-desc">${d.description}</div>
-        ${d.special_needs ? `<div style="margin-top:1rem;padding:.8rem;background:#fff5f5;border-radius:12px;font-size:.82rem;color:#c62828;border:1px solid #ffcdd2"><i class="fa-solid fa-circle-exclamation"></i> <strong>Special Needs:</strong> ${d.special_needs}</div>` : ''}
-      </div>
-
-      <div class="contact-box">
-        <div class="contact-box-title">📬 Contact Owner</div>
-        <div class="contact-row">
-          <div class="contact-info">
-            <div class="contact-avatar">${getInitials(d.owner_name)}</div>
-            <div>
-              <div class="contact-owner-name">${d.owner_name}</div>
-              <div class="contact-email">${d.owner_email}</div>
-            </div>
-          </div>
-          <a class="btn-email" href="mailto:${d.owner_email}?subject=Adoption Enquiry — ${d.name}&body=Hi ${d.owner_name.split(' ')[0]},%0A%0AI saw ${d.name}'s listing on PawDetect and I'm interested in adoption. Could we connect?%0A%0AThank you!">
-            <i class="fa-solid fa-envelope"></i> Send Email
-          </a>
-        </div>
-      </div>
-    `;
-    document.getElementById('modalOverlay').classList.add('open');
-  }
-
-  function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
-  function closeModalOutside(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
-
-  function contactOwner(email, name) {
-    window.location.href = `mailto:${email}?subject=Adoption Enquiry — ${name}&body=Hi,%0A%0AI saw ${name}'s listing on PawDetect and I'm interested in adoption. Could we connect?%0A%0AThank you!`;
-    showToast('Opening email client…', 'info');
-  }
-
-  function showToast(msg, type='info', ms=3000) {
-    const t = document.createElement('div');
-    t.className = `toast ${type}`;
-    const icons = { success:'<i class="fa-solid fa-circle-check"></i>', error:'❌', info:'<i class="fa-solid fa-circle-info"></i>' };
-    t.innerHTML = `<span>${icons[type]||'<i class="fa-solid fa-circle-info"></i>'}</span><span>${msg}</span>`;
-    document.getElementById('toastContainer').appendChild(t);
-    setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 400); }, ms);
-  }
-
-  // Init — fetch listings from database
-  fetchListings();
-</script>
+        fetchDogs();
+    </script>
 </body>
 </html>
-
-

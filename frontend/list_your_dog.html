@@ -1,896 +1,451 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PawDetect — List Your Dog for Adoption</title>
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" crossorigin="anonymous">
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PawDetect — List Your Dog for Adoption</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --cream: #f5f0e8;
-      --bark: #3b2a1a;
-      --moss: #4a6741;
-      --sand: #c9a96e;
-      --rust: #b55a2a;
-      --fog: #e8e0d4;
-      --leaf: #7a9e6e;
-      --teal: #00796b;
-      --teal-light: #e0f2f1;
-      --teal-mid: #b2dfdb;
-    }
-    body {
-      background-color: var(--cream);
-      font-family: 'DM Sans', sans-serif;
-      color: var(--bark); min-height: 100vh; overflow-x: hidden;
-    }
-    body::before {
-      content: ''; position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none; z-index: 0;
-    }
-
-    /* NAVBAR */
-    .navbar { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,.92); backdrop-filter: blur(12px); border-bottom: 1.5px solid var(--fog); padding: 0 2.5rem; display: flex; align-items: center; justify-content: space-between; height: 64px; box-shadow: 0 2px 12px rgba(59,42,26,.07); }
-    .nav-brand { display: flex; align-items: center; gap: .65rem; text-decoration: none; color: var(--bark); }
-    .logo-paw { width: 36px; height: 36px; background: var(--bark); border-radius: 50% 50% 50% 20%; display: flex; align-items: center; justify-content: center; color: var(--cream); font-size: 1.1rem; }
-    .logo-text { font-family: 'Playfair Display', serif; font-size: 1.45rem; font-weight: 700; letter-spacing: -.02em; }
-    .logo-text span { color: var(--rust); }
-    .nav-btn { display: inline-flex; align-items: center; gap: .5rem; text-decoration: none; color: var(--bark); font-size: .85rem; font-weight: 500; padding: .5rem 1.1rem; background: #fff; border: 1.5px solid var(--fog); border-radius: 10px; transition: all .2s; }
-    .nav-btn:hover { border-color: var(--sand); background: var(--cream); }
-    .nav-actions { display: flex; align-items: center; gap: .5rem; }
-    .nav-right { display: flex; align-items: center; gap: .5rem; position: relative; }
-
-    /* NAV ICON BUTTONS */
-    /* NAV TABS */
-    .nav-tabs { display: flex; gap: 1.5rem; margin-right: 1.2rem; }
-    .nav-tab {
-      text-decoration: none; color: var(--bark); font-size: 0.88rem; font-weight: 600;
-      padding: 0.5rem 0; position: relative; transition: color 0.2s; white-space: nowrap;
-    }
-    .nav-tab:hover { color: var(--rust); }
-    .nav-tab::after {
-      content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px;
-      background: var(--rust); transition: width 0.3s ease; border-radius: 2px;
-    }
-    .nav-tab:hover::after, .nav-tab.active::after { width: 100%; }
-    .nav-tab.active { color: var(--rust); }
-    .nav-divider { width: 1px; height: 26px; background: var(--fog); flex-shrink: 0; }
-
-    /* PROFILE BTN */
-    .profile-btn {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--rust), var(--sand));
-      border: none; cursor: pointer; color: #fff; font-size: 1.1rem;
-      display: flex; align-items: center; justify-content: center;
-      transition: box-shadow .2s, transform .2s;
-      box-shadow: 0 2px 8px rgba(181,90,42,.3);
-    }
-    .profile-btn:hover { transform: scale(1.07); box-shadow: 0 4px 14px rgba(181,90,42,.4); }
-    .profile-dropdown {
-      position: absolute; top: calc(100% + 10px); right: 2.5rem;
-      background: #fff; border: 1.5px solid var(--fog); border-radius: 16px;
-      min-width: 200px; box-shadow: 0 12px 40px rgba(59,42,26,.14);
-      overflow: hidden; display: none; z-index: 200;
-      text-align: left;
-    }
-    .profile-dropdown.open { display: block; animation: dropIn .2s ease; }
-    @keyframes dropIn { from { opacity:0; transform:translateY(-8px) } to { opacity:1; transform:translateY(0) } }
-    .dropdown-header { padding: 14px 16px 10px; border-bottom: 1px solid var(--fog); text-align: left; }
-    .dropdown-header .uname { font-weight: 500; font-size: .9rem; color: var(--bark); }
-    .dropdown-header .uemail { font-size: .75rem; color: #9a8878; margin-top: 2px; }
-    .dropdown-item {
-      display: flex; align-items: center; gap: 10px; padding: 12px 16px;
-      font-size: .88rem; color: var(--bark); cursor: pointer;
-      transition: background .15s; width: 100%; border: none; background: none;
-      font-family: 'DM Sans', sans-serif; text-decoration: none;
-    }
-    .dropdown-item:hover { background: var(--cream); }
-    .dropdown-item.logout { color: #c0392b; }
-    .dropdown-item.logout:hover { background: #fdf0ee; }
-    .dropdown-divider { height: 1px; background: var(--fog); }
-
-    /* TOAST */
-    #toastContainer { position: fixed; top: 80px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
-    .toast { padding: 13px 18px; border-radius: 14px; font-size: .86rem; font-weight: 500; box-shadow: 0 8px 30px rgba(0,0,0,.15); max-width: 300px; display: flex; align-items: center; gap: 10px; animation: toastIn .35s cubic-bezier(0.34,1.56,0.64,1) both; }
-    .toast.hide { animation: toastOut .3s ease forwards; }
-    .toast.success { background: #1e8449; color: #fff; }
-    .toast.error { background: #c0392b; color: #fff; }
-    .toast.info { background: var(--bark); color: var(--cream); }
-    @keyframes toastIn { from { opacity:0; transform:translateX(60px) } to { opacity:1; transform:translateX(0) } }
-    @keyframes toastOut { from { opacity:1; transform:translateX(0) } to { opacity:0; transform:translateX(60px) } }
-
-    /* LAYOUT */
-    .page-wrapper { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; padding: 2.5rem 2rem 5rem; }
-
-    /* HEADER */
-    .page-header { text-align: center; margin-bottom: 2.4rem; animation: fadeUp .6s ease both; }
-    .page-eyebrow { display: inline-flex; align-items: center; gap: .5rem; background: linear-gradient(135deg, var(--teal-light), var(--teal-mid)); color: var(--teal); font-size: .72rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; padding: .35rem 1rem; border-radius: 100px; margin-bottom: 1rem; }
-    .page-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem,4vw,2.6rem); letter-spacing: -.03em; margin-bottom: .5rem; }
-    .page-header h1 em { font-style: italic; color: var(--teal); }
-    .page-header p { font-size: .92rem; color: #7a6a58; font-weight: 300; max-width: 460px; margin: 0 auto; line-height: 1.7; }
-
-    /* PROGRESS */
-    .progress-track { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 2.5rem; animation: fadeUp .65s ease both; }
-    .step-node { display: flex; flex-direction: column; align-items: center; gap: .3rem; flex: 1; max-width: 120px; cursor: default; }
-    .step-circle { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--fog); background: #fff; display: flex; align-items: center; justify-content: center; font-size: .8rem; font-weight: 600; color: #9a8a7a; transition: all .3s; }
-    .step-node.active .step-circle { background: var(--teal); border-color: var(--teal); color: #fff; box-shadow: 0 0 0 4px var(--teal-light); }
-    .step-node.done .step-circle { background: #1e8449; border-color: #1e8449; color: #fff; }
-    .step-label { font-size: .68rem; color: #9a8a7a; text-align: center; font-weight: 400; }
-    .step-node.active .step-label { color: var(--teal); font-weight: 600; }
-    .step-connector { flex: 1; height: 2px; background: var(--fog); max-width: 60px; margin-bottom: 16px; }
-    .step-connector.done { background: #1e8449; }
-
-    /* FORM CARD */
-    .form-card { background: #fff; border: 1.5px solid var(--fog); border-radius: 24px; padding: 2rem 2.2rem; margin-bottom: 1.2rem; box-shadow: 0 4px 20px rgba(59,42,26,.06); animation: fadeUp .7s ease both; }
-    .form-card-title { display: flex; align-items: center; gap: .7rem; margin-bottom: 1.6rem; }
-    .form-card-icon { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, var(--teal-light), var(--teal-mid)); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
-    .form-card-title h2 { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--bark); }
-    .form-card-title p { font-size: .75rem; color: #9a8a7a; margin-top: .1rem; }
-
-    /* PHOTO UPLOAD */
-    .photo-upload-area {
-      border: 2px dashed var(--fog); border-radius: 18px; padding: 2.4rem 1.5rem;
-      text-align: center; cursor: pointer; transition: border-color .2s, background .2s;
-      background: #fafaf8; position: relative; overflow: hidden;
-    }
-    .photo-upload-area:hover, .photo-upload-area.dragover { border-color: var(--teal); background: var(--teal-light); }
-    .photo-upload-area.has-photo { border-color: var(--teal); border-style: solid; padding: 0; height: 240px; }
-    .photo-preview { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; display: none; }
-    .photo-upload-area.has-photo .photo-preview { display: block; }
-    .upload-placeholder { pointer-events: none; }
-    .photo-upload-area.has-photo .upload-placeholder { display: none; }
-    .upload-icon { font-size: 2.5rem; margin-bottom: .6rem; }
-    .upload-title { font-size: .92rem; font-weight: 600; color: var(--bark); margin-bottom: .3rem; }
-    .upload-sub { font-size: .78rem; color: #9a8a7a; }
-    .upload-badge { display: inline-block; margin-top: .7rem; background: var(--teal-light); color: var(--teal); font-size: .72rem; padding: .2rem .65rem; border-radius: 100px; }
-    #photoInput { display: none; }
-    .photo-remove { position: absolute; top: .6rem; right: .6rem; background: rgba(0,0,0,.55); border: none; border-radius: 50%; width: 28px; height: 28px; color: #fff; font-size: .75rem; cursor: pointer; display: none; align-items: center; justify-content: center; }
-    .photo-upload-area.has-photo .photo-remove { display: flex; }
-
-    /* FORM FIELDS */
-    .field-row { display: grid; gap: 1rem; margin-bottom: 1.2rem; }
-    .field-row.col-2 { grid-template-columns: 1fr 1fr; }
-    .field-row.col-3 { grid-template-columns: 1fr 1fr 1fr; }
-    .field-group { display: flex; flex-direction: column; gap: .45rem; margin-bottom: 1.1rem; }
-    .field-label { font-size: .78rem; font-weight: 600; color: var(--bark); display: flex; align-items: center; gap: .3rem; }
-    .field-label .req { color: var(--rust); }
-    .field-input, .field-select, .field-textarea {
-      padding: .78rem 1rem; border: 2px solid var(--fog); border-radius: 14px;
-      font-family: 'DM Sans', sans-serif; font-size: .9rem; background: #fff;
-      color: var(--bark); transition: border-color .2s, box-shadow .2s; width: 100%;
-    }
-    .field-input:focus, .field-select:focus, .field-textarea:focus {
-      outline: none; border-color: var(--teal); box-shadow: 0 0 0 4px var(--teal-light);
-    }
-    .field-input.error, .field-select.error, .field-textarea.error { border-color: var(--rust); }
-    .field-textarea { resize: vertical; min-height: 100px; }
-    .field-hint { font-size: .72rem; color: #9a8a7a; }
-    .field-err { font-size: .72rem; color: var(--rust); display: none; }
-    .field-err.visible { display: block; }
-
-    /* AUTOCOMPLETE */
-    .autocomplete-wrapper { position: relative; width: 100%; }
-    .autocomplete-list {
-      position: absolute; top: calc(100% + 5px); left: 0; right: 0;
-      background: #fff; border: 1.5px solid var(--fog); border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(59,42,26,.12); z-index: 1000;
-      max-height: 250px; overflow-y: auto; display: none;
-    }
-    .autocomplete-list.show { display: block; animation: dropIn .2s ease; }
-    .autocomplete-item {
-      padding: .75rem 1rem; cursor: pointer; font-size: .88rem; color: var(--bark);
-      transition: background .15s; display: flex; align-items: center; gap: .6rem;
-    }
-    .autocomplete-item:hover, .autocomplete-item.selected { background: var(--teal-light); color: var(--teal); }
-    .autocomplete-item i { font-size: .8rem; opacity: .6; }
-    .autocomplete-no-results { padding: 1rem; font-size: .82rem; color: #9a8a7a; text-align: center; }
-
-    /* CHECKBOX GRID */
-    .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
-    .check-item { display: flex; align-items: center; gap: .55rem; padding: .7rem .9rem; border: 1.5px solid var(--fog); border-radius: 12px; cursor: pointer; transition: border-color .2s, background .2s; user-select: none; }
-    .check-item:hover { border-color: var(--teal); background: var(--teal-light); }
-    .check-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--teal); cursor: pointer; }
-    .check-item input[type="checkbox"]:checked + span { color: var(--teal); font-weight: 500; }
-    .check-item span { font-size: .84rem; color: var(--bark); }
-    .check-item:has(input:checked) { border-color: var(--teal); background: var(--teal-light); }
-
-    /* URGENCY TOGGLE */
-    .urgency-row { display: flex; gap: .8rem; }
-    .urgency-btn { flex: 1; padding: .75rem; border: 2px solid var(--fog); border-radius: 14px; background: #fff; font-family: 'DM Sans', sans-serif; font-size: .84rem; font-weight: 500; cursor: pointer; transition: all .2s; color: var(--bark); }
-    .urgency-btn:hover { border-color: var(--sand); }
-    .urgency-btn.selected-no { border-color: #66bb6a; background: #e8f5e9; color: #2e7d32; }
-    .urgency-btn.selected-yes { border-color: var(--rust); background: #ffeee8; color: var(--rust); }
-
-    /* PREVIEW CARD */
-    .preview-card { background: linear-gradient(135deg, var(--teal-light), #f0faf9); border: 1.5px solid var(--teal-mid); border-radius: 20px; padding: 1.4rem 1.6rem; margin-bottom: 1.2rem; display: none; animation: fadeUp .4s ease both; }
-    .preview-card.visible { display: block; }
-    .preview-card-title { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--teal); margin-bottom: 1rem; }
-    .preview-inner { display: flex; gap: 1.2rem; align-items: flex-start; }
-    .preview-photo { width: 70px; height: 70px; border-radius: 14px; background: linear-gradient(135deg, var(--teal-light), var(--teal-mid)); display: flex; align-items: center; justify-content: center; font-size: 2rem; overflow: hidden; flex-shrink: 0; }
-    .preview-photo img { width: 100%; height: 100%; object-fit: cover; }
-    .preview-name { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--bark); margin-bottom: .2rem; }
-    .preview-tags { display: flex; gap: .4rem; flex-wrap: wrap; }
-    .preview-tag { background: #fff; border: 1px solid var(--teal-mid); color: var(--teal); font-size: .7rem; padding: .15rem .5rem; border-radius: 100px; }
-
-    /* SUBMIT */
-    .submit-row { display: flex; gap: .8rem; align-items: center; margin-top: 1.8rem; animation: fadeUp .8s ease both; }
-    .btn-submit { flex: 1; padding: 1rem; background: var(--bark); color: var(--cream); border: none; border-radius: 16px; font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background .2s, transform .15s; display: flex; align-items: center; justify-content: center; gap: .55rem; }
-    .btn-submit:hover { background: var(--rust); transform: scale(1.015); }
-    .btn-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
-    .btn-preview { padding: 1rem 1.4rem; background: #fff; color: var(--bark); border: 2px solid var(--fog); border-radius: 16px; font-family: 'DM Sans', sans-serif; font-size: .9rem; font-weight: 500; cursor: pointer; transition: all .2s; }
-    .btn-preview:hover { border-color: var(--teal); color: var(--teal); }
-
-    /* SUCCESS STATE */
-    .success-screen { text-align: center; padding: 3rem 2rem; display: none; animation: fadeUp .5s ease both; }
-    .success-screen.visible { display: block; }
-    .success-icon { font-size: 4rem; margin-bottom: 1rem; }
-    .success-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--bark); margin-bottom: .5rem; }
-    .success-sub { font-size: .92rem; color: #7a6a58; line-height: 1.7; margin-bottom: 1.8rem; }
-    .success-actions { display: flex; gap: .8rem; justify-content: center; flex-wrap: wrap; }
-    .success-btn { display: inline-flex; align-items: center; gap: .45rem; padding: .75rem 1.5rem; border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: .88rem; font-weight: 500; cursor: pointer; text-decoration: none; transition: all .2s; }
-    .success-btn.primary { background: var(--bark); color: var(--cream); border: none; }
-    .success-btn.primary:hover { background: var(--rust); }
-    .success-btn.secondary { background: #fff; color: var(--bark); border: 2px solid var(--fog); }
-    .success-btn.secondary:hover { border-color: var(--sand); }
-
-    @keyframes fadeUp { from { opacity:0; transform:translateY(18px) } to { opacity:1; transform:translateY(0) } }
-
-    @media (max-width: 600px) {
-      .navbar { padding: 0 1rem; }
-      .page-wrapper { padding: 1.5rem 1rem 4rem; }
-      .form-card { padding: 1.4rem 1.2rem; }
-      .field-row.col-2, .field-row.col-3 { grid-template-columns: 1fr; }
-      .check-grid { grid-template-columns: 1fr; }
-      .submit-row { flex-direction: column; }
-      .btn-preview { width: 100%; }
-    }
-  </style>
-</head>
-<body>
-
-<!-- NAVBAR -->
-<nav class="navbar">
-  <a class="nav-brand" href="home_page.html">
-    <div class="logo-paw"><i class="fa-solid fa-paw"></i></div>
-    <span class="logo-text">Paw<span>Detect</span></span>
-  </a>    <div class="nav-right">
-      <div class="nav-tabs">
-        <a href="detect.html" class="nav-tab">Detect Breed</a>
-        <a href="adoption_module.html" class="nav-tab">Adopt a Dog</a>
-        <a href="list_your_dog.html" class="nav-tab active">List of Dog</a>
-      </div>
-      <div class="nav-divider"></div>
-      <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()" title="My Account"><i class="fa-solid fa-user"></i></button>
-      <div class="profile-dropdown" id="profileDropdown">
-        <div class="dropdown-header">
-            <div class="uname" id="ddName">…</div>
-            <div class="uemail" id="ddEmail"></div>
-        </div>
-        <button class="dropdown-item" onclick="openProfile()"><i class="fa-solid fa-user"></i> My Profile</button>
-        <div class="dropdown-divider"></div>
-        <button class="dropdown-item logout" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
-      </div>
-    </div>
-  </nav>
-  </div>
-</nav>
-
-<div id="toastContainer"></div>
-
-<div class="page-wrapper">
-
-  <!-- HEADER -->
-  <div class="page-header" id="pageHeader">
-    <div class="page-eyebrow"><i class="fa-solid fa-dog"></i> Give a Loving Home</div>
-    <h1>List Your Dog for <em>Adoption</em></h1>
-    <p>Fill in your dog's details and a brief description. Interested adopters will reach you directly via email.</p>
-  </div>
-
-  <!-- PROGRESS -->
-  <div class="progress-track" id="progressTrack">
-    <div class="step-node active" id="step1node">
-      <div class="step-circle">1</div>
-      <div class="step-label">Dog Info</div>
-    </div>
-    <div class="step-connector" id="conn1"></div>
-    <div class="step-node" id="step2node">
-      <div class="step-circle">2</div>
-      <div class="step-label">Details</div>
-    </div>
-    <div class="step-connector" id="conn2"></div>
-    <div class="step-node" id="step3node">
-      <div class="step-circle">3</div>
-      <div class="step-label">Contact</div>
-    </div>
-  </div>
-
-  <!-- ── STEP 1: DOG INFO ─────────────────────────── -->
-  <div id="formStep1">
-    <!-- Photo Upload -->
-    <div class="form-card">
-      <div class="form-card-title">
-        <div class="form-card-icon"><i class="fa-solid fa-camera"></i></div>
-        <div>
-          <h2>Dog Photo</h2>
-          <p>Upload a clear, recent photo of your dog</p>
-        </div>
-      </div>
-
-      <div class="photo-upload-area" id="photoArea" onclick="document.getElementById('photoInput').click()"
-           ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-        <div class="upload-placeholder">
-          <div class="upload-icon"><i class="fa-solid fa-paw"></i></div>
-          <div class="upload-title">Click or drag to upload</div>
-          <div class="upload-sub">JPG, PNG or WEBP • max 5 MB</div>
-          <div class="upload-badge"><i class="fa-solid fa-circle-info"></i> A good photo gets more responses</div>
-        </div>
-        <img class="photo-preview" id="photoPreview" alt="Dog preview">
-        <button class="photo-remove" id="photoRemoveBtn" onclick="removePhoto(event)" title="Remove photo"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" onchange="handlePhotoSelect(event)">
-    </div>
-
-    <!-- Basic Info -->
-    <div class="form-card">
-      <div class="form-card-title">
-        <div class="form-card-icon"><i class="fa-solid fa-dog"></i></div>
-        <div>
-          <h2>Basic Information</h2>
-          <p>Tell us about your dog</p>
-        </div>
-      </div>
-
-      <div class="field-row col-2">
-        <div class="field-group">
-          <label class="field-label">Dog's Name <span class="req">*</span></label>
-          <input class="field-input" id="dogName" type="text" placeholder="e.g. Bruno" oninput="livePreview()">
-          <span class="field-err" id="errDogName">Please enter your dog's name.</span>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Breed <span class="req">*</span></label>
-          <div class="autocomplete-wrapper">
-            <input class="field-input" id="dogBreed" type="text" placeholder="e.g. Labrador Mix" oninput="handleBreedInput(this)" onfocus="handleBreedInput(this)">
-            <div class="autocomplete-list" id="breedResults"></div>
-          </div>
-          <span class="field-err" id="errDogBreed">Please enter the breed.</span>
-        </div>
-      </div>
-
-      <div class="field-row col-3">
-        <div class="field-group">
-          <label class="field-label">Age</label>
-          <input class="field-input" id="dogAge" type="text" placeholder="e.g. 2 years" oninput="livePreview()">
-        </div>
-        <div class="field-group">
-          <label class="field-label">Gender <span class="req">*</span></label>
-          <select class="field-select" id="dogGender" onchange="livePreview()">
-            <option value="">Select…</option>
-            <option value="Male"><i class="fa-solid fa-mars"></i> Male</option>
-            <option value="Female"><i class="fa-solid fa-venus"></i> Female</option>
-          </select>
-          <span class="field-err" id="errDogGender">Please select gender.</span>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Size</label>
-          <select class="field-select" id="dogSize" onchange="livePreview()">
-            <option value="">Select…</option>
-            <option value="Small">Small</option>
-            <option value="Medium">Medium</option>
-            <option value="Large">Large</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="field-row col-2">
-        <div class="field-group">
-          <label class="field-label">Weight (approx.)</label>
-          <input class="field-input" id="dogWeight" type="text" placeholder="e.g. 18 kg">
-        </div>
-        <div class="field-group">
-          <label class="field-label">Location <span class="req">*</span></label>
-          <input class="field-input" id="dogLocation" type="text" placeholder="e.g. Pune, MH">
-          <span class="field-err" id="errDogLocation">Please enter your location.</span>
-        </div>
-      </div>
-
-      <div style="margin-top:.2rem">
-        <div class="field-group" style="margin-bottom:0">
-          <label class="field-label">About Your Dog <span class="req">*</span></label>
-          <textarea class="field-textarea" id="dogDesc" placeholder="Describe your dog's personality, habits, what makes them special, and any special needs…" oninput="livePreview()"></textarea>
-          <span class="field-err" id="errDogDesc">Please write a short description (min. 5 characters).</span>
-          <div class="field-hint" style="margin-top:.3rem">Min. 5 characters. Be warm and honest — it helps find the right family!</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Live Preview -->
-    <div class="preview-card" id="previewCard">
-      <div class="preview-card-title">👁 Live Preview — How your listing will appear</div>
-      <div class="preview-inner">
-        <div class="preview-photo" id="previewPhoto"><i class="fa-solid fa-dog"></i></div>
-        <div>
-          <div class="preview-name" id="previewName">Your Dog's Name</div>
-          <div class="preview-tags" id="previewTags"></div>
-        </div>
-      </div>
-    </div>
-
-    <div style="display:flex;justify-content:flex-end;margin-top:.5rem;animation:fadeUp .8s ease both">
-      <button class="btn-submit" style="max-width:200px" onclick="goToStep2()">Next: Details →</button>
-    </div>
-  </div>
-
-  <!-- ── STEP 2: DETAILS ─────────────────────────── -->
-  <div id="formStep2" style="display:none">
-    <div class="form-card">
-      <div class="form-card-title">
-        <div class="form-card-icon"><i class="fa-solid fa-circle-check"></i></div>
-        <div><h2>Health &amp; Compatibility</h2><p>Help adopters understand your dog's situation</p></div>
-      </div>
-
-      <div class="field-group">
-        <label class="field-label">Tick all that apply</label>
-        <div class="check-grid">
-          <label class="check-item"><input type="checkbox" id="chkVaccinated"><span><i class="fa-solid fa-syringe"></i> Vaccinated</span></label>
-          <label class="check-item"><input type="checkbox" id="chkNeutered"><span><i class="fa-solid fa-scissors"></i> Spayed / Neutered</span></label>
-          <label class="check-item"><input type="checkbox" id="chkKids"><span><i class="fa-solid fa-child"></i> Good with kids</span></label>
-          <label class="check-item"><input type="checkbox" id="chkPets"><span><i class="fa-solid fa-paw"></i> Good with other pets</span></label>
-          <label class="check-item"><input type="checkbox" id="chkHoused"><span><i class="fa-solid fa-house"></i> House-trained</span></label>
-          <label class="check-item"><input type="checkbox" id="chkMicrochipped"><span><i class="fa-solid fa-satellite-dish"></i> Microchipped</span></label>
-        </div>
-      </div>
-
-      <div class="field-group" style="margin-top:1.2rem">
-        <label class="field-label">Special needs or medical notes</label>
-        <textarea class="field-textarea" id="dogSpecialNeeds" placeholder="Any ongoing medication, allergies, dietary restrictions, or behavioural notes…" style="min-height:80px"></textarea>
-        <div class="field-hint">Leave blank if none.</div>
-      </div>
-
-      <div class="field-group" style="margin-top:.4rem">
-        <label class="field-label">Urgency</label>
-        <div class="field-hint" style="margin-bottom:.6rem">Is rehoming urgent? (e.g. relocation, health reason)</div>
-        <div class="urgency-row">
-          <button type="button" class="urgency-btn selected-no" id="urgentNo" onclick="setUrgency(false)"><i class="fa-solid fa-circle" style="color: #4caf50;"></i> Not urgent</button>
-          <button type="button" class="urgency-btn" id="urgentYes" onclick="setUrgency(true)"><i class="fa-solid fa-circle" style="color: #f44336;"></i> Urgent rehoming</button>
-        </div>
-      </div>
-    </div>
-
-    <div style="display:flex;gap:.8rem;margin-top:.5rem;animation:fadeUp .7s ease both">
-      <button class="btn-preview" onclick="goToStep1()">← Back</button>
-      <button class="btn-submit" onclick="goToStep3()">Next: Contact →</button>
-    </div>
-  </div>
-
-  <!-- ── STEP 3: CONTACT ─────────────────────────── -->
-  <div id="formStep3" style="display:none">
-    <div class="form-card">
-      <div class="form-card-title">
-        <div class="form-card-icon">📬</div>
-        <div><h2>Your Contact Info</h2><p>Interested adopters will reach you here</p></div>
-      </div>
-
-      <div class="field-row col-2">
-        <div class="field-group">
-          <label class="field-label">Your Name <span class="req">*</span></label>
-          <input class="field-input" id="ownerName" type="text" placeholder="Full name">
-          <span class="field-err" id="errOwnerName">Please enter your name.</span>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Email Address <span class="req">*</span></label>
-          <input class="field-input" id="ownerEmail" type="email" placeholder="you@example.com">
-          <span class="field-err" id="errOwnerEmail">Please enter a valid email.</span>
-        </div>
-      </div>
-
-      <div class="field-group">
-        <label class="field-label">Phone (optional)</label>
-        <input class="field-input" id="ownerPhone" type="tel" placeholder="+91 9876543210">
-        <div class="field-hint">Only share if you're comfortable. Adopters will primarily contact by email.</div>
-      </div>
-
-      <div style="background:#fdf8f3;border:1.5px solid #f0d9c0;border-radius:14px;padding:1rem 1.2rem;margin-top:.4rem">
-        <div style="display:flex;gap:.6rem;align-items:flex-start">
-          <span style="font-size:1.1rem">🔒</span>
-          <div>
-            <div style="font-size:.82rem;font-weight:600;color:var(--bark);margin-bottom:.2rem">Privacy note</div>
-            <div style="font-size:.76rem;color:#7a6a58;line-height:1.6">Your email will be visible to potential adopters so they can contact you. It will not be used for marketing. You can request removal at any time.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Summary -->
-    <div class="form-card" style="background:linear-gradient(135deg,#fafaf8,var(--cream))">
-      <div class="form-card-title">
-        <div class="form-card-icon"><i class="fa-solid fa-clipboard-list"></i></div>
-        <div><h2>Listing Summary</h2><p>Review before submitting</p></div>
-      </div>
-      <div id="summaryContent" style="font-size:.85rem;color:#6a5a4a;line-height:1.9"></div>
-    </div>
-
-    <div class="submit-row">
-      <button class="btn-preview" onclick="goToStep2()">← Back</button>
-      <button class="btn-submit" id="submitBtn" onclick="submitListing()">
-        <span><i class="fa-solid fa-paw"></i></span> Submit Listing
-      </button>
-    </div>
-  </div>
-
-  <!-- ── SUCCESS ─────────────────────────────── -->
-  <div class="success-screen" id="successScreen">
-    <div class="success-icon"><i class="fa-solid fa-tada"></i></div>
-    <div class="success-title">Your listing is live!</div>
-    <div class="success-sub">
-      Thank you for giving your dog a chance at a loving home.<br>
-      Interested adopters will contact you at <strong id="successEmail"></strong>.
-    </div>
-    <div class="success-actions">
-      <a href="adoption_module.html" class="success-btn primary"><i class="fa-solid fa-house-chimney"></i> View All Listings</a>
-      <button class="success-btn secondary" onclick="resetForm()">+ List Another Dog</button>
-    </div>
-  </div>
-
-</div>
-
-  <script>
-    function toggleDropdown() { document.getElementById('profileDropdown').classList.toggle('open'); }
-    window.addEventListener('click', e => {
-      if (!e.target.closest('#profileBtn') && !e.target.closest('#profileDropdown')) {
-        const dd = document.getElementById('profileDropdown');
-        if (dd) dd.classList.remove('open');
-      }
-    });
-
-    function openProfile() { window.location.href = 'detect.html?openProfile=1'; }
-    function doLogout() {
-      sessionStorage.clear();
-      fetch('../backend/api/logout.php').finally(() => {
-        window.location.href = 'home_page.html';
-      });
-    }
-
-    // Populate profile instantly
-    const userEmail = sessionStorage.getItem('pawdetect_user_email');
-    const userName = sessionStorage.getItem('pawdetect_user_name');
-    if (userEmail) {
-      document.getElementById('ddName').textContent = userName || 'User';
-      document.getElementById('ddEmail').textContent = userEmail;
-    } else {
-      fetch('../backend/api/login.php?check=1')
-        .then(r => r.json())
-        .then(data => {
-          if (data.logged_in) {
-            document.getElementById('ddName').textContent = data.user.full_name;
-            document.getElementById('ddEmail').textContent = data.user.email;
-            sessionStorage.setItem('pawdetect_user_email', data.user.email);
-            sessionStorage.setItem('pawdetect_user_name', data.user.full_name);
-          } else {
-            window.location.href = 'home_page.html';
-          }
-        });
-    }
-  let isUrgent = false;
-  let photoDataURL = null;
-
-  // ── Photo handling ───────────────────────────────
-  function handlePhotoSelect(e) {
-    const file = e.target.files[0];
-    if (file) loadPhoto(file);
-  }
-  function handleDragOver(e) {
-    e.preventDefault();
-    document.getElementById('photoArea').classList.add('dragover');
-  }
-  function handleDragLeave() {
-    document.getElementById('photoArea').classList.remove('dragover');
-  }
-  function handleDrop(e) {
-    e.preventDefault();
-    document.getElementById('photoArea').classList.remove('dragover');
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) loadPhoto(file);
-  }
-  function loadPhoto(file) {
-    if (file.size > 5 * 1024 * 1024) { showToast('Image too large (max 5 MB)', 'error'); return; }
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      photoDataURL = ev.target.result;
-      document.getElementById('photoPreview').src = photoDataURL;
-      document.getElementById('photoArea').classList.add('has-photo');
-      livePreview();
-      saveDraft();
-      showToast('Photo uploaded!', 'success');
-    };
-    reader.readAsDataURL(file);
-  }
-  function removePhoto(e) {
-    if (e && e.stopPropagation) e.stopPropagation();
-    photoDataURL = null;
-    document.getElementById('photoPreview').src = '';
-    document.getElementById('photoArea').classList.remove('has-photo');
-    document.getElementById('photoInput').value = '';
-    livePreview();
-  }
-
-  // ── Breed Autocomplete ──────────────────────────
-  const BREED_LIST = [
-    "Australian Shepherd", "Beagle", "Border Collie", "Boxer", "Bulldog", "Chihuahua", 
-    "Cocker Spaniel", "Dachshund", "Doberman", "French Bulldog", "German Shepherd", 
-    "Golden Retriever", "Great Dane", "Labrador Retriever", "Maltese", "Pit Bull Terrier", 
-    "Pomeranian", "Poodle", "Rottweiler", "Saint Bernard", "Siberian Husky", "Shih Tzu", "Yorkshire Terrier"
-  ];
-
-  function handleBreedInput(input) {
-    const val = input.value.trim().toLowerCase();
-    const results = document.getElementById('breedResults');
-    results.innerHTML = '';
+    <link rel="stylesheet" href="../assets/css/index.css">
     
-    if (!val) {
-      results.classList.remove('show');
-      return;
-    }
-
-    const matches = BREED_LIST.filter(b => b.toLowerCase().includes(val));
-    
-    if (matches.length > 0) {
-      matches.forEach(m => {
-        const div = document.createElement('div');
-        div.className = 'autocomplete-item';
-        div.innerHTML = `<i class="fa-solid fa-dog"></i> ${m}`;
-        div.onclick = () => selectBreed(m);
-        results.appendChild(div);
-      });
-      results.classList.add('show');
-    } else {
-      results.innerHTML = `<div class="autocomplete-no-results">No standard breed found for "${input.value}"</div>`;
-      results.classList.add('show');
-    }
-    livePreview();
-  }
-
-  function selectBreed(name) {
-    document.getElementById('dogBreed').value = name;
-    document.getElementById('breedResults').classList.remove('show');
-    livePreview();
-  }
-
-  window.addEventListener('click', e => {
-    const wrap = e.target.closest('.autocomplete-wrapper');
-    if (!wrap) {
-      const dd = document.getElementById('breedResults');
-      if (dd) dd.classList.remove('show');
-    }
-  });
-
-  // ── Live preview ─────────────────────────────────
-  function livePreview() {
-    const name = document.getElementById('dogName').value.trim();
-    const breed = document.getElementById('dogBreed').value.trim();
-    const age = document.getElementById('dogAge').value.trim();
-    const gender = document.getElementById('dogGender').value;
-    const size = document.getElementById('dogSize').value;
-    const desc = document.getElementById('dogDesc').value.trim();
-    const pc = document.getElementById('previewCard');
-    if (!name && !breed) { pc.classList.remove('visible'); return; }
-    pc.classList.add('visible');
-    const pp = document.getElementById('previewPhoto');
-    pp.innerHTML = photoDataURL ? `<img src="${photoDataURL}" style="width:100%;height:100%;object-fit:cover">` : '<i class="fa-solid fa-dog"></i>';
-    document.getElementById('previewName').textContent = name || 'Your Dog';
-    const tags = [breed, age, gender, size].filter(Boolean).map(t => `<span class="preview-tag">${t}</span>`).join('');
-    document.getElementById('previewTags').innerHTML = tags;
-  }
-
-  function setUrgency(val) {
-    isUrgent = val;
-    document.getElementById('urgentNo').className = 'urgency-btn' + (val ? '' : ' selected-no');
-    document.getElementById('urgentYes').className = 'urgency-btn' + (val ? ' selected-yes' : '');
-  }
-
-  // ── Navigation ───────────────────────────────────
-  function setStep(n) {
-    [1,2,3].forEach(i => {
-      document.getElementById(`formStep${i}`).style.display = i === n ? 'block' : 'none';
-      const node = document.getElementById(`step${i}node`);
-      node.classList.toggle('active', i === n);
-      node.classList.toggle('done', i < n);
-    });
-    [1,2].forEach(i => document.getElementById(`conn${i}`).classList.toggle('done', i < n));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function goToStep1() { setStep(1); }
-  function goToStep2() {
-    if (!validateStep1()) return;
-    setStep(2);
-  }
-  function goToStep3() {
-    setStep(3);
-    buildSummary();
-  }
-
-  function validateStep1() {
-    let ok = true;
-    const check = (id, errId, cond) => {
-      const el = document.getElementById(id);
-      const err = document.getElementById(errId);
-      el.classList.toggle('error', !cond);
-      err.classList.toggle('visible', !cond);
-      if (!cond) ok = false;
-    };
-    check('dogName', 'errDogName', document.getElementById('dogName').value.trim().length > 0);
-    check('dogBreed', 'errDogBreed', document.getElementById('dogBreed').value.trim().length > 0);
-    check('dogGender', 'errDogGender', document.getElementById('dogGender').value !== '');
-    check('dogLocation', 'errDogLocation', document.getElementById('dogLocation').value.trim().length > 0);
-    check('dogDesc', 'errDogDesc', document.getElementById('dogDesc').value.trim().length >= 5);
-    return ok;
-  }
-
-  function validateStep3() {
-    let ok = true;
-    const name = document.getElementById('ownerName').value.trim();
-    const email = document.getElementById('ownerEmail').value.trim();
-    const nameErr = document.getElementById('errOwnerName');
-    const emailErr = document.getElementById('errOwnerEmail');
-    document.getElementById('ownerName').classList.toggle('error', !name);
-    nameErr.classList.toggle('visible', !name);
-    if (!name) ok = false;
-    const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    document.getElementById('ownerEmail').classList.toggle('error', !validEmail);
-    emailErr.classList.toggle('visible', !validEmail);
-    if (!validEmail) ok = false;
-    return ok;
-  }
-
-  function buildSummary() {
-    const checks = [
-      { id:'chkVaccinated', label:'Vaccinated' },
-      { id:'chkNeutered', label:'Spayed/Neutered' },
-      { id:'chkKids', label:'Good with kids' },
-      { id:'chkPets', label:'Good with pets' },
-      { id:'chkHoused', label:'House-trained' },
-      { id:'chkMicrochipped', label:'Microchipped' },
-    ];
-    const ticked = checks.filter(c => document.getElementById(c.id).checked).map(c => c.label);
-    const rows = [
-      ['Dog', document.getElementById('dogName').value.trim()],
-      ['Breed', document.getElementById('dogBreed').value.trim()],
-      ['Age', document.getElementById('dogAge').value.trim() || '—'],
-      ['Gender', document.getElementById('dogGender').value || '—'],
-      ['Size', document.getElementById('dogSize').value || '—'],
-      ['Weight', document.getElementById('dogWeight').value.trim() || '—'],
-      ['Location', document.getElementById('dogLocation').value.trim()],
-      ['Traits', ticked.length ? ticked.join(', ') : 'None specified'],
-      ['Urgent', isUrgent ? '<i class="fa-solid fa-circle" style="color: #f44336;"></i> Yes' : '<i class="fa-solid fa-circle" style="color: #4caf50;"></i> No'],
-    ];
-    document.getElementById('summaryContent').innerHTML = rows.map(([k,v]) =>
-      `<div style="display:flex;gap:.5rem;border-bottom:1px solid var(--fog);padding:.4rem 0"><span style="min-width:90px;font-weight:600;color:var(--bark)">${k}</span><span>${v}</span></div>`
-    ).join('');
-  }
-
-  function submitListing() {
-    if (!validateStep3()) return;
-    const btn = document.getElementById('submitBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner" style="width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block"></span> Submitting…';
-
-    // ── Build the listing object ──────────────────────────────────────
-    const ageRaw = document.getElementById('dogAge').value.trim();
-    function getAgeCat(ageStr) {
-      const a = ageStr.toLowerCase();
-      const months = a.includes('month') ? parseInt(a) : null;
-      const years  = a.includes('yr') || a.includes('year') ? parseFloat(a) : null;
-      if (months && months < 12) return 'puppy';
-      if (years === null && months === null) return 'adult';
-      if (years <= 1) return 'puppy';
-      if (years <= 3) return 'young';
-      if (years <= 8) return 'adult';
-      return 'senior';
-    }
-
-    const listing = {
-      id:            Date.now(),
-      name:          document.getElementById('dogName').value.trim(),
-      breed:         document.getElementById('dogBreed').value.trim(),
-      age_label:     ageRaw || 'Unknown',
-      age_cat:       getAgeCat(ageRaw),
-      gender:        document.getElementById('dogGender').value,
-      size:          document.getElementById('dogSize').value || 'Medium',
-      weight:        document.getElementById('dogWeight').value.trim() || '—',
-      vaccinated:    document.getElementById('chkVaccinated').checked,
-      neutered:      document.getElementById('chkNeutered').checked,
-      good_with_kids:document.getElementById('chkKids').checked,
-      good_with_pets:document.getElementById('chkPets').checked,
-      description:   document.getElementById('dogDesc').value.trim(),
-      photo:         photoDataURL || null,
-      owner_name:    document.getElementById('ownerName').value.trim(),
-      owner_email:   document.getElementById('ownerEmail').value.trim(),
-      owner_phone:   document.getElementById('ownerPhone').value.trim(),
-      location:      document.getElementById('dogLocation').value.trim(),
-      urgent:        isUrgent,
-      listed_at:     new Date().toISOString(),
-    };
-
-    const fd = new FormData();
-    fd.append('action', 'save_listing');
-    fd.append('name', document.getElementById('dogName').value.trim());
-    fd.append('breed', document.getElementById('dogBreed').value.trim());
-    fd.append('age_label', ageRaw || 'Unknown');
-    fd.append('gender', document.getElementById('dogGender').value);
-    fd.append('size', document.getElementById('dogSize').value || 'Medium');
-    fd.append('weight', document.getElementById('dogWeight').value.trim() || '—');
-    fd.append('location', document.getElementById('dogLocation').value.trim());
-    fd.append('description', document.getElementById('dogDesc').value.trim());
-    fd.append('special_needs', document.getElementById('dogSpecialNeeds').value.trim());
-    fd.append('urgent', isUrgent);
-    fd.append('vaccinated', document.getElementById('chkVaccinated').checked);
-    fd.append('neutered', document.getElementById('chkNeutered').checked);
-    fd.append('good_with_kids', document.getElementById('chkKids').checked);
-    fd.append('good_with_pets', document.getElementById('chkPets').checked);
-    fd.append('housed', document.getElementById('chkHoused').checked);
-    fd.append('microchipped', document.getElementById('chkMicrochipped').checked);
-    if (photoDataURL) fd.append('photo', photoDataURL);
-
-    fetch('../backend/api/profile.php', { method: 'POST', body: fd })
-      .then(r => r.json())
-      .then(data => {
-        if (data.success) {
-          document.getElementById('successEmail').textContent = document.getElementById('ownerEmail').value.trim();
-          document.getElementById('formStep3').style.display = 'none';
-          document.getElementById('pageHeader').style.display = 'none';
-          document.getElementById('progressTrack').style.display = 'none';
-          document.getElementById('successScreen').classList.add('visible');
-          showToast('Listing saved to database!', 'success', 5000);
-        } else {
-          showToast(data.message || 'Submission failed.', 'error');
-          btn.disabled = false;
-          btn.innerHTML = '<span><i class="fa-solid fa-paw"></i></span> Submit Listing';
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-md);
         }
-      })
-      .catch(e => {
-        showToast('Network error while submitting.', 'error');
-        btn.disabled = false;
-        btn.innerHTML = '<span><i class="fa-solid fa-paw"></i></span> Submit Listing';
-      });
-  }
 
-  function resetForm() {
-    document.getElementById('successScreen').classList.remove('visible');
-    document.getElementById('pageHeader').style.display = '';
-    document.getElementById('progressTrack').style.display = '';
-    document.getElementById('dogName').value = '';
-    document.getElementById('dogBreed').value = '';
-    document.getElementById('dogAge').value = '';
-    document.getElementById('dogGender').value = '';
-    document.getElementById('dogSize').value = '';
-    document.getElementById('dogWeight').value = '';
-    document.getElementById('dogLocation').value = '';
-    document.getElementById('dogDesc').value = '';
-    document.getElementById('ownerName').value = '';
-    document.getElementById('ownerEmail').value = '';
-    document.getElementById('ownerPhone').value = '';
-    removePhoto({ stopPropagation: () => {} });
-    setUrgency(false);
-    document.getElementById('submitBtn').disabled = false;
-    document.getElementById('submitBtn').innerHTML = '<span><i class="fa-solid fa-paw"></i></span> Submit Listing';
-    setStep(1);
-  }
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+        }
 
-  function showToast(msg, type='info', ms=3000) {
-    const t = document.createElement('div');
-    t.className = `toast ${type}`;
-    const icons = { success:'<i class="fa-solid fa-circle-check"></i>', error:'<i class="fa-solid fa-circle-xmark"></i>', info:'<i class="fa-solid fa-circle-info"></i>' };
-    t.innerHTML = `<span>${icons[type]||'<i class="fa-solid fa-circle-info"></i>'}</span><span>${msg}</span>`;
-    document.getElementById('toastContainer').appendChild(t);
-    setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 400); }, ms);
-  }
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 18px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--border-color);
+            z-index: 1;
+        }
 
-  // Init
-  setStep(1);
-</script>
+        .step {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 2;
+            transition: var(--transition);
+        }
+
+        .step.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 0 4px var(--primary-light);
+        }
+
+        .step.done {
+            background: #27ae60;
+            border-color: #27ae60;
+            color: white;
+        }
+
+        .form-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        .input-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: white;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .input-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-light);
+        }
+
+        .photo-upload {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: white;
+            margin-bottom: 24px;
+        }
+
+        .photo-upload:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .photo-preview {
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: var(--radius-sm);
+            display: none;
+            margin-top: 20px;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            gap: 16px;
+        }
+
+        .success-overlay {
+            position: fixed;
+            inset: 0;
+            background: white;
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .success-icon {
+            font-size: 80px;
+            color: #27ae60;
+            margin-bottom: 24px;
+            animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes bounceIn {
+            from { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.05); }
+            to { transform: scale(1); }
+        }
+
+        .redirect-text {
+            color: var(--text-muted);
+            margin-top: 12px;
+            font-size: 0.9rem;
+        }
+
+        .loader-bar {
+            width: 200px;
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+            margin-top: 24px;
+            overflow: hidden;
+        }
+
+        .loader-progress {
+            width: 0%;
+            height: 100%;
+            background: var(--primary);
+            animation: progress 3s linear forwards;
+        }
+
+        @keyframes progress {
+            to { width: 100%; }
+        }
+    </style>
+</head>
+<body style="padding-top: 100px;">
+
+    <!-- Reuse the same header structure -->
+    <header id="mainHeader">
+        <div class="nav-container">
+            <a href="home_page.html" class="nav-brand">
+                <div class="logo-paw"><i class="fa-solid fa-paw"></i></div>
+                <div class="logo-text">Paw<span>Detect</span></div>
+            </a>
+
+            <div class="nav-right">
+                <nav class="nav-tabs">
+                    <a href="detect.html" class="nav-tab">Detect Breed</a>
+                    <a href="adoption_module.html" class="nav-tab">Adopt a Dog</a>
+                    <a href="list_your_dog.html" class="nav-tab active">My Listings</a>
+                </nav>
+
+                <div id="userProfile" style="position: relative;">
+                    <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()">
+                        <i class="fa-solid fa-user"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="dropdown-header">
+                            <div class="uname" id="ddName">User</div>
+                            <div class="uemail" id="ddEmail">email@example.com</div>
+                        </div>
+                        <button class="dropdown-item" onclick="openProfile()">
+                            <i class="fa-solid fa-circle-user"></i> My Profile
+                        </button>
+                        <hr style="border: none; border-top: 1px solid rgba(0,0,0,0.06);">
+                        <button class="dropdown-item logout" onclick="logout()">
+                            <i class="fa-solid fa-right-from-bracket"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container scroll-reveal active">
+        <div class="form-container">
+            <h2 style="font-size: 2rem; margin-bottom: 12px; text-align: center;">List Your Dog</h2>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 40px;">Help us find a new family for your furry friend.</p>
+
+            <div class="step-indicator">
+                <div class="step active" id="step1">1</div>
+                <div class="step" id="step2">2</div>
+                <div class="step" id="step3">3</div>
+            </div>
+
+            <!-- Step 1: Dog Info -->
+            <div class="form-section active" id="section1">
+                <div class="photo-upload" onclick="document.getElementById('photoInput').click()">
+                    <i class="fa-solid fa-cloud-arrow-up" style="font-size: 3rem; color: var(--primary); margin-bottom: 12px;"></i>
+                    <p style="font-weight: 600;">Click to upload a photo</p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">PNG, JPG (Max 5MB)</p>
+                    <img id="photoPreview" class="photo-preview" src="" alt="Preview">
+                </div>
+                <input type="file" id="photoInput" hidden accept="image/*" onchange="previewImage(this)">
+
+                <div class="input-group">
+                    <label>Dog's Name</label>
+                    <input type="text" id="dogName" class="input-control" placeholder="Enter dog's name">
+                </div>
+                <div class="input-group">
+                    <label>Breed</label>
+                    <input type="text" id="dogBreed" class="input-control" placeholder="e.g. Golden Retriever">
+                </div>
+                <div class="btn-group">
+                    <div></div>
+                    <button class="btn btn-primary" onclick="nextStep(2)">Next Step <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 2: Details -->
+            <div class="form-section" id="section2">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="input-group">
+                        <label>Age Label</label>
+                        <input type="text" id="dogAge" class="input-control" placeholder="e.g. 2 years old">
+                    </div>
+                    <div class="input-group">
+                        <label>Gender</label>
+                        <select id="dogGender" class="input-control">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="input-group">
+                        <label>Size</label>
+                        <select id="dogSize" class="input-control">
+                            <option value="Small">Small</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Large">Large</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Weight (Optional)</label>
+                        <input type="text" id="dogWeight" class="input-control" placeholder="e.g. 15 kg">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Location</label>
+                    <input type="text" id="dogLocation" class="input-control" placeholder="City, State">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-outline" onclick="nextStep(1)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                    <button class="btn btn-primary" onclick="nextStep(3)">Next Step <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 3: Bio & Submit -->
+            <div class="form-section" id="section3">
+                <div class="input-group">
+                    <label>Description / Bio</label>
+                    <textarea id="dogDesc" class="input-control" rows="5" placeholder="Tell us about the dog's personality..."></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" id="chkVaccinated"> Vaccinated
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" id="chkNeutered"> Neutered
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" id="chkKids"> Good with Kids
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" id="chkPets"> Good with Pets
+                    </label>
+                </div>
+                <div class="input-group">
+                    <label style="display: flex; align-items: center; gap: 10px; color: #e74c3c; cursor: pointer;">
+                        <input type="checkbox" id="chkUrgent"> <strong>URGENT PROTECTION NEEDED</strong>
+                    </label>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-outline" onclick="nextStep(2)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                    <button class="btn btn-primary" id="submitBtn" onclick="submitForm()">Submit Listing <i class="fa-solid fa-check"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Screen -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
+        <h2 style="font-size: 2.5rem; margin-bottom: 12px;">Listing Submitted!</h2>
+        <p>Your dog's listing is now live and visible to potential adopters.</p>
+        <div class="loader-bar">
+            <div class="loader-progress"></div>
+        </div>
+        <p class="redirect-text">Redirecting to adoption center in 3 seconds...</p>
+        <a href="adoption_module.html" class="btn btn-primary" style="margin-top: 32px;">Go Now <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+
+    <script>
+        // Check Auth
+        const email = sessionStorage.getItem('pawdetect_user_email');
+        const name = sessionStorage.getItem('pawdetect_user_name');
+        if (!email) window.location.href = 'login_page.htm';
+        document.getElementById('ddName').textContent = name || 'User';
+        document.getElementById('ddEmail').textContent = email;
+
+        function toggleDropdown() {
+            document.getElementById('profileDropdown').classList.toggle('open');
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'home_page.html';
+        }
+
+        function openProfile() { window.location.href = 'detect.html?openProfile=1'; }
+
+        // Form Logic
+        let currentStep = 1;
+
+        function nextStep(step) {
+            document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.step').forEach((s, idx) => {
+                if (idx + 1 === step) s.classList.add('active');
+                else if (idx + 1 < step) s.classList.add('done');
+                else s.classList.remove('active', 'done');
+            });
+            document.getElementById('section' + step).classList.add('active');
+            currentStep = step;
+        }
+
+        let photoBase64 = null;
+
+        function previewImage(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('photoPreview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    photoBase64 = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function submitForm() {
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Submitting...';
+
+            const fd = new FormData();
+            fd.append('action', 'save_listing');
+            fd.append('name', document.getElementById('dogName').value);
+            fd.append('breed', document.getElementById('dogBreed').value);
+            fd.append('age_label', document.getElementById('dogAge').value);
+            fd.append('gender', document.getElementById('dogGender').value);
+            fd.append('size', document.getElementById('dogSize').value);
+            fd.append('weight', document.getElementById('dogWeight').value);
+            fd.append('location', document.getElementById('dogLocation').value);
+            fd.append('description', document.getElementById('dogDesc').value);
+            fd.append('urgent', document.getElementById('chkUrgent').checked);
+            fd.append('vaccinated', document.getElementById('chkVaccinated').checked);
+            fd.append('neutered', document.getElementById('chkNeutered').checked);
+            fd.append('good_with_kids', document.getElementById('chkKids').checked);
+            fd.append('good_with_pets', document.getElementById('chkPets').checked);
+            if (photoBase64) fd.append('photo', photoBase64);
+
+            try {
+                const res = await fetch('../backend/api/profile.php', { method: 'POST', body: fd });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('successOverlay').style.display = 'flex';
+                    setTimeout(() => {
+                        window.location.href = 'adoption_module.html';
+                    }, 3000);
+                } else {
+                    alert(data.message);
+                    btn.disabled = false;
+                    btn.innerHTML = 'Submit Listing <i class="fa-solid fa-check"></i>';
+                }
+            } catch (e) {
+                alert('Submission failed. Check network.');
+                btn.disabled = false;
+                btn.innerHTML = 'Submit Listing <i class="fa-solid fa-check"></i>';
+            }
+        }
+
+        // Header Scroll Effect
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('mainHeader');
+            if (window.scrollY > 50) header.classList.add('scrolled');
+            else header.classList.remove('scrolled');
+        });
+    </script>
 </body>
 </html>
-
-

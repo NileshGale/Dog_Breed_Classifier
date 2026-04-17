@@ -1,551 +1,211 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" crossorigin="anonymous">
-<meta charset="UTF-8">
-<title>PawDetect - AI Dog Breed Detector</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Segoe UI", Arial, sans-serif;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-15px); }
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-@keyframes slideInLeft {
-    from { opacity: 0; transform: translateX(-50px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes slideInRight {
-    from { opacity: 0; transform: translateX(50px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes wiggle {
-    0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(-5deg); }
-    75% { transform: rotate(5deg); }
-}
-
-@keyframes shimmer {
-    0% { background-position: -1000px 0; }
-    100% { background-position: 1000px 0; }
-}
-
-body {
-    background:
-        repeating-linear-gradient(
-            45deg,
-            rgba(255, 224, 240, 0.35),
-            rgba(255, 224, 240, 0.35) 20px,
-            rgba(255, 240, 248, 0.35) 20px,
-            rgba(255, 240, 248, 0.35) 40px
-        ),
-        linear-gradient(135deg, #FAF0E6 0%, #FFE4E1 50%, #FFF0F5 100%);
-    color: #333;
-    position: relative;
-    min-height: 100vh;
-}
-
-    /* Header / Navbar */
-    header {
-        position: sticky; top: 0; z-index: 100; height: 64px;
-        background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px);
-        border-bottom: 1.5px solid #e8e0d4; padding: 0 60px;
-        display: flex; align-items: center; justify-content: space-between;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.05); transition: all 0.3s ease;
-    }
-    header:hover { background: rgba(255, 255, 255, 0.95); }
-
-    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #3b2a1a; font-weight: 700; font-size: 24px; }
-    .logo-paw { width: 36px; height: 36px; background: #3b2a1a; border-radius: 50% 50% 50% 20%; display: flex; align-items: center; justify-content: center; color: #f5f0e8; font-size: 1.1rem; }
-    .logo-text span { color: #b55a2a; }
-
-    .nav-right { display: flex; align-items: center; gap: 8px; position: relative; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PawDetect — AI Dog Breed Detector</title>
+    <meta name="description" content="Identify any dog breed instantly with our AI-powered detector. Accurate characteristics and insights for dog lovers.">
     
-    /* NAV TABS */
-    .nav-tabs { display: flex; gap: 1.5rem; margin-right: 1rem; }
-    .nav-tab {
-        text-decoration: none; color: #3b2a1a; font-size: 0.88rem; font-weight: 600;
-        padding: 0.5rem 0; position: relative; transition: color 0.2s; white-space: nowrap;
-        font-family: 'DM Sans', sans-serif;
-    }
-    .nav-tab:hover { color: #b55a2a; }
-    .nav-tab::after {
-        content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px;
-        background: #b55a2a; transition: width 0.3s ease; border-radius: 2px;
-    }
-    .nav-tab:hover::after { width: 100%; }
-
-    /* Buttons for Guest */
-    .nav-btns-guest { display: flex; gap: 10px; align-items: center; }
-    .nav-btn {
-        padding: 8px 18px; border-radius: 50px; font-size: 13.5px; font-weight: 600;
-        cursor: pointer; text-decoration: none; border: none; transition: all 0.25s ease;
-        display: inline-flex; align-items: center; gap: 6px;
-    }
-
-.nav-btn {
-    padding: 9px 22px;
-    border-radius: 50px;
-    /* PROFILE DROPDOWN (Standardized) */
-    .profile-btn {
-        width: 40px; height: 40px; border-radius: 50%;
-        background: linear-gradient(135deg, #b55a2a, #c9a96e);
-        border: none; cursor: pointer; color: #fff; font-size: 1rem;
-        display: flex; align-items: center; justify-content: center;
-        transition: all .2s; box-shadow: 0 2px 8px rgba(181,90,42,.3);
-    }
-    .profile-btn:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(181,90,42,.4); }
-    .profile-dropdown {
-        position: absolute; top: calc(100% + 10px); right: 0;
-        background: #fff; border: 1.5px solid #e8e0d4; border-radius: 16px;
-        min-width: 200px; box-shadow: 0 12px 40px rgba(59,42,26,.14);
-        overflow: hidden; display: none; z-index: 200; text-align: left;
-    }
-    .profile-dropdown.open { display: block; animation: dropIn .2s ease; }
-    @keyframes dropIn { from { opacity:0; transform:translateY(-8px) } to { opacity:1; transform:translateY(0) } }
-    .dropdown-header { padding: 14px 16px 10px; border-bottom: 1px solid #e8e0d4; }
-    .dropdown-header .uname { font-weight: 600; font-size: .9rem; color: #3b2a1a; }
-    .dropdown-header .uemail { font-size: .75rem; color: #9a8878; margin-top: 2px; }
-    .dropdown-item {
-        display: flex; align-items: center; gap: 10px; padding: 12px 16px;
-        font-size: .88rem; color: #3b2a1a; cursor: pointer;
-        transition: background .15s; width: 100%; border: none; background: none;
-        font-family: 'DM Sans', sans-serif; text-decoration: none;
-    }
-    .dropdown-item:hover { background: #f5f0e8; }
-    .dropdown-item.logout { color: #c0392b; }
-    .dropdown-divider { height: 1px; background: #e8e0d4; }
-
-.btn-login {
-    background: transparent;
-    color: #2c2c2c;
-    border: 1.5px solid rgba(0,0,0,0.18);
-}
-.btn-login:hover {
-    background: #fff3ea;
-    border-color: #ff8c42;
-    color: #ff6b20;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255,140,66,0.15);
-}
-
-.btn-register {
-    background: linear-gradient(135deg, #ff8c42, #ff6b20);
-    color: #fff;
-    box-shadow: 0 4px 14px rgba(255,140,66,0.35);
-}
-.btn-register:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255,140,66,0.5);
-    filter: brightness(1.06);
-}
-
-.btn-detect {
-    background: linear-gradient(135deg, #4a6741, #7a9e6e);
-    color: #fff;
-    box-shadow: 0 4px 14px rgba(74,103,65,0.3);
-}
-.btn-detect:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(74,103,65,0.45);
-    filter: brightness(1.06);
-}
-
-.btn-adopt {
-    background: linear-gradient(135deg, #00796b, #4db6ac);
-    color: #fff;
-    box-shadow: 0 4px 14px rgba(0,121,107,0.3);
-}
-.btn-adopt:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,121,107,0.45);
-    filter: brightness(1.06);
-}
-
-.btn-list {
-    background: linear-gradient(135deg, #b55a2a, #c9a96e);
-    color: #fff;
-    box-shadow: 0 4px 14px rgba(181,90,42,0.3);
-}
-.btn-list:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(181,90,42,0.45);
-    filter: brightness(1.06);
-}
-
-.btn-logout {
-    background: transparent;
-    color: #c0392b;
-    border: 1.5px solid rgba(192,57,43,0.22);
-}
-.btn-logout:hover {
-    background: #fff0ee;
-    border-color: #c0392b;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(192,57,43,0.12);
-}
-
-.user-badge {
-    font-size: 13px;
-    font-weight: 500;
-    color: #888;
-    background: #f5f5f5;
-    border: 1px solid rgba(0,0,0,0.08);
-    padding: 7px 14px;
-    border-radius: 20px;
-    max-width: 180px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-#guestBtns { display: flex; gap: 10px; align-items: center; }
-#userBtns  { display: none; gap: 10px; align-items: center; }
-
-@media(max-width: 768px) {
-    header { padding: 14px 20px; }
-    .nav-btn { padding: 7px 14px; font-size: 12px; }
-    .user-badge { display: none; }
-}
-
-/* Main */
-.main {
-    text-align: center;
-    padding: 80px 20px 60px;
-}
-
-.main h1 {
-    font-size: 48px;
-    margin-bottom: 18px;
-    animation: fadeIn 1s ease;
-    color: #2c2c2c;
-    font-weight: 800;
-    letter-spacing: -1px;
-}
-
-.main h1 span {
-    color: #ff8c42;
-    position: relative;
-    display: inline-block;
-    animation: pulse 2s ease-in-out infinite;
-}
-
-.main h1 span::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, #ff8c42, transparent);
-    animation: shimmer 2s infinite;
-}
-
-.subtitle {
-    color: #666;
-    max-width: 700px;
-    margin: 0 auto 50px;
-    font-size: 18px;
-    line-height: 1.6;
-    animation: fadeIn 1.2s ease;
-}
-
-/* CTA button */
-.cta-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: linear-gradient(135deg, #ff8c42, #ff6b20);
-    color: #fff;
-    padding: 15px 36px;
-    border-radius: 50px;
-    font-size: 18px;
-    font-weight: 700;
-    text-decoration: none;
-    margin-bottom: 60px;
-    box-shadow: 0 6px 20px rgba(255,140,66,0.4);
-    transition: all 0.3s ease;
-    animation: fadeIn 1.3s ease;
-}
-.cta-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255,140,66,0.5); filter: brightness(1.05); }
-
-/* Feature cards */
-.features {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    flex-wrap: wrap;
-    animation: fadeIn 1.6s ease;
-}
-
-.card {
-    background: linear-gradient(145deg, #ffffff 0%, #f9f9f9 100%);
-    width: 280px;
-    padding: 32px;
-    border-radius: 24px;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative;
-    overflow: hidden;
-    border: 2px solid transparent;
-}
-
-.card::before {
-    content: '\f1b0';
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 40px;
-    opacity: 0.1;
-    transition: all 0.4s ease;
-}
-
-.card:hover::before { opacity: 0.3; transform: rotate(20deg) scale(1.2); }
-.card:hover { transform: translateY(-12px) rotate(2deg); box-shadow: 0 20px 50px rgba(0,0,0,0.15); border-color: #ff8c42; }
-.card:nth-child(1) { animation: slideInLeft 1s ease; }
-.card:nth-child(2) { animation: fadeIn 1.2s ease; }
-.card:nth-child(3) { animation: slideInRight 1s ease; }
-
-.card h3 { margin-bottom: 12px; font-size: 22px; color: #2c2c2c; font-weight: 700; transition: color 0.3s ease; }
-.card:hover h3 { color: #ff8c42; }
-.card p { font-size: 15px; color: #666; line-height: 1.6; }
-
-/* Rules */
-.rules {
-    background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
-    margin: 100px auto 0;
-    padding: 80px 40px;
-    border-radius: 50px 50px 0 0;
-    box-shadow: 0 -10px 40px rgba(0,0,0,0.08);
-    animation: fadeIn 1.8s ease;
-}
-
-.rules h2 {
-    text-align: center;
-    margin-bottom: 40px;
-    font-size: 36px;
-    color: #2c2c2c;
-    font-weight: 800;
-    position: relative;
-    display: inline-block;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.rules h2::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 4px;
-    background: linear-gradient(90deg, #ff8c42, #ff6b35);
-    border-radius: 2px;
-}
-
-.rules ul { max-width: 700px; margin: auto; list-style: none; }
-
-.rules li {
-    margin-bottom: 20px;
-    padding: 20px 20px 20px 60px;
-    position: relative;
-    color: #555;
-    background: #f9f9f9;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    border-left: 4px solid transparent;
-    font-size: 16px;
-}
-
-.rules li:hover { background: #fff; transform: translateX(10px); box-shadow: 0 5px 20px rgba(0,0,0,0.08); border-left-color: #ff8c42; }
-.rules li::before { 
-    content: '\f1b0'; 
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
-    position: absolute; left: 20px; font-size: 24px; transition: transform 0.3s ease; 
-}
-.rules li:hover::before { transform: rotate(20deg) scale(1.2); }
-
-footer { text-align: center; padding: 30px; font-size: 14px; color: #999; background: #fafafa; }
-
-@media(max-width: 768px) {
-    header { padding: 20px 30px; font-size: 20px; }
-    .main { padding: 60px 20px 40px; }
-    .main h1 { font-size: 36px; }
-    .subtitle { font-size: 16px; }
-    .card { width: 100%; max-width: 320px; }
-    .rules { padding: 60px 20px; }
-    .rules h2 { font-size: 28px; }
-}
-
-.scroll-reveal { opacity: 0; transform: translateY(30px); transition: all 0.6s ease; }
-.scroll-reveal.active { opacity: 1; transform: translateY(0); }
-</style>
+    <!-- External Resources -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/index.css">
 </head>
-
 <body>
 
-<header>
-    <a href="home_page.html" class="nav-brand">
-        <div class="logo-paw"><i class="fa-solid fa-paw"></i></div>
-        <div class="logo-text">Paw<span>Detect</span></div>
-    </a>
+    <header id="mainHeader">
+        <div class="nav-container">
+            <a href="home_page.html" class="nav-brand">
+                <div class="logo-paw"><i class="fa-solid fa-paw"></i></div>
+                <div class="logo-text">Paw<span>Detect</span></div>
+            </a>
 
-    <div class="nav-right">
-        <!-- TABS (Shown when logged in) -->
-        <div class="nav-tabs" id="userTabs" style="display: none;">
-            <a href="detect.html" class="nav-tab">Detect Breed</a>
-            <a href="adoption_module.html" class="nav-tab">Adopt a Dog</a>
-            <a href="list_your_dog.html" class="nav-tab">List of Dog</a>
-        </div>
+            <div class="nav-right">
+                <nav class="nav-tabs" id="userTabs" style="display: none;">
+                    <a href="detect.html" class="nav-tab">Detect Breed</a>
+                    <a href="adoption_module.html" class="nav-tab">Adopt a Dog</a>
+                    <a href="list_your_dog.html" class="nav-tab">My Listings</a>
+                </nav>
 
-        <!-- GUEST BUTTONS -->
-        <div class="nav-btns-guest" id="guestBtns">
-            <a href="login_page.htm" class="nav-btn btn-login"><i class="fa-solid fa-key"></i> Login</a>
-            <a href="register.html" class="nav-btn btn-register"><i class="fa-solid fa-wand-magic-sparkles"></i> Register</a>
-        </div>
-
-        <!-- PROFILE BTN (Show when logged in) -->
-        <div id="userProfile" style="display: none; position: relative;">
-            <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()" title="My Account"><i class="fa-solid fa-user"></i></button>
-            <div class="profile-dropdown" id="profileDropdown">
-                <div class="dropdown-header">
-                    <div class="uname" id="ddName">…</div>
-                    <div class="uemail" id="ddEmail"></div>
+                <div class="nav-btns" id="guestBtns">
+                    <a href="login_page.htm" class="btn btn-outline"><i class="fa-solid fa-key"></i> Login</a>
+                    <a href="register.html" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Register</a>
                 </div>
-                <button class="dropdown-item" onclick="openProfile()"><i class="fa-solid fa-user"></i> My Profile</button>
-                <div class="dropdown-divider"></div>
-                <button class="dropdown-item logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+
+                <div id="userProfile" style="display: none; position: relative;">
+                    <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()" title="My Account">
+                        <i class="fa-solid fa-user"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="dropdown-header">
+                            <div class="uname" id="ddName">User</div>
+                            <div class="uemail" id="ddEmail">email@example.com</div>
+                        </div>
+                        <button class="dropdown-item" onclick="openProfile()">
+                            <i class="fa-solid fa-circle-user"></i> My Profile
+                        </button>
+                        <hr style="border: none; border-top: 1px solid rgba(0,0,0,0.06);">
+                        <button class="dropdown-item logout" onclick="logout()">
+                            <i class="fa-solid fa-right-from-bracket"></i> Logout
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</header>
+    </header>
 
-<section class="main">
-    <h1>Discover Your Dog's <span>Breed</span></h1>
-    <p class="subtitle">
-        Upload a photo and let our advanced AI identify your dog's breed with detailed characteristics and insights
-    </p>
+    <main>
+        <section class="hero">
+            <div class="container scroll-reveal">
+                <h1>Discover Your Dog's <span>Breed</span> Instantly</h1>
+                <p>Upload a photo and let our advanced AI identify your dog's breed with detailed characteristics, care tips, and personality insights.</p>
+                <div class="cta-group">
+                    <a href="detect.html" class="btn btn-primary btn-cta" id="ctaBtn">
+                        <i class="fa-solid fa-paw"></i> Try PawDetect Now
+                    </a>
+                </div>
+            </div>
+        </section>
 
-    <!-- CTA changes based on auth state -->
-    <a href="detect.html" class="cta-btn" id="ctaBtn"><i class="fa-solid fa-paw"></i> Try PawDetect Now</a>
+        <section class="features">
+            <div class="container">
+                <div class="feature-grid">
+                    <div class="card scroll-reveal">
+                        <div class="card-icon"><i class="fa-solid fa-robot"></i></div>
+                        <h3>AI-Powered</h3>
+                        <p>Advanced machine learning technology for accurate breed identification with over 95% accuracy.</p>
+                    </div>
 
-    <div class="features">
-        <div class="card">
-            <h3><i class="fa-solid fa-robot"></i> AI-Powered</h3>
-            <p>Advanced machine learning technology for accurate breed identification with over 95% accuracy</p>
+                    <div class="card scroll-reveal" style="transition-delay: 0.1s;">
+                        <div class="card-icon"><i class="fa-solid fa-circle-check"></i></div>
+                        <h3>Reliable Results</h3>
+                        <p>Trusted by dog owners and professionals worldwide with thousands of successful identifications.</p>
+                    </div>
+
+                    <div class="card scroll-reveal" style="transition-delay: 0.2s;">
+                        <div class="card-icon"><i class="fa-solid fa-bolt"></i></div>
+                        <h3>Instant Insights</h3>
+                        <p>Get detailed breed information, characteristics, and specialized care tips in just seconds.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="rules-section scroll-reveal">
+            <div class="rules-container">
+                <h2>Usage Guidelines</h2>
+                <div class="rules-list">
+                    <div class="rule-item">
+                        <div class="rule-icon"><i class="fa-solid fa-camera"></i></div>
+                        <div>
+                            <strong>Clear Photos Only</strong>
+                            <p style="font-size: 0.9rem; color: #666;">Upload well-lit images of dogs for the most accurate identification.</p>
+                        </div>
+                    </div>
+                    <div class="rule-item">
+                        <div class="rule-icon"><i class="fa-solid fa-dog"></i></div>
+                        <div>
+                            <strong>Single Dog Focus</strong>
+                            <p style="font-size: 0.9rem; color: #666;">Ensure only one dog is clearly visible in the frame.</p>
+                        </div>
+                    </div>
+                    <div class="rule-item">
+                        <div class="rule-icon"><i class="fa-solid fa-file-image"></i></div>
+                        <div>
+                            <strong>Supported Formats</strong>
+                            <p style="font-size: 0.9rem; color: #666;">We support high-resolution JPG, PNG, and WEBP files up to 5MB.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 PawDetect — Empowering Dog Lovers Worldwide</p>
+            <p style="margin-top: 1rem; font-size: 0.8rem;">
+                Made with <i class="fa-solid fa-heart" style="color: #ff8c42;"></i> for the Dog Community
+            </p>
         </div>
+    </footer>
 
-        <div class="card">
-            <h3><i class="fa-solid fa-circle-check"></i> Reliable</h3>
-            <p>Trusted by dog owners and professionals worldwide with thousands of successful identifications</p>
-        </div>
+    <script>
+        // --- Auth & Header Management ---
+        function checkAuthState() {
+            const email = sessionStorage.getItem('pawdetect_user_email');
+            const name = sessionStorage.getItem('pawdetect_user_name');
+            const guestBtns = document.getElementById('guestBtns');
+            const userTabs = document.getElementById('userTabs');
+            const userProf = document.getElementById('userProfile');
+            const ctaBtn = document.getElementById('ctaBtn');
 
-        <div class="card">
-            <h3><i class="fa-solid fa-bolt"></i> Instant Results</h3>
-            <p>Get detailed breed information, characteristics, and care tips in just seconds</p>
-        </div>
-    </div>
-</section>
+            if (email) {
+                guestBtns.style.display = 'none';
+                userTabs.style.display = 'flex';
+                userProf.style.display = 'block';
+                document.getElementById('ddName').textContent = name || 'User';
+                document.getElementById('ddEmail').textContent = email;
+                ctaBtn.href = 'detect.html';
+            } else {
+                guestBtns.style.display = 'flex';
+                userTabs.style.display = 'none';
+                userProf.style.display = 'none';
+                ctaBtn.href = 'login_page.htm';
+            }
+        }
 
-<section class="rules">
-    <h2>Rules &amp; Regulations</h2>
-    <ul>
-        <li>Upload clear, well-lit images of dogs only for best results</li>
-        <li>One dog per image to ensure accurate breed identification</li>
-        <li>Supported formats: JPG, PNG, WEBP with high resolution</li>
-        <li>Maximum image size: 5MB for optimal processing speed</li>
-        <li>Ensure the dog is clearly visible and faces the camera</li>
-        <li>Avoid heavily filtered or edited photos for accuracy</li>
-    </ul>
-</section>
+        function toggleDropdown() {
+            document.getElementById('profileDropdown').classList.toggle('open');
+        }
 
-<footer>
-    © 2026 PawDetect - All Rights Reserved | Made with <i class="fa-solid fa-heart" style="color: #e74c3c;"></i> for Dog Lovers
-</footer>
+        window.addEventListener('click', e => {
+            const dd = document.getElementById('profileDropdown');
+            const pb = document.getElementById('profileBtn');
+            if (dd && !dd.contains(e.target) && pb && !pb.contains(e.target)) {
+                dd.classList.remove('open');
+            }
+        });
 
-<script>
-function checkAuthState() {
-    const email    = sessionStorage.getItem('pawdetect_user_email');
-    const name     = sessionStorage.getItem('pawdetect_user_name');
-    const guestBtns = document.getElementById('guestBtns');
-    const userTabs  = document.getElementById('userTabs');
-    const userProf  = document.getElementById('userProfile');
-    const ctaBtn    = document.getElementById('ctaBtn');
+        function openProfile() { 
+            window.location.href = 'detect.html?openProfile=1'; 
+        }
 
-    if (email) {
-        guestBtns.style.display = 'none';
-        userTabs.style.display  = 'flex';
-        userProf.style.display  = 'block';
-        document.getElementById('ddName').textContent = name || 'User';
-        document.getElementById('ddEmail').textContent = email;
-        ctaBtn.href = 'detect.html';
-    } else {
-        guestBtns.style.display = 'flex';
-        userTabs.style.display  = 'none';
-        userProf.style.display  = 'none';
-        ctaBtn.href = 'login_page.htm';
-    }
-}
+        function logout() {
+            sessionStorage.clear();
+            fetch('../backend/api/logout.php').finally(() => {
+                window.location.href = 'home_page.html';
+            });
+        }
 
-function toggleDropdown() {
-    document.getElementById('profileDropdown').classList.toggle('open');
-}
-document.addEventListener('click', e => {
-    const dd = document.getElementById('profileDropdown');
-    const pb = document.getElementById('profileBtn');
-    if (dd && !dd.contains(e.target) && pb && !pb.contains(e.target)) dd.classList.remove('open');
-});
+        // --- Scroll Effects ---
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('mainHeader');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
 
-function openProfile() { window.location.href = 'detect.html?openProfile=1'; }
+        // --- Intersection Observer for Scroll Reveals ---
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -50px 0px'
+        };
 
-function logout() {
-    sessionStorage.clear();
-    fetch('../backend/api/logout.php').finally(() => {
-        window.location.href = 'home_page.html';
-    });
-}
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
 
-function showToast(msg, type = 'info') {
-    const t = document.createElement('div');
-    t.className = `toast ${type}`;
-    const icons = { success:'<i class="fa-solid fa-circle-check"></i>', error:'<i class="fa-solid fa-circle-xmark"></i>', info:'<i class="fa-solid fa-circle-info"></i>' };
-    t.innerHTML = `<span>${icons[type]||'<i class="fa-solid fa-circle-info"></i>'}</span><span>${msg}</span>`;
-    document.getElementById('toastContainer').appendChild(t);
-    setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 400); }, 3000);
-}
+        document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
 
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('active'); });
-}, { threshold: 0.15 });
-document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
-
-checkAuthState();
-</script>
+        // Initial Auth Check
+        checkAuthState();
+    </script>
 </body>
 </html>
-
-
