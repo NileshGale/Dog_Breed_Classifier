@@ -3,196 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PawDetect — List Your Dog for Adoption</title>
+    <title>PawDetect — List Your Dog</title>
     
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" crossorigin="anonymous">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Core CSS -->
     <link rel="stylesheet" href="../assets/css/index.css">
-    
+
     <style>
+        :root {
+            /* Aligning with index.css brand colors */
+            --primary: var(--secondary); /* The darker rust color used in adoption */
+            --primary-light: #fff5f0;
+            --border-color: rgba(0,0,0,0.06);
+            --text-dark: #1a1a1a;
+            --text-muted: #666;
+            --accent: var(--primary); /* The bright orange */
+        }
+
+        body {
+            padding-top: 100px;
+            background-color: #fafbfc;
+        }
+
+        /* Form Container */
         .form-container {
             max-width: 800px;
-            margin: 40px auto;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(20px);
+            margin: 0 auto;
+            padding: 0 1.5rem 5rem;
+            animation: fadeUp 0.6s ease-out;
+        }
+
+        .form-card {
+            background: #ffffff;
+            border-radius: 32px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
             border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 40px;
-            box-shadow: var(--shadow-md);
         }
 
+        /* Step Indicator */
         .step-indicator {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .step-indicator::before {
-            content: '';
-            position: absolute;
-            top: 18px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--border-color);
-            z-index: 1;
-        }
-
-        .step {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: white;
-            border: 2px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            font-size: 0.9rem;
-            position: relative;
-            z-index: 2;
-            transition: var(--transition);
+            margin-bottom: 3.5rem;
+            gap: 12px;
         }
 
-        .step.active {
-            border-color: var(--primary);
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 0 0 4px var(--primary-light);
-        }
-
-        .step.done {
-            background: #27ae60;
-            border-color: #27ae60;
-            color: white;
-        }
-
-        .form-section {
-            display: none;
-            animation: fadeIn 0.4s ease;
-        }
-
-        .form-section.active {
-            display: block;
-        }
-
-        .input-group {
-            margin-bottom: 24px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: var(--text-main);
-        }
-
-        .input-control {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1.5px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            background: white;
-            font-family: inherit;
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        .input-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px var(--primary-light);
-        }
-
-        .photo-upload {
-            border: 2px dashed var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 40px;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-            background: white;
-            margin-bottom: 24px;
-        }
-
-        .photo-upload:hover {
-            border-color: var(--primary);
-            background: var(--primary-light);
-        }
-
-        .photo-preview {
-            width: 100%;
-            max-height: 300px;
-            object-fit: contain;
-            border-radius: var(--radius-sm);
-            display: none;
-            margin-top: 20px;
-        }
-
-        .btn-group {
+        .step-item {
             display: flex;
-            justify-content: space-between;
-            margin-top: 40px;
-            gap: 16px;
+            align-items: center;
+            gap: 10px;
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.95rem;
         }
 
-        .success-overlay {
-            position: fixed;
-            inset: 0;
-            background: white;
-            z-index: 2000;
-            display: none;
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .step-item.active { color: var(--primary); }
+        .step-item.active .step-circle { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3); }
+        .step-item.done { color: var(--primary); }
+        .step-item.done .step-circle { background: var(--primary-light); color: var(--primary); }
+
+        .step-line {
+            width: 40px;
+            height: 2px;
+            background: #f1f5f9;
+            border-radius: 2px;
+        }
+
+        /* Multi-Step Sections */
+        .form-section { display: none; }
+        .form-section.active { display: block; animation: slideIn 0.4s ease-out; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Photo Upload Zone */
+        .photo-upload-zone {
+            width: 100%;
+            height: 240px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 24px;
+            display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .success-icon {
-            font-size: 80px;
-            color: #27ae60;
-            margin-bottom: 24px;
-            animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes bounceIn {
-            from { opacity: 0; transform: scale(0.3); }
-            50% { opacity: 1; transform: scale(1.05); }
-            to { transform: scale(1); }
-        }
-
-        .redirect-text {
-            color: var(--text-muted);
-            margin-top: 12px;
-            font-size: 0.9rem;
-        }
-
-        .loader-bar {
-            width: 200px;
-            height: 4px;
-            background: var(--border-color);
-            border-radius: 2px;
-            margin-top: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
             overflow: hidden;
+            background: #f8fafc;
         }
 
-        .loader-progress {
-            width: 0%;
-            height: 100%;
-            background: var(--primary);
-            animation: progress 3s linear forwards;
+        .photo-upload-zone:hover { border-color: var(--primary); background: var(--primary-light); }
+        .photo-preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; }
+
+        .upload-badge {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 1rem;
         }
 
-        @keyframes progress {
-            to { width: 100%; }
+        /* Input Controls */
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; }
+        .input-group { margin-bottom: 1.5rem; }
+        .input-group label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.6rem; color: var(--text-dark); }
+        
+        .input-control {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            background: #fff;
+        }
+
+        .input-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1); }
+        .char-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem; }
+
+        /* Breed Autocomplete */
+        .breed-container { position: relative; }
+        .autocomplete-list {
+            position: absolute; top: 100%; left: 0; right: 0;
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+            margin-top: 8px; max-height: 300px; overflow-y: auto; z-index: 2000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); display: none; padding: 8px;
+        }
+        .autocomplete-list.active { display: block; }
+        .autocomplete-item { padding: 10px 16px; cursor: pointer; border-radius: 10px; font-size: 0.9rem; transition: all 0.2s; }
+        .autocomplete-item:hover { background: var(--primary-light); color: var(--primary); }
+
+        /* Footer Buttons */
+        .form-footer { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem; }
+        .btn-next, .btn-submit {
+            background: var(--primary); color: white; border: none; padding: 14px 28px;
+            border-radius: 100px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-next:hover, .btn-submit:hover { background: var(--accent); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(181,90,42,0.2); }
+        .btn-back { background: transparent; color: #64748b; border: 1px solid #e2e8f0; padding: 14px 28px; border-radius: 100px; font-weight: 600; cursor: pointer; }
+        .btn-back:hover { background: #f8fafc; }
+
+        /* Success Overlay */
+        .success-overlay {
+            position: fixed; inset: 0; background: #fff; z-index: 3000;
+            display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+            animation: fadeIn 0.4s ease-out;
+        }
+        .success-icon { width: 80px; height: 80px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin-bottom: 2rem; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        @media (max-width: 640px) {
+            .input-grid { grid-template-columns: 1fr; }
+            .form-card { padding: 1.5rem; }
+            .step-indicator { flex-wrap: wrap; }
         }
     </style>
 </head>
-<body style="padding-top: 100px;">
+<body>
 
-    <!-- Reuse the same header structure -->
     <header id="mainHeader">
         <div class="nav-container">
             <a href="home_page.html" class="nav-brand">
@@ -204,23 +202,22 @@
                 <nav class="nav-tabs">
                     <a href="detect.html" class="nav-tab">Detect Breed</a>
                     <a href="adoption_module.html" class="nav-tab">Adopt a Dog</a>
-                    <a href="list_your_dog.html" class="nav-tab active">My Listings</a>
+                    <a href="list_your_dog.html" class="nav-tab active">List Your Dog</a>
                 </nav>
 
-                <div id="userProfile" style="position: relative;">
+                <div class="nav-btns">
                     <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()">
                         <i class="fa-solid fa-user"></i>
                     </button>
                     <div class="profile-dropdown" id="profileDropdown">
                         <div class="dropdown-header">
                             <div class="uname" id="ddName">User</div>
-                            <div class="uemail" id="ddEmail">email@example.com</div>
+                            <div class="uemail" id="ddEmail">...</div>
                         </div>
-                        <button class="dropdown-item" onclick="openProfile()">
+                        <a href="detect.html?openProfile=1" class="dropdown-item">
                             <i class="fa-solid fa-circle-user"></i> My Profile
-                        </button>
-                        <hr style="border: none; border-top: 1px solid rgba(0,0,0,0.06);">
-                        <button class="dropdown-item logout" onclick="logout()">
+                        </a>
+                        <button class="dropdown-item logout" onclick="doLogout()">
                             <i class="fa-solid fa-right-from-bracket"></i> Logout
                         </button>
                     </div>
@@ -229,131 +226,192 @@
         </div>
     </header>
 
-    <div class="container scroll-reveal active">
-        <div class="form-container">
-            <h2 style="font-size: 2rem; margin-bottom: 12px; text-align: center;">List Your Dog</h2>
-            <p style="text-align: center; color: var(--text-muted); margin-bottom: 40px;">Help us find a new family for your furry friend.</p>
+    <div class="form-container">
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 0.5rem;">Fill in your dog's details and a brief description. Interested adopters</p>
+            <p style="color: #64748b; font-size: 0.95rem;">will reach you directly via email.</p>
+        </div>
 
-            <div class="step-indicator">
-                <div class="step active" id="step1">1</div>
-                <div class="step" id="step2">2</div>
-                <div class="step" id="step3">3</div>
+        <div class="step-indicator">
+            <div class="step-item active" id="stepIndicator1">
+                <div class="step-circle">1</div>
+                <div class="step-label">Dog Info</div>
             </div>
+            <div class="step-line"></div>
+            <div class="step-item" id="stepIndicator2">
+                <div class="step-circle">2</div>
+                <div class="step-label">Details</div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step-item" id="stepIndicator3">
+                <div class="step-circle">3</div>
+                <div class="step-label">Contact</div>
+            </div>
+        </div>
 
-            <!-- Step 1: Dog Info -->
-            <div class="form-section active" id="section1">
-                <div class="photo-upload" onclick="document.getElementById('photoInput').click()">
-                    <i class="fa-solid fa-cloud-arrow-up" style="font-size: 3rem; color: var(--primary); margin-bottom: 12px;"></i>
-                    <p style="font-weight: 600;">Click to upload a photo</p>
-                    <p style="font-size: 0.8rem; color: var(--text-muted);">PNG, JPG (Max 5MB)</p>
-                    <img id="photoPreview" class="photo-preview" src="" alt="Preview">
+        <!-- Section 1: Dog Info -->
+        <div class="form-section active" id="section1">
+            <div class="form-card">
+                <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 2rem;">
+                    <div style="width: 48px; height: 48px; background: var(--primary-light); color: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                        <i class="fa-solid fa-camera"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-family: 'Outfit';">Dog Photo</h3>
+                        <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Upload a clear, recent photo</p>
+                    </div>
+                </div>
+
+                <div class="photo-upload-zone" onclick="document.getElementById('photoInput').click()">
+                    <i class="fa-solid fa-paw" style="font-size: 2.5rem; color: #cbd5e1; margin-bottom: 1rem;"></i>
+                    <div style="font-weight: 700; color: var(--text-dark);">Click or drag to upload</div>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">JPG, PNG or WEBP • max 5 MB</p>
+                    <div class="upload-badge"><i class="fa-solid fa-camera"></i> A good photo gets more responses</div>
+                    <img id="photoPreview" class="photo-preview">
                 </div>
                 <input type="file" id="photoInput" hidden accept="image/*" onchange="previewImage(this)">
-
-                <div class="input-group">
-                    <label>Dog's Name</label>
-                    <input type="text" id="dogName" class="input-control" placeholder="Enter dog's name">
-                </div>
-                <div class="input-group">
-                    <label>Breed</label>
-                    <input type="text" id="dogBreed" class="input-control" placeholder="e.g. Golden Retriever">
-                </div>
-                <div class="btn-group">
-                    <div></div>
-                    <button class="btn btn-primary" onclick="nextStep(2)">Next Step <i class="fa-solid fa-arrow-right"></i></button>
-                </div>
             </div>
 
-            <!-- Step 2: Details -->
-            <div class="form-section" id="section2">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-card">
+                <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 2rem;">
+                    <div style="width: 48px; height: 48px; background: var(--primary-light); color: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                        <i class="fa-solid fa-dog"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-family: 'Outfit';">Basic Information</h3>
+                        <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Tell us about your dog</p>
+                    </div>
+                </div>
+
+                <div class="input-grid">
                     <div class="input-group">
-                        <label>Age Label</label>
-                        <input type="text" id="dogAge" class="input-control" placeholder="e.g. 2 years old">
+                        <label>Dog's Name *</label>
+                        <input type="text" id="dogName" class="input-control" placeholder="e.g. Bruno">
                     </div>
                     <div class="input-group">
-                        <label>Gender</label>
+                        <label>Breed *</label>
+                        <div class="breed-container">
+                            <input type="text" id="dogBreed" class="input-control" placeholder="e.g. Labrador Mix" autocomplete="off">
+                            <div id="breedAutocomplete" class="autocomplete-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label>Gender *</label>
                         <select id="dogGender" class="input-control">
+                            <option value="">Select...</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
                         </select>
                     </div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div class="input-group">
-                        <label>Size</label>
-                        <select id="dogSize" class="input-control">
-                            <option value="Small">Small</option>
-                            <option value="Medium">Medium</option>
-                            <option value="Large">Large</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Weight (Optional)</label>
-                        <input type="text" id="dogWeight" class="input-control" placeholder="e.g. 15 kg">
+                        <label>Location *</label>
+                        <input type="text" id="dogLocation" class="input-control" placeholder="e.g. Pune, MH">
                     </div>
                 </div>
+
                 <div class="input-group">
-                    <label>Location</label>
-                    <input type="text" id="dogLocation" class="input-control" placeholder="City, State">
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-outline" onclick="nextStep(1)"><i class="fa-solid fa-arrow-left"></i> Back</button>
-                    <button class="btn btn-primary" onclick="nextStep(3)">Next Step <i class="fa-solid fa-arrow-right"></i></button>
+                    <label>About Your Dog *</label>
+                    <textarea id="dogDesc" class="input-control" rows="5" placeholder="Describe personality, habits..."></textarea>
+                    <p class="char-hint">Min. 30 characters. Be warm and honest!</p>
                 </div>
             </div>
 
-            <!-- Step 3: Bio & Submit -->
-            <div class="form-section" id="section3">
-                <div class="input-group">
-                    <label>Description / Bio</label>
-                    <textarea id="dogDesc" class="input-control" rows="5" placeholder="Tell us about the dog's personality..."></textarea>
+            <div class="form-footer">
+                <button class="btn-next" onclick="nextStep(2)">Next: Details <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Section 2: Details -->
+        <div class="form-section" id="section2">
+            <div class="form-card">
+                <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 2rem;">
+                    <div style="width: 48px; height: 48px; background: var(--primary-light); color: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                        <i class="fa-solid fa-notes-medical"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-family: 'Outfit';">Health & Compatibility</h3>
+                        <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Check all that apply</p>
+                    </div>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px;">
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                        <input type="checkbox" id="chkVaccinated"> Vaccinated
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 1rem; border: 1.5px solid #f1f5f9; border-radius: 12px;">
+                        <input type="checkbox" id="chkVaccinated" style="width: 18px; height: 18px; accent-color: var(--primary);"> <span>Vaccinated</span>
                     </label>
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                        <input type="checkbox" id="chkNeutered"> Neutered
+                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 1rem; border: 1.5px solid #f1f5f9; border-radius: 12px;">
+                        <input type="checkbox" id="chkNeutered" style="width: 18px; height: 18px; accent-color: var(--primary);"> <span>Neutered</span>
                     </label>
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                        <input type="checkbox" id="chkKids"> Good with Kids
+                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 1rem; border: 1.5px solid #f1f5f9; border-radius: 12px;">
+                        <input type="checkbox" id="chkKids" style="width: 18px; height: 18px; accent-color: var(--primary);"> <span>Good with Kids</span>
                     </label>
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                        <input type="checkbox" id="chkPets"> Good with Pets
-                    </label>
-                </div>
-                <div class="input-group">
-                    <label style="display: flex; align-items: center; gap: 10px; color: #e74c3c; cursor: pointer;">
-                        <input type="checkbox" id="chkUrgent"> <strong>URGENT PROTECTION NEEDED</strong>
+                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 1rem; border: 1.5px solid #f1f5f9; border-radius: 12px;">
+                        <input type="checkbox" id="chkPets" style="width: 18px; height: 18px; accent-color: var(--primary);"> <span>Good with other Pets</span>
                     </label>
                 </div>
 
-                <div class="btn-group">
-                    <button class="btn btn-outline" onclick="nextStep(2)"><i class="fa-solid fa-arrow-left"></i> Back</button>
-                    <button class="btn btn-primary" id="submitBtn" onclick="submitForm()">Submit Listing <i class="fa-solid fa-check"></i></button>
+                <div class="input-group" style="background: #fff1f2; padding: 1.5rem; border-radius: 16px; border: 1px solid #fecdd3;">
+                    <label style="display: flex; align-items: center; gap: 12px; color: #881337; cursor: pointer; margin-bottom: 0;">
+                        <input type="checkbox" id="chkUrgent" style="width: 20px; height: 20px; accent-color: #e11d48;"> 
+                        <div>
+                            <strong style="display: block;">URGENT PROTECTION NEEDED</strong>
+                            <span style="font-size: 0.75rem; font-weight: normal; opacity: 0.8;">Mark if immediate home is required</span>
+                        </div>
+                    </label>
                 </div>
+            </div>
+
+            <div class="form-footer">
+                <button class="btn-back" onclick="nextStep(1)">Back</button>
+                <button class="btn-next" onclick="nextStep(3)">Next: Contact <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Section 3: Contact -->
+        <div class="form-section" id="section3">
+            <div class="form-card" style="text-align: center;">
+                <div style="width: 64px; height: 64px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 1.5rem;">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </div>
+                <h3 style="font-family: 'Outfit';">Ready to Publish?</h3>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">Adopters will reach you directly at your registered email.</p>
+                
+                <div style="background: #f8fafc; padding: 1.5rem; border-radius: 16px; text-align: left; margin-bottom: 2rem;">
+                    <p style="font-size: 0.9rem; color: #475569; line-height: 1.6; margin: 0;">
+                        <i class="fa-solid fa-circle-info" style="color: var(--primary); margin-right: 0.5rem;"></i>
+                        By listing your dog, you agree to respond to potential adopter inquiries in a timely manner.
+                    </p>
+                </div>
+
+                <button class="btn-submit" id="submitBtn" onclick="submitForm()" style="width: 100%; justify-content: center;">
+                    Publish Listing <i class="fa-solid fa-check"></i>
+                </button>
+            </div>
+
+            <div class="form-footer">
+                <button class="btn-back" onclick="nextStep(2)">Back</button>
             </div>
         </div>
     </div>
 
-    <!-- Success Screen -->
     <div class="success-overlay" id="successOverlay">
         <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
-        <h2 style="font-size: 2.5rem; margin-bottom: 12px;">Listing Submitted!</h2>
-        <p>Your dog's listing is now live and visible to potential adopters.</p>
-        <div class="loader-bar">
-            <div class="loader-progress"></div>
+        <h2 style="font-size: 2rem; font-family: 'Outfit'; margin-bottom: 0.5rem;">Listing Published!</h2>
+        <p style="color: var(--text-muted);">Your dog's profile is now live for potential adopters.</p>
+        <div style="width: 200px; height: 4px; background: #f1f5f9; border-radius: 10px; margin: 2rem 0; overflow: hidden;">
+            <div style="height: 100%; background: var(--primary); width: 100%; animation: loader 2.5s ease-in-out;"></div>
         </div>
-        <p class="redirect-text">Redirecting to adoption center in 3 seconds...</p>
-        <a href="adoption_module.html" class="btn btn-primary" style="margin-top: 32px;">Go Now <i class="fa-solid fa-arrow-right"></i></a>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Redirecting to adoption center...</p>
     </div>
 
     <script>
-        // Check Auth
+        // Auth Guard
         const email = sessionStorage.getItem('pawdetect_user_email');
         const name = sessionStorage.getItem('pawdetect_user_name');
         if (!email) window.location.href = 'login_page.htm';
+        
         document.getElementById('ddName').textContent = name || 'User';
         document.getElementById('ddEmail').textContent = email;
 
@@ -361,39 +419,105 @@
             document.getElementById('profileDropdown').classList.toggle('open');
         }
 
-        function logout() {
+        function doLogout() {
             sessionStorage.clear();
             window.location.href = 'home_page.html';
         }
 
-        function openProfile() { window.location.href = 'detect.html?openProfile=1'; }
-
         // Form Logic
         let currentStep = 1;
+        let photoBase64 = null;
 
-        function nextStep(step) {
-            document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.step').forEach((s, idx) => {
-                if (idx + 1 === step) s.classList.add('active');
-                else if (idx + 1 < step) s.classList.add('done');
-                else s.classList.remove('active', 'done');
-            });
-            document.getElementById('section' + step).classList.add('active');
-            currentStep = step;
+        const BREEDS = [
+            "Affenpinscher", "Afghan Hound", "Airedale Terrier", "Akita", "Alaskan Malamute", "American Bulldog", 
+            "American Eskimo Dog", "American Pit Bull Terrier", "American Staffordshire Terrier", "Australian Cattle Dog", 
+            "Australian Shepherd", "Basenji", "Basset Hound", "Beagle", "Belgian Malinois", "Bernese Mountain Dog", 
+            "Bichon Frise", "Bloodhound", "Border Collie", "Boston Terrier", "Boxer", "Brittany", "Bulldog", 
+            "Bullmastiff", "Cairn Terrier", "Cane Corso", "Cavalier King Charles Spaniel", "Chihuahua", 
+            "Chinese Shar-Pei", "Chow Chow", "Cocker Spaniel", "Collie", "Dachshund", "Dalmatian", 
+            "Doberman Pinscher", "English Setter", "English Springer Spaniel", "French Bulldog", 
+            "German Shepherd Dog", "German Shorthaired Pointer", "Golden Retriever", "Great Dane", 
+            "Great Pyrenees", "Greyhound", "Havanese", "Irish Setter", "Irish Wolfhound", "Jack Russell Terrier", 
+            "Labrador Retriever", "Lhasa Apso", "Maltese", "Mastiff", "Miniature Pinscher", "Miniature Schnauzer", 
+            "Newfoundland", "Papillon", "Pekingese", " Pembroke Welsh Corgi", "Pointer", "Pomeranian", 
+            "Poodle", "Portuguese Water Dog", "Pug", "Rhodesian Ridgeback", "Rottweiler", "Saint Bernard", 
+            "Saluki", "Samoyed", "Scottish Terrier", "Shetland Sheepdog", "Shiba Inu", "Shih Tzu", 
+            "Siberian Husky", "Vizsla", "Weimaraner", "West Highland White Terrier", "Whippet", 
+            "Yorkshire Terrier", "Mixed Breed", "Other"
+        ];
+
+        // Breed Autocomplete
+        const breedInput = document.getElementById('dogBreed');
+        const breedList = document.getElementById('breedAutocomplete');
+
+        breedInput.addEventListener('input', function() {
+            const val = this.value.toLowerCase();
+            breedList.innerHTML = '';
+            if (!val) { breedList.classList.remove('active'); return; }
+
+            const filtered = BREEDS.filter(b => b.toLowerCase().includes(val))
+                                   .sort((a,b) => a.toLowerCase().startsWith(val) ? -1 : 1);
+
+            if (filtered.length > 0) {
+                filtered.forEach(breed => {
+                    const item = document.createElement('div');
+                    item.className = 'autocomplete-item';
+                    item.textContent = breed;
+                    item.onclick = () => { breedInput.value = breed; breedList.classList.remove('active'); };
+                    breedList.appendChild(item);
+                });
+                breedList.classList.add('active');
+            } else { breedList.classList.remove('active'); }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!breedInput.contains(e.target)) breedList.classList.remove('active');
+        });
+
+        function showError(id, msg) {
+            const el = document.getElementById(id);
+            el.style.borderColor = '#e11d48';
+            alert(msg);
+            el.focus();
+            setTimeout(() => el.style.borderColor = '', 3000);
         }
 
-        let photoBase64 = null;
+        function validateSection1() {
+            if (!photoBase64) { alert("Please upload a photo of your dog."); return false; }
+            if (!document.getElementById('dogName').value.trim()) { showError('dogName', "Name is required."); return false; }
+            if (!document.getElementById('dogBreed').value.trim()) { showError('dogBreed', "Breed is required."); return false; }
+            if (!document.getElementById('dogGender').value) { showError('dogGender', "Please select gender."); return false; }
+            if (!document.getElementById('dogLocation').value.trim()) { showError('dogLocation', "Location is required."); return false; }
+            if (document.getElementById('dogDesc').value.trim().length < 30) { showError('dogDesc', "Tell us a bit more! (Min 30 chars)"); return false; }
+            return true;
+        }
+
+        function nextStep(step) {
+            if (step === 2 && currentStep === 1 && !validateSection1()) return;
+            if (step > currentStep + 1) return;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('section' + step).classList.add('active');
+            
+            document.querySelectorAll('.step-item').forEach((s, idx) => {
+                const i = idx + 1;
+                s.classList.toggle('active', i === step);
+                s.classList.toggle('done', i < step);
+            });
+            currentStep = step;
+        }
 
         function previewImage(input) {
             const file = input.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = (e) => {
                     const preview = document.getElementById('photoPreview');
                     preview.src = e.target.result;
                     preview.style.display = 'block';
                     photoBase64 = e.target.result;
-                }
+                };
                 reader.readAsDataURL(file);
             }
         }
@@ -401,16 +525,13 @@
         async function submitForm() {
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Submitting...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Publishing...';
 
             const fd = new FormData();
             fd.append('action', 'save_listing');
             fd.append('name', document.getElementById('dogName').value);
             fd.append('breed', document.getElementById('dogBreed').value);
-            fd.append('age_label', document.getElementById('dogAge').value);
             fd.append('gender', document.getElementById('dogGender').value);
-            fd.append('size', document.getElementById('dogSize').value);
-            fd.append('weight', document.getElementById('dogWeight').value);
             fd.append('location', document.getElementById('dogLocation').value);
             fd.append('description', document.getElementById('dogDesc').value);
             fd.append('urgent', document.getElementById('chkUrgent').checked);
@@ -425,18 +546,16 @@
                 const data = await res.json();
                 if (data.success) {
                     document.getElementById('successOverlay').style.display = 'flex';
-                    setTimeout(() => {
-                        window.location.href = 'adoption_module.html';
-                    }, 3000);
+                    setTimeout(() => window.location.href = 'adoption_module.html', 2500);
                 } else {
                     alert(data.message);
                     btn.disabled = false;
-                    btn.innerHTML = 'Submit Listing <i class="fa-solid fa-check"></i>';
+                    btn.innerHTML = 'Publish Listing <i class="fa-solid fa-check"></i>';
                 }
             } catch (e) {
-                alert('Submission failed. Check network.');
+                alert("Submission failed. Please check your connection.");
                 btn.disabled = false;
-                btn.innerHTML = 'Submit Listing <i class="fa-solid fa-check"></i>';
+                btn.innerHTML = 'Publish Listing <i class="fa-solid fa-check"></i>';
             }
         }
 

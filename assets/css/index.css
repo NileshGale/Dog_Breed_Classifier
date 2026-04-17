@@ -40,6 +40,10 @@
     -webkit-font-smoothing: antialiased;
 }
 
+html {
+    scrollbar-gutter: stable;
+}
+
 body {
     font-family: 'Inter', sans-serif;
     background-color: var(--bg-main);
