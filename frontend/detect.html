@@ -3,6 +3,7 @@
 
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/index.css">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PawDetect — Identify Your Dog</title>
@@ -18,6 +19,7 @@
       padding: 0;
     }
 
+    /* Local specific styles only - Navbar handled by index.css */
     :root {
       --cream: #f5f0e8;
       --bark: #3b2a1a;
@@ -26,162 +28,6 @@
       --rust: #b55a2a;
       --fog: #e8e0d4;
       --leaf: #7a9e6e;
-    }
-
-    body {
-      background-color: var(--cream);
-      font-family: 'DM Sans', sans-serif;
-      color: var(--bark);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* NAVBAR */
-    .navbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(245, 240, 232, 0.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1.5px solid var(--fog);
-      padding: 0 2.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 64px;
-      box-shadow: 0 2px 12px rgba(59, 42, 26, .07);
-    }
-
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: .65rem;
-      text-decoration: none;
-      color: var(--bark);
-    }
-
-    .logo-paw {
-      width: 36px;
-      height: 36px;
-      background: var(--bark);
-      border-radius: 50% 50% 50% 20%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--cream);
-      font-size: 1.1rem;
-    }
-
-    .logo-text {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.45rem;
-      font-weight: 700;
-      letter-spacing: -.02em;
-    }
-
-    .logo-text span {
-      color: var(--rust);
-    }
-
-    .nav-right {
-      display: flex;
-      align-items: center;
-      gap: .5rem;
-      position: relative;
-    }
-
-    /* NAV TABS */
-    .nav-tabs {
-      display: flex;
-      gap: 1.5rem;
-      margin-right: 1.2rem;
-    }
-
-    .nav-tab {
-      text-decoration: none;
-      color: var(--bark);
-      font-size: 0.88rem;
-      font-weight: 600;
-      padding: 0.5rem 0;
-      position: relative;
-      transition: color 0.2s;
-      white-space: nowrap;
-    }
-
-    .nav-tab:hover {
-      color: var(--rust);
-    }
-
-    .nav-tab::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background: var(--rust);
-      transition: width 0.3s ease;
-      border-radius: 2px;
-    }
-
-    .nav-tab:hover::after,
-    .nav-tab.active::after {
-      width: 100%;
-    }
-
-    .nav-tab.active {
-      color: var(--rust);
-    }
-
-    .nav-divider {
-      width: 1px;
-      height: 26px;
-      background: var(--fog);
-      flex-shrink: 0;
-    }
-
-    .profile-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--rust), var(--sand));
-      border: none;
-      cursor: pointer;
-      color: #fff;
-      font-size: 1.1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: box-shadow .2s, transform .2s;
-      box-shadow: 0 2px 8px rgba(181, 90, 42, .3);
-    }
-
-    .profile-btn:hover {
-      transform: scale(1.07);
-      box-shadow: 0 4px 14px rgba(181, 90, 42, .4);
-    }
-
-    .profile-dropdown {
-      position: absolute;
-      top: calc(100% + 10px);
-      right: 0;
-      background: #fff;
-      border: 1.5px solid var(--fog);
-      border-radius: 16px;
-      min-width: 200px;
-      box-shadow: 0 12px 40px rgba(59, 42, 26, .14);
-      overflow: hidden;
-      display: none;
-      z-index: 200;
     }
 
     .profile-dropdown.open {
@@ -1776,33 +1622,42 @@
   </style>
 </head>
 
-<body>
+<body style="padding-top: 100px;">
 
-  <!-- NAVBAR -->
-  <nav class="navbar">
-    <a href="home_page.html" class="nav-brand">
-      <div class="logo-paw"><i class="fa-solid fa-paw"></i></div>
-      <div class="logo-text">Paw<span>Detect</span></div>
-    </a>
-    <div class="nav-right">
-      <div class="nav-tabs">
-        <a href="detect.html" class="nav-tab active">Detect Breed</a>
-        <a href="adoption_module.html" class="nav-tab">Adopt a Dog</a>
-        <a href="list_your_dog.html" class="nav-tab">List of Dog</a>
-      </div>
-      <div class="nav-divider"></div>
-      <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()" title="My Account"><i class="fa-solid fa-user"></i></button>
-      <div class="profile-dropdown" id="profileDropdown">
-        <div class="dropdown-header">
-          <div class="uname" id="ddName">…</div>
-          <div class="uemail" id="ddEmail"></div>
+  <header id="mainHeader">
+    <div class="nav-container">
+      <a href="home_page.html" class="nav-brand">
+        <div class="logo-paw"><i class="fa-solid fa-paw"></i></div>
+        <div class="logo-text">Paw<span>Detect</span></div>
+      </a>
+
+      <div class="nav-right">
+        <nav class="nav-tabs">
+          <a href="detect.html" class="nav-tab active">Detect Breed</a>
+          <a href="adoption_module.html" class="nav-tab">Adopt a Dog</a>
+          <a href="list_your_dog.html" class="nav-tab">List Your Dog</a>
+        </nav>
+
+        <div class="nav-btns">
+          <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()">
+            <i class="fa-solid fa-user"></i>
+          </button>
+          <div class="profile-dropdown" id="profileDropdown">
+            <div class="dropdown-header">
+              <div class="uname" id="ddName">User</div>
+              <div class="uemail" id="ddEmail">...</div>
+            </div>
+            <a href="detect.html?openProfile=1" class="dropdown-item">
+              <i class="fa-solid fa-circle-user"></i> My Profile
+            </a>
+            <button class="dropdown-item logout" onclick="doLogout()">
+              <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </button>
+          </div>
         </div>
-        <button class="dropdown-item" onclick="openProfile()"><i class="fa-solid fa-user"></i> My Profile</button>
-        <div class="dropdown-divider"></div>
-        <button class="dropdown-item logout" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
       </div>
     </div>
-  </nav>
+  </header>
 
   <!-- HERO -->
   <div class="hero">

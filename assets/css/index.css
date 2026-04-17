@@ -138,29 +138,33 @@ header.scrolled {
 .nav-tab {
     text-decoration: none;
     color: var(--text-main);
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-size: 15px; /* Fixed px size is more stable than rem across different base font setups */
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
     position: relative;
     padding: 0.5rem 0;
     transition: var(--transition);
+    white-space: nowrap;
 }
 
-.nav-tab:hover {
+.nav-tab:hover,
+.nav-tab.active {
     color: var(--primary);
 }
 
 .nav-tab::after {
     content: '';
     position: absolute;
-    bottom: 0;
+    bottom: -2px;
     left: 0;
     width: 0;
-    height: 2px;
+    height: 2.5px;
     background: var(--primary);
     transition: var(--transition);
-    border-radius: 2px;
+    border-radius: 4px;
 }
 
+.nav-tab.active::after,
 .nav-tab:hover::after {
     width: 100%;
 }
