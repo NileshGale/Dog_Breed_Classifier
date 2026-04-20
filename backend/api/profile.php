@@ -262,7 +262,7 @@ if ($action === 'get_history') {
 if ($action === 'get_public_listings') {
     $conn = getDB();
     // Join with users to get owner details
-    $sql = "SELECT d.*, u.full_name as owner_name, u.email as owner_email 
+    $sql = "SELECT d.*, u.full_name as owner_name, u.email as owner_email, u.mobile as owner_mobile 
             FROM dog_listings d 
             JOIN users u ON d.user_id = u.id 
             ORDER BY d.created_at DESC";
