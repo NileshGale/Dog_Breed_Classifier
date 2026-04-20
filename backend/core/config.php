@@ -57,7 +57,7 @@ function generateOTP() {
     return str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 }
 
-function sendOTPEmail(string $toEmail, string $otp, string $subject = 'Your OTP Code', string $purpose = 'verify your account') {
+function sendMail(string $toEmail, string $subject, string $title, string $messageHtml, string $footerText = null) {
     require_once __DIR__ . '/../../vendor/PHPMailer/src/Exception.php';
     require_once __DIR__ . '/../../vendor/PHPMailer/src/PHPMailer.php';
     require_once __DIR__ . '/../../vendor/PHPMailer/src/SMTP.php';
@@ -75,30 +75,40 @@ function sendOTPEmail(string $toEmail, string $otp, string $subject = 'Your OTP 
         $mail->addAddress($toEmail);
         $mail->isHTML(true);
         $mail->Subject = 'PawDetect — ' . $subject;
+
+        $footer = $footerText ?: "&copy; " . date('Y') . " PawDetect. All rights reserved.";
+
         $mail->Body    = "
         <div style='font-family:Arial,sans-serif;max-width:520px;margin:auto;border:1px solid #eee;border-radius:12px;overflow:hidden'>
           <div style='background:linear-gradient(135deg,#b55a2a,#c9a96e);padding:24px;text-align:center'>
             <h2 style='color:#fff;margin:0;font-size:22px'>🐾 PawDetect</h2>
           </div>
           <div style='padding:32px'>
-            <h3 style='color:#3b2a1a'>Email Verification</h3>
-            <p style='color:#555;margin-top:8px'>Please use the OTP below to {$purpose}.</p>
-            <div style='background:#fdf8f3;border:2px dashed #c9a96e;border-radius:10px;padding:24px;text-align:center;margin:24px 0'>
-              <span style='font-size:40px;font-weight:bold;letter-spacing:12px;color:#b55a2a'>{$otp}</span>
-            </div>
-            <p style='color:#888;font-size:13px'>⏱ Valid for <strong>10 minutes</strong>. Do not share it with anyone.</p>
-            <p style='color:#bbb;font-size:12px;margin-top:12px'>If you did not request this, please ignore this email.</p>
+            <h3 style='color:#3b2a1a'>{$title}</h3>
+            {$messageHtml}
           </div>
           <div style='background:#fdf8f3;padding:14px;text-align:center'>
-            <p style='color:#bbb;font-size:12px;margin:0'>&copy; " . date('Y') . " PawDetect. All rights reserved.</p>
+            <p style='color:#bbb;font-size:12px;margin:0'>{$footer}</p>
           </div>
         </div>";
-        $mail->AltBody = "PawDetect OTP: {$otp} — Valid for 10 minutes.";
+        $mail->AltBody = strip_tags($messageHtml);
         $mail->send();
         return true;
     } catch (\Exception $e) {
         return false;
     }
+}
+
+function sendOTPEmail(string $toEmail, string $otp, string $subject = 'Your OTP Code', string $purpose = 'verify your account') {
+    $msgBody = "
+        <p style='color:#555;margin-top:8px'>Please use the OTP below to {$purpose}.</p>
+        <div style='background:#fdf8f3;border:2px dashed #c9a96e;border-radius:10px;padding:24px;text-align:center;margin:24px 0'>
+          <span style='font-size:40px;font-weight:bold;letter-spacing:12px;color:#b55a2a'>{$otp}</span>
+        </div>
+        <p style='color:#888;font-size:13px'>⏱ Valid for <strong>10 minutes</strong>. Do not share it with anyone.</p>
+        <p style='color:#bbb;font-size:12px;margin-top:12px'>If you did not request this, please ignore this email.</p>";
+
+    return sendMail($toEmail, $subject, 'Email Verification', $msgBody);
 }
 
 function requireLogin() {

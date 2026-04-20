@@ -319,5 +319,62 @@ if ($action === 'delete_listing') {
     }
 }
 
+// ── CONTACT dog owner (In-app email) ──────────────────────────────
+if ($action === 'contact_owner') {
+    requireLogin();
+    
+    $listingId = intval($_POST['listing_id'] ?? 0);
+    $message   = trim($_POST['message'] ?? '');
+    
+    if ($listingId <= 0) sendJSON(false, 'Invalid listing ID.');
+    if (strlen($message) < 5) sendJSON(false, 'Message must be at least 5 characters.');
+
+    $conn = getDB();
+    // Fetch owner email and dog name
+    $stmt = $conn->prepare("SELECT d.name, u.email as owner_email FROM dog_listings d JOIN users u ON d.user_id = u.id WHERE d.id = ?");
+    $stmt->bind_param("i", $listingId);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    if ($res->num_rows === 0) {
+        $stmt->close(); $conn->close();
+        sendJSON(false, 'Listing not found.');
+    }
+    $listing = $res->fetch_assoc();
+    $stmt->close();
+
+    // Fetch sender name
+    $stmt = $conn->prepare("SELECT full_name, email FROM users WHERE id = ?");
+    $stmt->bind_param("i", $_SESSION['user_id']);
+    $stmt->execute();
+    $sender = $stmt->get_result()->fetch_assoc();
+    $stmt->close(); $conn->close();
+
+    $senderName  = $sender['full_name'];
+    $senderEmail = $sender['email'];
+    $dogName     = $listing['name'];
+    $toEmail     = $listing['owner_email'];
+
+    $subject  = "New Inquiry for {$dogName}";
+    $title    = "Adoption Inquiry: {$dogName}";
+    $msgBody  = "
+        <p style='color:#555;'>Hello,</p>
+        <p style='color:#555;'>You have received a new message regarding your dog, <strong>{$dogName}</strong>.</p>
+        <div style='background:#f9f9f9; padding:20px; border-radius:8px; border-left:4px solid var(--primary); margin:20px 0;'>
+            <p style='margin:0; font-style:italic; color:#333;'>\"{$message}\"</p>
+        </div>
+        <p style='color:#555; font-size:14px;'><strong>Sender Details:</strong></p>
+        <ul style='color:#555; font-size:14px; list-style:none; padding:0;'>
+            <li>Name: {$senderName}</li>
+            <li>Email: <a href='mailto:{$senderEmail}'>{$senderEmail}</a></li>
+        </ul>
+        <p style='color:#888; font-size:13px; margin-top:24px;'>Please reply to the sender directly using their email address above.</p>";
+
+    if (sendMail($toEmail, $subject, $title, $msgBody)) {
+        sendJSON(true, 'Message sent successfully!');
+    } else {
+        sendJSON(false, 'Failed to send message. Please try again later.');
+    }
+}
+
 sendJSON(false, 'Invalid action.');
 ?>

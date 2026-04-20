@@ -340,6 +340,65 @@
             grid-template-columns: 1fr 1fr;
             gap: 12px;
         }
+        .cm-actions.hidden {
+            display: none;
+        }
+
+        /* Message Composer */
+        .cm-message-composer {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .cm-message-composer.active {
+            display: block;
+        }
+        .composer-textarea {
+            width: 100%;
+            height: 120px;
+            padding: 16px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.9rem;
+            resize: none;
+            margin-bottom: 8px;
+            background: #fdfdfd;
+            transition: border-color 0.3s;
+        }
+        .composer-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .composer-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .char-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        .cm-nav-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 20px;
+        }
+        .cm-nav-back:hover {
+            color: var(--secondary);
+            transform: translateX(-2px);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body style="padding-top: 100px;">
@@ -550,13 +609,28 @@
                     </div>
                 </div>
 
-                <div class="cm-actions">
+                <div class="cm-actions" id="cmActions">
                     <a href="#" id="cmCallBtn" class="btn btn-primary" style="text-align: center; display: block; background: #2ecc71; border: none; box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);">
                         <i class="fa-solid fa-phone"></i> Call Now
                     </a>
-                    <a href="javascript:void(0)" id="cmEmailBtn" class="btn btn-primary" style="text-align: center; display: block;">
-                        <i class="fa-solid fa-envelope"></i> Email
-                    </a>
+                    <button id="cmEmailBtn" class="btn btn-primary" style="text-align: center; display: block;" onclick="toggleMessageForm(true)">
+                        <i class="fa-solid fa-envelope"></i> Send Message
+                    </button>
+                </div>
+
+                <!-- Message Composer Section -->
+                <div class="cm-message-composer" id="cmComposer">
+                    <div class="cm-nav-back" onclick="toggleMessageForm(false)">
+                        <i class="fa-solid fa-arrow-left"></i> Back to contact details
+                    </div>
+                    <div class="cm-section-title">Compose Inquiry</div>
+                    <textarea id="cmMessageText" class="composer-textarea" placeholder="Hi, I'm interested in adopting this dog. Can you tell me more about..."></textarea>
+                    <div class="composer-footer">
+                        <span class="char-count" id="cmCharCount">0 / 500</span>
+                    </div>
+                    <button class="btn btn-primary" style="width:100%" id="cmSendBtn" onclick="sendMessageToOwner()">
+                        <i class="fa-solid fa-paper-plane"></i> Send Inquiry
+                    </button>
                 </div>
             </div>
         </div>
@@ -630,6 +704,14 @@
             const dog = allDogs.find(d => d.id == dogId);
             if (!dog) return;
 
+            // Reset modal state
+            toggleMessageForm(false);
+            document.getElementById('cmMessageText').value = '';
+            updateCharCount();
+
+            // Store current dog ID for the message function
+            window.currentViewingDogId = dogId;
+
             document.getElementById('cmDogName').textContent = dog.name;
             document.getElementById('cmDogBreed').innerHTML = `<i class="fa-solid fa-paw"></i> ${dog.breed}`;
             document.getElementById('cmDescription').textContent = dog.description || "No description provided for this dog yet.";
@@ -684,28 +766,88 @@
         }
 
         function handleEmailClick(email, dogName) {
-            let appOpened = false;
-            
-            // Heuristic: If the window loses focus, the OS likely opened the email app
-            const onBlur = () => {
-                appOpened = true;
-                window.removeEventListener('blur', onBlur);
-            };
-            window.addEventListener('blur', onBlur);
-            
-            // Attempt to open the email app
-            window.location.href = `mailto:${email}?subject=Interested in adopting ${dogName}`;
-            
-            // Check after 2 seconds if focus was lost
-            setTimeout(() => {
-                window.removeEventListener('blur', onBlur);
-                if (!appOpened && !document.hidden) {
-                    showToast("Cant open email app right now.", 'error');
-                    // Add a secondary toast with the email address for manual copy if needed
-                    setTimeout(() => showToast("Please copy email: " + email, 'info'), 1000);
-                }
-            }, 2000);
+            toggleMessageForm(true);
         }
+
+        function toggleMessageForm(show) {
+            const actions = document.getElementById('cmActions');
+            const composer = document.getElementById('cmComposer');
+            const info = document.querySelector('.cm-contact-info');
+            const about = document.getElementById('cmDescription');
+            const aboutTitle = about.previousElementSibling;
+            const ownerTitle = info.previousElementSibling;
+
+            if (show) {
+                actions.classList.add('hidden');
+                info.style.display = 'none';
+                about.style.display = 'none';
+                aboutTitle.style.display = 'none';
+                ownerTitle.style.display = 'none';
+                composer.classList.add('active');
+                document.getElementById('cmMessageText').focus();
+            } else {
+                actions.classList.remove('hidden');
+                info.style.display = 'grid';
+                about.style.display = 'block';
+                aboutTitle.style.display = 'block';
+                ownerTitle.style.display = 'block';
+                composer.classList.remove('active');
+            }
+        }
+
+        async function sendMessageToOwner() {
+            const msg = document.getElementById('cmMessageText').value.trim();
+            const btn = document.getElementById('cmSendBtn');
+            const dogId = window.currentViewingDogId;
+
+            if (!msg) {
+                showToast("Please enter a message.", 'error');
+                return;
+            }
+            if (msg.length < 5) {
+                showToast("Message is too short.", 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+
+            try {
+                const fd = new FormData();
+                fd.append('action', 'contact_owner');
+                fd.append('listing_id', dogId);
+                fd.append('message', msg);
+
+                const res = await fetch('../backend/api/profile.php', { method: 'POST', body: fd });
+                const data = await res.json();
+                
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    toggleMessageForm(false);
+                    document.getElementById('cmMessageText').value = '';
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (e) {
+                showToast("Network error while sending message.", 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Inquiry';
+            }
+        }
+
+        function updateCharCount() {
+            const textarea = document.getElementById('cmMessageText');
+            const count = document.getElementById('cmCharCount');
+            if (textarea && count) {
+                const len = textarea.value.length;
+                count.textContent = `${len} / 500`;
+                if (len > 500) count.style.color = '#e74c3c';
+                else count.style.color = 'var(--text-muted)';
+            }
+        }
+
+        document.getElementById('cmMessageText').addEventListener('input', updateCharCount);
 
         // Close on backdrop click
         window.onclick = function(event) {
