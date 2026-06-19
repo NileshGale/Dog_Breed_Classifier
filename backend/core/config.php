@@ -12,9 +12,9 @@ define('DB_NAME', 'pawdetect_db');
 // Place PHPMailer files at: PHPMailer/src/{PHPMailer,SMTP,Exception}.php
 define('SMTP_HOST',      'smtp.gmail.com');
 define('SMTP_PORT',      587);
-define('SMTP_USER',      'ranetanvi0203@gmail.com');
-define('SMTP_PASS',      'dkob ahjb ntvp vsvj');
-define('SMTP_FROM',      'ranetanvi0203@gmail.com');
+define('SMTP_USER',      'nileshgale025@gmail.com');
+define('SMTP_PASS',      'okyx drui yoom kfmw');
+define('SMTP_FROM',      'nileshgale025@gmail.com');
 define('SMTP_FROM_NAME', 'PawDetect');
 
 // ── Uploads ───────────────────────────────────────
