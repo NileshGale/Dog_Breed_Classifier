@@ -20,7 +20,7 @@ if (isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] === 'localhost' || $_
 // ── Machine Learning API Mode ──────────────────────
 // Leave as empty string to run the Python model locally via command execution (requires local Python & TensorFlow).
 // Set to your hosted API endpoint (e.g. 'https://dog-breed-classifier-api.onrender.com/predict') to support InfinityFree.
-define('ML_API_URL', '');
+define('ML_API_URL', 'https://dog-breed-classifier-1a5u.onrender.com/predict');
 
 // ── SMTP (PHPMailer — no Composer) ────────────────
 // Place PHPMailer files at: PHPMailer/src/{PHPMailer,SMTP,Exception}.php
