@@ -2,11 +2,25 @@
 // config.php — Central configuration for PawDetect
 // ─────────────────────────────────────────────────
 
-// ── Database ──────────────────────────────────────
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'pawdetect_db');
+// ── Database Settings (Local vs Production) ────────
+if (isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1' || str_contains($_SERVER['HTTP_HOST'], '192.168.'))) {
+    // Local development settings (XAMPP)
+    define('DB_HOST', 'localhost');
+    define('DB_USER', 'root');
+    define('DB_PASS', '');
+    define('DB_NAME', 'pawdetect_db');
+} else {
+    // Production settings (InfinityFree or other live host)
+    define('DB_HOST', 'sql306.infinityfree.com'); 
+    define('DB_USER', 'if0_42223736');                
+    define('DB_PASS', 'forever2616');
+    define('DB_NAME', 'if0_42223736_dog_detect');
+}
+
+// ── Machine Learning API Mode ──────────────────────
+// Leave as empty string to run the Python model locally via command execution (requires local Python & TensorFlow).
+// Set to your hosted API endpoint (e.g. 'https://dog-breed-classifier-api.onrender.com/predict') to support InfinityFree.
+define('ML_API_URL', '');
 
 // ── SMTP (PHPMailer — no Composer) ────────────────
 // Place PHPMailer files at: PHPMailer/src/{PHPMailer,SMTP,Exception}.php

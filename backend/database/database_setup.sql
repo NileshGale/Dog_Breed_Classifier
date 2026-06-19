@@ -3,11 +3,11 @@
 --  Run this entire file in MySQL / phpMyAdmin (fresh install)
 -- ═══════════════════════════════════════════════════════════════════
 
-CREATE DATABASE IF NOT EXISTS pawdetect_db
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-
-USE pawdetect_db;
+-- CREATE DATABASE IF NOT EXISTS pawdetect_db
+--   CHARACTER SET utf8mb4
+--   COLLATE utf8mb4_unicode_ci;
+-- 
+-- USE pawdetect_db;
 
 -- ── Users ──────────────────────────────────────────────────────────
 DROP TABLE IF EXISTS user_sessions;

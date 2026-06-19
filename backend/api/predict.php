@@ -16,30 +16,66 @@ if (!$imagePath) sendJSON(false, 'No image path provided.');
 $absPath = __DIR__ . '/../../' . ltrim($imagePath, '/');
 if (!file_exists($absPath)) sendJSON(false, 'Image file not found: ' . $imagePath);
 
-// ── Call Python CNN script ───────────────────────────────────────────
-$pythonCmd = 'py -3.13';   // Use Python 3.13 via launcher to get tensorflow support
-$scriptPath = __DIR__ . '/../scripts/dog_breed_detector.py';
-$escapedImgPath = escapeshellarg($absPath);
+// ── Call Python CNN script or Host API ────────────────────────────────
+$output = '';
+$isLocal = empty(ML_API_URL);
 
-$command = "$pythonCmd \"$scriptPath\" $escapedImgPath 2>&1";
-$output = shell_exec($command);
-
-if (!$output) {
-    sendJSON(false, 'Python script returned no output. Make sure Python and TensorFlow are installed.', [
-        'command' => $command
+if (!$isLocal) {
+    // Call external hosted API via cURL
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, ML_API_URL);
+    curl_setopt($ch, CURLOPT_POST, true);
+    // Use CURLFile to upload binary file
+    curl_setopt($ch, CURLOPT_POSTFIELDS, [
+        'file' => new CURLFile($absPath)
     ]);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 90); // 90s timeout to allow free-tier API cold starts
+    
+    $output = curl_exec($ch);
+    $curlError = curl_error($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($output === false || $httpCode !== 200) {
+        sendJSON(false, 'External AI model API request failed.', [
+            'api_url' => ML_API_URL,
+            'http_code' => $httpCode,
+            'curl_error' => $curlError,
+            'raw_response' => substr($output, 0, 500)
+        ]);
+    }
+} else {
+    // Call Python CNN script locally
+    $pythonCmd = 'py -3.13';   // Use Python 3.13 via launcher to get tensorflow support
+    $scriptPath = __DIR__ . '/../scripts/dog_breed_detector.py';
+    $escapedImgPath = escapeshellarg($absPath);
+
+    $command = "$pythonCmd \"$scriptPath\" $escapedImgPath 2>&1";
+    $output = shell_exec($command);
+
+    if (!$output) {
+        sendJSON(false, 'Python script returned no output. Make sure Python and TensorFlow are installed.', [
+            'command' => $command
+        ]);
+    }
 }
 
-// ── Parse the JSON output from Python ────────────────────────────────
-// The Python script may output TF warnings before JSON — find the JSON line
-$lines = explode("\n", trim($output));
+// ── Parse the JSON output ────────────────────────────────────────────
 $jsonLine = null;
-// Search from the end to find the JSON output (last line with JSON)
-for ($i = count($lines) - 1; $i >= 0; $i--) {
-    $trimmed = trim($lines[$i]);
-    if (str_starts_with($trimmed, '{') && str_ends_with($trimmed, '}')) {
-        $jsonLine = $trimmed;
-        break;
+
+if (!$isLocal) {
+    // External API returns clean JSON directly
+    $jsonLine = trim($output);
+} else {
+    // Local script may output TF warnings — extract JSON line from output
+    $lines = explode("\n", trim($output));
+    for ($i = count($lines) - 1; $i >= 0; $i--) {
+        $trimmed = trim($lines[$i]);
+        if (str_starts_with($trimmed, '{') && str_ends_with($trimmed, '}')) {
+            $jsonLine = $trimmed;
+            break;
+        }
     }
 }
 

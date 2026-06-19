@@ -136,40 +136,76 @@ The system runs on **MySQL** with six primary tables, maintaining strict integri
 
 ---
 
-## 🚀 Installation & Local Setup
+## 🚀 Deployment & Local Setup Guide
 
-Follow these steps to run the application locally on a Windows machine with a standard XAMPP stack:
+The application supports a **dual-mode deployment architecture**, allowing you to run it locally on a standard PHP + Python server or host it fully on the cloud (InfinityFree + external ML API server).
 
-### Prerequisites
+### A. Local Development Setup (XAMPP + Python)
+
+Follow these steps to run the application locally on a Windows machine:
+
+#### Prerequisites
 *   **XAMPP / WampServer** (PHP 8.0+ and MySQL installed).
 *   **Python 3.10+** (Added to your system PATH).
 
-### 1. Setup the Database
-1. Launch **phpMyAdmin** or log in to your MySQL terminal.
+#### 1. Setup the Local Database
+1. Launch **phpMyAdmin** or log in to your MySQL command line.
 2. Create a new database named `pawdetect_db`:
    ```sql
    CREATE DATABASE pawdetect_db;
    ```
 3. Import the file located at [database_setup.sql](file:///c:/xampp/htdocs/PawDetect/backend/database/database_setup.sql) into the database.
 
-### 2. Configure PHP Configs
-Open [config.php](file:///c:/xampp/htdocs/PawDetect/backend/core/config.php) and configure:
-*   **Database connection settings** (`DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`).
-*   **SMTP host details** to send verification codes via PHPMailer.
+#### 2. Configure PHP Configs
+Open [config.php](file:///c:/xampp/htdocs/PawDetect/backend/core/config.php) and confirm the settings:
+*   Make sure `ML_API_URL` is set to `''` (empty string) to enable local Python execution.
+*   Update database connection settings under the local `if` statement block (default values should work out of the box).
+*   Configure SMTP details with your Gmail App Password to enable email verifications.
 
-### 3. Install Python Dependencies
+#### 3. Install Python Libraries
 Open your command prompt and run the following command to install the required libraries:
 ```bash
 pip install tensorflow numpy pillow
 ```
 
-### 4. Deploy inside Apache
+#### 4. Serve the App
 1. Copy or clone this folder into your local XAMPP HTDOCS directory: `C:\xampp\htdocs\dog_breed_classifier`
 2. Start **Apache** and **MySQL** services from your XAMPP Control Panel.
-3. Open your browser and navigate to:
-   ```text
-   http://localhost/dog_breed_classifier
-   ```
+3. Open your browser and navigate to: `http://localhost/dog_breed_classifier`
+
+---
+
+### B. Production Cloud Setup (InfinityFree + Render)
+
+To deploy this project to the cloud completely for free, follow this setup:
+
+#### Step 1: Deploy the Python ML API (Render / Railway)
+Since InfinityFree does not support running Python scripts, you can deploy the standalone FastAPI app wrapper located at [app.py](file:///c:/xampp/htdocs/PawDetect/backend/scripts/app.py) to a free cloud hosting service:
+1. Create a free account on **Render** (render.com) or **Railway** (railway.app).
+2. Connect your GitHub repository containing the files.
+3. Create a new **Web Service**.
+4. Set the build parameters:
+   *   **Environment**: `Python`
+   *   **Build Command**: `pip install fastapi uvicorn python-multipart tensorflow numpy pillow`
+   *   **Start Command**: `python backend/scripts/app.py`
+5. Once deployed, Render will provide you with a public URL (e.g., `https://dog-breed-classifier-api.onrender.com`).
+
+#### Step 2: Configure and Upload PHP Files to InfinityFree
+1. Log in to your **InfinityFree Client Area** and access the Control Panel (VistaPanel).
+2. Go to **MySQL Databases** and create a new database.
+3. Open the database in **phpMyAdmin** and import [database_setup.sql](file:///c:/xampp/htdocs/PawDetect/backend/database/database_setup.sql).
+4. Note down your production host, user, password, and database name.
+5. In your local [config.php](file:///c:/xampp/htdocs/PawDetect/backend/core/config.php):
+   *   Paste the production MySQL details in the `else` block of the database configuration.
+   *   Set `ML_API_URL` to your hosted API prediction endpoint:
+       ```php
+       define('ML_API_URL', 'https://dog-breed-classifier-api.onrender.com/predict');
+       ```
+6. Install an FTP client like **FileZilla**, connect to InfinityFree using the FTP credentials provided, and upload the entire contents of your project directory into the remote `htdocs` folder.
+
+Your application is now live on the internet! PHP will automatically route predictions to the external Render API via cURL, and the classifier will run seamlessly without violating InfinityFree resource constraints.
+
+---
 
 ---
 
