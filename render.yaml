@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: dog-breed-classifier-api
+    env: python
+    buildCommand: pip install fastapi uvicorn python-multipart tensorflow numpy pillow
+    startCommand: python backend/scripts/app.py
