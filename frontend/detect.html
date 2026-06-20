@@ -2043,6 +2043,52 @@
       document.getElementById('captureBtn').onclick = captureFrame;
     }
 
+    function dataURLtoBlob(dataurl) {
+      const arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1];
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while(n--){
+          u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new Blob([u8arr], {type:mime});
+    }
+
+    async function callRenderAPI(blobOrFile) {
+      const fd = new FormData();
+      fd.append('file', blobOrFile, 'image.jpg');
+      try {
+        const res = await fetch('https://dog-breed-classifier-1a5u.onrender.com/predict', {
+          method: 'POST',
+          body: fd
+        });
+        return await res.json();
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function savePredictionResult(base64Data, source, prediction) {
+      const params = new URLSearchParams();
+      params.append('image_base64', base64Data);
+      params.append('source', source);
+      if (prediction) {
+        params.append('top_breed', prediction.is_dog ? prediction.breed : 'Not a Dog');
+        params.append('confidence', prediction.is_dog ? prediction.confidence : 0);
+        params.append('predictions', JSON.stringify(prediction.top3 || []));
+      }
+      try {
+        const res = await fetch('../backend/api/save_scan.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params
+        });
+        return await res.json();
+      } catch (e) {
+        return null;
+      }
+    }
+
     async function confirmCapture() {
       const dataUrl = capturedDataUrl;
       closeCamera();
@@ -2058,28 +2104,36 @@
       document.getElementById('resultBanner').classList.add('show');
       document.getElementById('resultBanner').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-      // Step 1: Save image to server
-      const result = await saveImage(dataUrl, 'camera');
+      // Step 1: Predict breed directly from browser using Render API
+      const blob = dataURLtoBlob(dataUrl);
+      const prediction = await callRenderAPI(blob);
 
-      if (!result || !result.success) {
+      if (!prediction || !prediction.success) {
         setSaving(false);
-        document.getElementById('resultBreed').textContent = 'Save Failed';
-        document.getElementById('resultConf').textContent = 'Could not save to server. Check your PHP setup.';
-        showToast('Photo captured but could not be saved.', 'error');
+        document.getElementById('resultBreed').textContent = 'Detection Failed';
+        document.getElementById('resultConf').textContent = 'Could not connect to the AI model.';
+        showToast('Breed detection failed.', 'error');
         return;
       }
 
-      // Step 2: Run CNN breed detection
-      const prediction = await predictBreed(result.image_path, result.scan_id);
+      if (!prediction.is_dog) {
+        // Save scan history as non-dog
+        await savePredictionResult(dataUrl, 'camera', prediction);
+        displayPrediction(prediction, dataUrl, 'camera');
+        setSaving(false);
+        return;
+      }
+
+      // Step 2: Save to server with prediction results
+      const saveResult = await savePredictionResult(dataUrl, 'camera', prediction);
       setSaving(false);
 
-      if (prediction && prediction.success) {
+      if (saveResult && saveResult.success) {
         displayPrediction(prediction, dataUrl, 'camera');
         showToast('Breed detected: ' + prediction.breed, 'success');
       } else {
-        document.getElementById('resultBreed').textContent = 'Detection Failed';
-        document.getElementById('resultConf').textContent = prediction ? prediction.message : 'CNN API unreachable. Run: python dog_breed_detector.py';
-        showToast('Image saved but breed detection failed.', 'error');
+        showToast('Breed detected, but saving history failed.', 'warning');
+        displayPrediction(prediction, dataUrl, 'camera');
       }
     }
 
@@ -2133,60 +2187,43 @@
       document.getElementById('resultBanner').classList.add('show');
       document.getElementById('resultBanner').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-      // Step 1: Save image to server
-      const result = await saveImageFile(selectedFile);
+      // Step 1: Predict breed directly from browser using Render API
+      const prediction = await callRenderAPI(selectedFile);
 
-      if (!result || !result.success) {
+      if (!prediction || !prediction.success) {
         setSaving(false);
         btn.disabled = false;
         btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> Analyze Image`;
-        document.getElementById('resultBreed').textContent = 'Save Failed';
-        document.getElementById('resultConf').textContent = result
-          ? result.message : 'Server unreachable. Check PHP & uploads folder.';
-        showToast('Could not save image to server.', 'error');
+        document.getElementById('resultBreed').textContent = 'Detection Failed';
+        document.getElementById('resultConf').textContent = 'Could not connect to the AI model.';
+        showToast('Breed detection failed.', 'error');
         closeResult();
         return;
       }
 
-      // Step 2: Run CNN breed detection
-      const prediction = await predictBreed(result.image_path, result.scan_id);
+      if (!prediction.is_dog) {
+        // Save scan history as non-dog
+        await savePredictionResult(previewSrc, 'upload', prediction);
+        displayPrediction(prediction, previewSrc, 'upload');
+        setSaving(false);
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> Analyze Image`;
+        return;
+      }
+
+      // Step 2: Save to server with prediction results
+      const saveResult = await savePredictionResult(previewSrc, 'upload', prediction);
       setSaving(false);
       btn.disabled = false;
       btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> Analyze Image`;
 
-      if (prediction && prediction.success) {
+      if (saveResult && saveResult.success) {
         displayPrediction(prediction, previewSrc, 'upload');
         showToast('Breed detected: ' + prediction.breed, 'success');
       } else {
-        document.getElementById('resultBreed').textContent = 'Detection Failed';
-        document.getElementById('resultConf').textContent = prediction ? prediction.message : 'CNN API unreachable. Run: python dog_breed_detector.py';
-        showToast('Image saved but breed detection failed.', 'error');
+        showToast('Breed detected, but saving history failed.', 'warning');
+        displayPrediction(prediction, previewSrc, 'upload');
       }
-    }
-
-    /* ═══ SAVE TO SERVER ═════════════════════════════════════════════ */
-    async function saveImage(base64Data, source) {
-      const fd = new FormData();
-      fd.append('image_base64', base64Data);
-      fd.append('source', source);
-      try { return await (await fetch('../backend/api/save_scan.php', { method: 'POST', body: fd })).json(); }
-      catch (e) { return null; }
-    }
-    async function saveImageFile(file) {
-      const fd = new FormData();
-      fd.append('image', file);
-      fd.append('source', 'upload');
-      try { return await (await fetch('../backend/api/save_scan.php', { method: 'POST', body: fd })).json(); }
-      catch (e) { return null; }
-    }
-
-    /* ═══ CNN BREED PREDICTION ═══════════════════════════════════════════ */
-    async function predictBreed(imagePath, scanId) {
-      const fd = new FormData();
-      fd.append('image_path', imagePath);
-      fd.append('scan_id', scanId || 0);
-      try { return await (await fetch('../backend/api/predict.php', { method: 'POST', body: fd })).json(); }
-      catch (e) { return null; }
     }
 
     function displayPrediction(prediction, imgSrc, source) {

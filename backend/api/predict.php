@@ -3,6 +3,10 @@
 // No Flask server needed — uses exec() to run dog_breed_detector.py
 require_once __DIR__ . '/../core/config.php';
 
+// Enable error reporting temporarily to debug server issues
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 requireLogin();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') sendJSON(false, 'Invalid request method.');
@@ -35,6 +39,9 @@ if (!$isLocal) {
     // Disable SSL verification to prevent certificate handshake failures on shared hosting
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    
+    // Set a browser User-Agent to bypass Cloudflare/Render WAF blocks (which block default PHP cURL user-agents with 403)
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
     
     $output = curl_exec($ch);
     $curlError = curl_error($ch);
