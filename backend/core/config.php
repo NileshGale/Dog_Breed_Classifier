@@ -11,10 +11,10 @@ if (isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] === 'localhost' || $_
     define('DB_NAME', 'pawdetect_db');
 } else {
     // Production settings (InfinityFree or other live host)
-    define('DB_HOST', 'sql306.infinityfree.com'); 
-    define('DB_USER', 'if0_42223736');                
-    define('DB_PASS', 'forever2616');
-    define('DB_NAME', 'if0_42223736_dog_detect');
+    define('DB_HOST', 'sql305.infinityfree.com'); 
+    define('DB_USER', 'if0_42226919');                
+    define('DB_PASS', 'bestfriend2616');
+    define('DB_NAME', 'if0_42226919_dog_detect');
 }
 
 // ── Machine Learning API Mode ──────────────────────

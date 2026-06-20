@@ -1,3 +1,6 @@
+# visit this link for testing the website
+https://dogbreedfinder.gt.tc
+
 # 🐾 Dog Breed Classifier (formerly PawDetect)
 
 An engineering-focused, AI-powered web application that identifies dog breeds instantly using deep learning, paired with a comprehensive suite of dog care tools including an adoption marketplace, personalized nutrition planner, behavioral training tracker, and vaccination schedule scheduler.
