@@ -62,8 +62,30 @@ else {
     sendJSON(false, 'No image provided.');
 }
 
+// ── Cleanup old scan images and database records older than 2 days ──
+function cleanupOldScans($conn) {
+    $stmt = $conn->prepare("SELECT id, image_path FROM scan_history WHERE created_at < NOW() - INTERVAL 2 DAY");
+    if ($stmt) {
+        $stmt->execute();
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
+            $imagePath = $row['image_path'];
+            if (!empty($imagePath)) {
+                $fullPath = __DIR__ . '/../../' . $imagePath;
+                if (file_exists($fullPath) && is_file($fullPath)) {
+                    @unlink($fullPath);
+                }
+            }
+        }
+        $stmt->close();
+    }
+    $conn->query("DELETE FROM scan_history WHERE created_at < NOW() - INTERVAL 2 DAY");
+}
+
 // ── Store record in DB ─────────────────────────────────────────────
 $conn = getDB();
+cleanupOldScans($conn);
+
 $stmt = $conn->prepare("INSERT INTO scan_history (user_id, image_path, source, top_breed, confidence, predictions) VALUES (?, ?, ?, ?, ?, ?)");
 $topBreedVal   = $topBreed   ?: null;
 $confVal       = $confidence > 0 ? $confidence : null;

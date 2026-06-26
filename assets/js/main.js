@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Redirect to login if not authenticated (except for public home page or registration)
     const isPublicPage = window.location.pathname.includes('home_page.html') || window.location.pathname.includes('register.html');
     if (!userEmail && !isPublicPage) {
-        window.location.href = 'login_page.htm';
+        window.location.href = 'login_page.html';
         return;
     }
 

@@ -127,7 +127,7 @@ function sendOTPEmail(string $toEmail, string $otp, string $subject = 'Your OTP 
 
 function requireLogin() {
     if (empty($_SESSION['user_id'])) {
-        header('Location: login_page.htm');
+        header('Location: login_page.html');
         exit;
     }
 }

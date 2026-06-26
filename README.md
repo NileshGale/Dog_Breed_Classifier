@@ -1,7 +1,7 @@
 # visit this link for testing the website
-https://dogbreedfinder.gt.tc
+https://dogbreedfinder.gt.tc/
 
-# 🐾 Dog Breed Classifier (formerly PawDetect)
+# 🐾 PawDetect — AI Dog Breed Classifier
 
 An engineering-focused, AI-powered web application that identifies dog breeds instantly using deep learning, paired with a comprehensive suite of dog care tools including an adoption marketplace, personalized nutrition planner, behavioral training tracker, and vaccination schedule scheduler.
 
@@ -88,7 +88,7 @@ To ensure the app does not misidentify random objects, humans, or cats as dog br
 ## 📁 Repository Structure
 
 ```text
-dog_breed_classifier/
+PawDetect/
 ├── assets/                     # Static UI assets
 │   ├── css/                    # Custom styling sheet (index.css)
 │   ├── js/                     # Shared frontend routing & handlers (main.js)
@@ -117,7 +117,7 @@ dog_breed_classifier/
 │   ├── behavior_module.html    # Behavioral training recommendations
 │   ├── vaccination_module.html # Vaccination tracker and schedule generator
 │   ├── list_your_dog.html      # Adoption listing registration
-│   ├── login_page.htm          # Auth login view
+│   ├── login_page.html         # Auth login view
 │   └── register.html           # Auth register view
 ├── uploads/                    # User image uploads directory (scans & dog listing photos)
 ├── vendor/                     # Backend components (PHPMailer source integration)
@@ -172,9 +172,9 @@ pip install tensorflow numpy pillow
 ```
 
 #### 4. Serve the App
-1. Copy or clone this folder into your local XAMPP HTDOCS directory: `C:\xampp\htdocs\dog_breed_classifier`
+1. Copy or clone this folder into your local XAMPP HTDOCS directory: `C:\xampp\htdocs\PawDetect`
 2. Start **Apache** and **MySQL** services from your XAMPP Control Panel.
-3. Open your browser and navigate to: `http://localhost/dog_breed_classifier`
+3. Open your browser and navigate to: `http://localhost/PawDetect`
 
 ---
 

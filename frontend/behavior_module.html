@@ -1,176 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" crossorigin="anonymous">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PawDetect — Behavior Module</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="../assets/css/index.css?v=1.3">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --cream: #f5f0e8;
-      --bark: #3b2a1a;
-      --moss: #4a6741;
-      --sand: #c9a96e;
-      --rust: #b55a2a;
-      --fog: #e8e0d4;
-      --leaf: #7a9e6e;
-      --orange: #e65100;
-      --orange-light: #fff3e0;
-      --orange-mid: #ffe0b2;
-    }
+    
     body {
-      background-color: var(--cream);
-      font-family: 'DM Sans', sans-serif;
-      color: var(--bark); min-height: 100vh; overflow-x: hidden;
+      padding-top: 100px;
+      background-color: #0a0a1a;
+      font-family: 'Inter', sans-serif;
+      color: var(--liq-text);
+      min-height: 100vh;
+      overflow-x: hidden;
     }
-    body::before {
-      content: ''; position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none; z-index: 0;
-    }
-
-    /* NAVBAR */
-    .navbar { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,.92); backdrop-filter: blur(12px); border-bottom: 1.5px solid var(--fog); padding: 0 2.5rem; display: flex; align-items: center; justify-content: space-between; height: 64px; box-shadow: 0 2px 12px rgba(59,42,26,.07); }
-    .nav-brand { display: flex; align-items: center; gap: .65rem; text-decoration: none; color: var(--bark); }
-    .logo-paw { width: 36px; height: 36px; background: var(--bark); border-radius: 50% 50% 50% 20%; display: flex; align-items: center; justify-content: center; color: var(--cream); font-size: 1.1rem; }
-    .logo-text { font-family: 'Playfair Display', serif; font-size: 1.45rem; font-weight: 700; letter-spacing: -.02em; }
-    .logo-text span { color: var(--rust); }
-    .nav-right { display: flex; align-items: center; gap: .5rem; position: relative; }
-
-    /* NAV TABS */
-    .nav-tabs { display: flex; gap: 1.5rem; margin-right: 1.2rem; }
-    .nav-tab {
-      text-decoration: none; color: var(--bark); font-size: 0.88rem; font-weight: 600;
-      padding: 0.5rem 0; position: relative; transition: color 0.2s; white-space: nowrap;
-    }
-    .nav-tab:hover { color: var(--rust); }
-    .nav-tab::after {
-      content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px;
-      background: var(--rust); transition: width 0.3s ease; border-radius: 2px;
-    }
-    .nav-tab:hover::after, .nav-tab.active::after { width: 100%; }
-    .nav-tab.active { color: var(--rust); }
-    .nav-divider { width: 1px; height: 26px; background: var(--fog); flex-shrink: 0; }
-    .nav-back:hover { background: #ddd8cc; border-color: var(--sand); }
-
-    /* PROFILE BTN (re-added for consistency) */
-    .profile-btn {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--rust), var(--sand));
-      border: none; cursor: pointer; color: #fff; font-size: 1.1rem;
-      display: flex; align-items: center; justify-content: center;
-      transition: box-shadow .2s, transform .2s;
-      box-shadow: 0 2px 8px rgba(181,90,42,.3);
-    }
-    .profile-btn:hover { transform: scale(1.07); box-shadow: 0 4px 14px rgba(181,90,42,.4); }
-    .profile-dropdown {
-      position: absolute; top: calc(100% + 10px); right: 2.5rem;
-      background: #fff; border: 1.5px solid var(--fog); border-radius: 16px;
-      min-width: 200px; box-shadow: 0 12px 40px rgba(59,42,26,.14);
-      overflow: hidden; display: none; z-index: 200;
-    }
-    .profile-dropdown.open { display: block; animation: dropIn .2s ease; }
-    @keyframes dropIn { from { opacity:0; transform:translateY(-8px) } to { opacity:1; transform:translateY(0) } }
-    .dropdown-header { padding: 14px 16px 10px; border-bottom: 1px solid var(--fog); text-align: left; }
-    .dropdown-header .uname { font-weight: 500; font-size: .9rem; color: var(--bark); }
-    .dropdown-header .uemail { font-size: .75rem; color: #9a8878; margin-top: 2px; }
-    .dropdown-item {
-      display: flex; align-items: center; gap: 10px; padding: 12px 16px;
-      font-size: .88rem; color: var(--bark); cursor: pointer;
-      transition: background .15s; width: 100%; border: none; background: none;
-      font-family: 'DM Sans', sans-serif; text-decoration: none;
-    }
-    .dropdown-item:hover { background: var(--cream); }
-    .dropdown-item.logout { color: #c0392b; }
-    .dropdown-item.logout:hover { background: #fdf0ee; }
-    .dropdown-divider { height: 1px; background: var(--fog); }
 
     /* SECONDARY BACK BUTTON */
     .btn-back-wrap { margin-bottom: 2rem; animation: fadeUp .55s ease both; display: flex; justify-content: flex-start; }
     .btn-back {
       display: inline-flex; align-items: center; gap: .6rem;
-      text-decoration: none; color: var(--bark);
+      text-decoration: none; color: var(--liq-text);
       font-size: .88rem; font-weight: 500;
       padding: .6rem 1.2rem; 
-      background: #fff;
-      border: 1.5px solid var(--fog);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--liq-glass-border);
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(59,42,26,.05);
-      transition: all .2s ease;
+      transition: all 0.2s ease;
       cursor: pointer;
     }
     .btn-back:hover { 
       transform: translateX(-4px);
-      border-color: var(--sand);
-      box-shadow: 0 6px 16px rgba(59,42,26,.1);
-      color: var(--rust);
+      border-color: var(--liq-text);
+      background: rgba(255, 255, 255, 0.12);
     }
 
-    /* TOAST */
-    #toastContainer { position: fixed; top: 80px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
-    .toast { padding: 13px 18px; border-radius: 14px; font-size: .86rem; font-weight: 500; box-shadow: 0 8px 30px rgba(0,0,0,.15); max-width: 300px; display: flex; align-items: center; gap: 10px; animation: toastIn .35s cubic-bezier(0.34,1.56,0.64,1) both; }
-    .toast.hide { animation: toastOut .3s ease forwards; }
-    .toast.success { background: #1e8449; color: #fff; }
-    .toast.error { background: #c0392b; color: #fff; }
-    .toast.info { background: var(--bark); color: var(--cream); }
-    @keyframes toastIn { from { opacity:0; transform:translateX(60px) } to { opacity:1; transform:translateX(0) } }
-    @keyframes toastOut { from { opacity:1; transform:translateX(0) } to { opacity:0; transform:translateX(60px) } }
-
-    /* LAYOUT */
+    /* MAIN LAYOUT */
     .page-wrapper { position: relative; z-index: 1; max-width: 820px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
 
     /* HEADER */
     .page-header { text-align: center; margin-bottom: 2.2rem; animation: fadeUp .6s ease both; }
-    .page-eyebrow { display: inline-flex; align-items: center; gap: .5rem; background: linear-gradient(135deg, var(--orange-light), var(--orange-mid)); color: var(--orange); font-size: .72rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; padding: .35rem 1rem; border-radius: 100px; margin-bottom: 1rem; }
-    .page-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem,4vw,2.8rem); letter-spacing: -.03em; margin-bottom: .5rem; }
-    .page-header h1 em { font-style: italic; color: var(--orange); }
-    .page-header p { font-size: .92rem; color: #7a6a58; font-weight: 300; max-width: 480px; margin: 0 auto; line-height: 1.7; }
-
-    /* SEARCH */
-    .search-bar-wrap { position: relative; margin-bottom: 2rem; animation: fadeUp .65s ease both; }
-    .search-bar { width: 100%; padding: 1rem 1.2rem 1rem 3rem; border: 2px solid var(--fog); border-radius: 16px; font-family: 'DM Sans', sans-serif; font-size: .95rem; background: #fff; color: var(--bark); transition: border-color .2s, box-shadow .2s; box-shadow: 0 4px 16px rgba(59,42,26,.06); }
-    .search-bar:focus { outline: none; border-color: var(--orange); box-shadow: 0 4px 20px rgba(230,81,0,.15); }
-    .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-size: 1.1rem; pointer-events: none; }
-    .search-clear { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: var(--fog); border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-size: .8rem; display: none; align-items: center; justify-content: center; transition: background .2s; }
-    .search-clear:hover { background: #ddd; }
-    .search-clear.visible { display: flex; }
-
-    /* CHIPS */
-    .breed-chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 2rem; animation: fadeUp .7s ease both; }
-    .breed-chip { padding: .35rem .85rem; border-radius: 100px; background: #fff; border: 1.5px solid var(--fog); font-size: .78rem; font-weight: 500; color: var(--bark); cursor: pointer; transition: all .2s; }
-    .breed-chip:hover { background: var(--cream); border-color: var(--orange); color: var(--orange); }
-    .breed-chip.active { background: linear-gradient(135deg, var(--orange-light), var(--orange-mid)); border-color: #ffb74d; color: var(--orange); }
+    .page-eyebrow {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(245, 158, 11, 0.15);
+      color: #fde047; font-size: .72rem; font-weight: 700;
+      letter-spacing: .18em; text-transform: uppercase;
+      padding: .35rem 1rem; border-radius: 100px; margin-bottom: 1rem;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+    .page-header h1 { font-family: 'Outfit', sans-serif; font-size: clamp(1.8rem,4vw,2.8rem); letter-spacing: -.03em; margin-bottom: .5rem; color: var(--liq-text); font-weight: 800; }
+    .page-header h1 em { font-style: normal; color: var(--liq-accent-2); }
+    .page-header p { font-size: .92rem; color: var(--liq-text-muted); font-weight: 400; max-width: 480px; margin: 0 auto; line-height: 1.7; }
 
     /* LOADING / EMPTY */
-    .loading-state { text-align: center; padding: 3rem 1rem; color: #9a8a7a; animation: fadeUp .4s ease both; }
-    .spinner { width: 20px; height: 20px; border: 2.5px solid var(--fog); border-top-color: var(--orange); border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; margin-bottom: .8rem; }
+    .loading-state { text-align: center; padding: 3rem 1rem; color: var(--liq-text-muted); animation: fadeUp .4s ease both; }
+    .spinner { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.08); border-top-color: var(--liq-accent-2); border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; margin-bottom: .8rem; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .empty-state { text-align: center; padding: 3rem 1rem; color: #9a8a7a; animation: fadeUp .4s ease both; }
-    .empty-icon { font-size: 3rem; margin-bottom: .8rem; }
+
+    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--liq-text-muted); animation: fadeUp .4s ease both; }
+    .empty-icon { font-size: 3rem; margin-bottom: .8rem; color: rgba(255, 255, 255, 0.2); }
 
     /* MODULE */
     .behavior-module { animation: fadeUp .5s ease both; }
     .module-breed-title { display: flex; align-items: center; gap: .8rem; margin-bottom: 1.5rem; }
     .module-breed-icon { font-size: 2rem; }
-    .module-breed-name { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--bark); }
-    .module-breed-sub { font-size: .8rem; color: #9a8a7a; margin-top: .1rem; }
+    .module-breed-name { font-family: 'Outfit', sans-serif; font-size: 1.5rem; color: var(--liq-text); font-weight: 800; }
+    .module-breed-sub { font-size: .8rem; color: var(--liq-text-muted); margin-top: .1rem; }
 
     /* TEMPERAMENT HERO CARD */
     .temperament-card {
-      background: linear-gradient(135deg, #fff8f0, #fef3e8);
-      border: 1.5px solid #ffd180; border-radius: 20px;
+      background: rgba(124, 58, 237, 0.12);
+      border: 1px solid rgba(124, 58, 237, 0.25); border-radius: 20px;
       padding: 1.6rem 1.8rem; margin-bottom: 1rem;
       position: relative; overflow: hidden;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
     }
     .temperament-card::before {
       content: '\f5d1'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
       position: absolute; right: 1.5rem; top: 50%;
       transform: translateY(-50%); font-size: 4rem; opacity: .12;
+      background: linear-gradient(135deg, var(--liq-accent-1), var(--liq-accent-3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-    .temperament-label { font-size: .72rem; font-weight: 500; color: var(--orange); text-transform: uppercase; letter-spacing: .1em; margin-bottom: .5rem; }
-    .temperament-text { font-size: 1rem; color: var(--bark); line-height: 1.7; font-weight: 300; max-width: 90%; }
+    .temperament-label { font-size: .72rem; font-weight: 700; color: var(--liq-accent-2); text-transform: uppercase; letter-spacing: .1em; margin-bottom: .5rem; }
+    .temperament-text { font-size: 1rem; color: var(--liq-text); line-height: 1.7; font-weight: 400; max-width: 90%; }
 
     /* STATS GRID */
     .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin-bottom: 1rem; }
@@ -178,78 +97,109 @@
     @media(max-width:380px) { .stats-grid { grid-template-columns: 1fr; } }
 
     .stat-card {
-      background: #fff; border: 1.5px solid var(--fog); border-radius: 16px;
-      padding: 1.1rem; transition: transform .25s, box-shadow .25s;
+      background: var(--liq-glass); border: 1px solid var(--liq-glass-border); border-radius: 16px;
+      padding: 1.1rem; transition: transform .25s, box-shadow .25s, background-color .25s;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
     }
-    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(59,42,26,.1); }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(124, 58, 237, 0.2); border-color: rgba(255,255,255,0.2); background: var(--liq-glass-strong); }
     .stat-icon { font-size: 1.4rem; margin-bottom: .4rem; }
-    .stat-label { font-size: .68rem; font-weight: 500; color: #9a8a7a; text-transform: uppercase; letter-spacing: .07em; margin-bottom: .3rem; }
-    .stat-value { font-size: .9rem; font-weight: 600; color: var(--bark); }
-    .stat-meter { height: 5px; background: var(--fog); border-radius: 100px; overflow: hidden; margin-top: .5rem; }
-    .stat-meter-fill { height: 100%; border-radius: 100px; transition: width .8s ease; }
-    .fill-high { background: linear-gradient(90deg, #43a047, #66bb6a); }
-    .fill-medium { background: linear-gradient(90deg, var(--sand), var(--rust)); }
-    .fill-low { background: linear-gradient(90deg, #ef9a9a, #e53935); }
+    .stat-label { font-size: .68rem; font-weight: 700; color: var(--liq-text-muted); text-transform: uppercase; letter-spacing: .07em; margin-bottom: .3rem; }
+    .stat-value { font-size: .9rem; font-weight: 600; color: var(--liq-text); }
+    
+    .stat-meter { height: 6px; background: rgba(255,255,255,0.08); border-radius: 100px; overflow: hidden; margin-top: .5rem; border: 1px solid rgba(255,255,255,0.04); }
+    .stat-meter-fill { height: 100%; border-radius: 100px; transition: width .8s cubic-bezier(0.16, 1, 0.3, 1); }
+    .fill-high { background: linear-gradient(90deg, #10b981, #34d399); }
+    .fill-medium { background: linear-gradient(90deg, #f59e0b, #ec4899); }
+    .fill-low { background: linear-gradient(90deg, #ef4444, #fca5a5); }
 
     /* INFO CARDS */
-    .info-card { background: #fff; border: 1.5px solid var(--fog); border-radius: 20px; padding: 1.4rem; margin-bottom: 1rem; transition: transform .25s, box-shadow .25s; }
-    .info-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(59,42,26,.1); }
+    .info-card {
+      background: var(--liq-glass); border: 1px solid var(--liq-glass-border); border-radius: 20px;
+      padding: 1.4rem; margin-bottom: 1rem; transition: transform .25s, box-shadow .25s, background-color .25s;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      color: var(--liq-text);
+    }
+    .info-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0, 0, 0, .2); border-color: rgba(255, 255, 255, 0.2); background: var(--liq-glass-strong); }
+
     .card-header { display: flex; align-items: center; gap: .7rem; margin-bottom: .9rem; }
-    .card-icon-wrap { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
-    .icon-orange { background: var(--orange-light); }
-    .icon-green { background: #e8f5e9; }
-    .icon-blue { background: #e3f2fd; }
-    .card-title { font-weight: 600; font-size: .95rem; color: var(--bark); }
-    .card-sub { font-size: .75rem; color: #9a8a7a; margin-top: .1rem; }
-    .card-body { font-size: .85rem; color: #5a4a3a; line-height: 1.7; }
+    .card-icon-wrap {
+      width: 42px; height: 42px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .icon-orange { background: rgba(245, 158, 11, 0.15); color: #fde047; border-color: rgba(245, 158, 11, 0.25); }
+    .icon-green { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border-color: rgba(16, 185, 129, 0.25); }
+    .icon-blue { background: rgba(6, 182, 212, 0.15); color: #67e8f9; border-color: rgba(6, 182, 212, 0.25); }
+    
+    .card-title { font-weight: 700; font-size: .95rem; color: var(--liq-text); }
+    .card-sub { font-size: .75rem; color: var(--liq-text-muted); margin-top: .1rem; }
+    .card-body { font-size: .85rem; color: var(--liq-text-muted); line-height: 1.7; }
 
     /* COMPATIBILITY GRID */
     .compat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
-    .compat-item { display: flex; align-items: center; gap: .6rem; padding: .65rem .9rem; background: var(--cream); border-radius: 12px; border: 1px solid rgba(59,42,26,.06); }
+    .compat-item { display: flex; align-items: center; gap: .6rem; padding: .65rem .9rem; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); }
     .compat-emoji { font-size: 1.2rem; }
-    .compat-label { font-size: .78rem; color: #7a6a58; }
-    .compat-value { font-size: .82rem; font-weight: 600; color: var(--bark); margin-top: .1rem; }
+    .compat-label { font-size: .78rem; color: var(--liq-text-muted); }
+    .compat-value { font-size: .82rem; font-weight: 600; color: var(--liq-text); margin-top: .1rem; }
 
     /* TIPS */
     .tips-list { list-style: none; padding: 0; }
-    .tips-list li { display: flex; align-items: flex-start; gap: .7rem; padding: .55rem 0; font-size: .84rem; color: #5a4a3a; line-height: 1.5; border-bottom: 1px solid var(--fog); }
+    .tips-list li { display: flex; align-items: flex-start; gap: .7rem; padding: .55rem 0; font-size: .84rem; color: var(--liq-text-muted); line-height: 1.5; border-bottom: 1px solid var(--liq-glass-border); }
     .tips-list li:last-child { border-bottom: none; }
-    .tip-bullet { flex-shrink: 0; width: 22px; height: 22px; background: linear-gradient(135deg, var(--orange-light), var(--orange-mid)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .7rem; margin-top: .1rem; }
+    .tip-bullet { flex-shrink: 0; width: 22px; height: 22px; background: rgba(124, 58, 237, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .7rem; margin-top: .1rem; color: #c4b5fd; border: 1px solid rgba(124, 58, 237, 0.25); }
 
     /* NOTE */
-    .info-note { display: flex; gap: .6rem; align-items: flex-start; background: #fdf8f3; border: 1px solid var(--sand); border-radius: 14px; padding: 1rem 1.1rem; margin-top: .5rem; font-size: .82rem; color: #6a5a4a; line-height: 1.65; }
+    .info-note {
+      display: flex; gap: .6rem; align-items: flex-start;
+      background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.25); border-radius: 14px;
+      padding: 1rem 1.1rem; margin-top: .5rem;
+      font-size: .82rem; color: #67e8f9; line-height: 1.65;
+    }
     .note-icon { font-size: 1rem; flex-shrink: 0; margin-top: .1rem; }
 
     @keyframes fadeUp { from { opacity:0; transform:translateY(24px) } to { opacity:1; transform:translateY(0) } }
-    @media(max-width:600px) { .navbar { padding: 0 1rem; } .page-wrapper { padding: 2rem 1rem 3rem; } .compat-grid { grid-template-columns: 1fr; } }
+    @media(max-width:600px) { .page-wrapper { padding: 2rem 1rem 3rem; } .compat-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
-<body>
+<body style="padding-top: 100px;">
 
-  <nav class="navbar">
-    <a href="home_page.html" class="nav-brand">
-      <div class="logo-paw"><i class="fa-solid fa-paw"></i></div>
-      <div class="logo-text">Paw<span>Detect</span></div>
-    </a>
-    <div class="nav-right">
-      <div class="nav-tabs" id="navTabs">
-        <a href="detect.html" class="nav-tab">Detect Breed</a>
-        <a href="adoption_module.html" class="nav-tab">Adopt a Dog</a>
-        <a href="list_your_dog.html" class="nav-tab">List of Dog</a>
-      </div>
-      <div class="nav-divider"></div>
-      <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()" title="My Account"><i class="fa-solid fa-user"></i></button>
-      <div class="profile-dropdown" id="profileDropdown">
-        <div class="dropdown-header">
-            <div class="uname" id="ddName">…</div>
-            <div class="uemail" id="ddEmail"></div>
+    <header id="mainHeader">
+        <div class="nav-container">
+            <a href="home_page.html" class="nav-brand">
+                <div class="logo-paw"><i class="fa-solid fa-paw"></i></div>
+                <div class="logo-text">Paw<span>Detect</span></div>
+            </a>
+
+            <div class="nav-right">
+                <nav class="nav-tabs">
+                    <a href="detect.html" class="nav-tab">Detect Breed</a>
+                    <a href="adoption_module.html" class="nav-tab">Adopt a Dog</a>
+                    <a href="list_your_dog.html" class="nav-tab">List Your Dog</a>
+                </nav>
+
+                <div class="nav-btns">
+                    <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()">
+                        <i class="fa-solid fa-user"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="dropdown-header">
+                            <div class="uname" id="ddName">User</div>
+                            <div class="uemail" id="ddEmail">...</div>
+                        </div>
+                        <button class="dropdown-item" onclick="openProfile()">
+                            <i class="fa-solid fa-circle-user"></i> My Profile
+                        </button>
+                        <button class="dropdown-item logout" onclick="doLogout()">
+                            <i class="fa-solid fa-right-from-bracket"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <button class="dropdown-item" onclick="openProfile()"><i class="fa-solid fa-user"></i> My Profile</button>
-        <div class="dropdown-divider"></div>
-        <button class="dropdown-item logout" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
-      </div>
-    </div>
-  </nav>
+    </header>
 
   <div class="page-wrapper">
     <!-- SECONDARY BACK -->
@@ -270,51 +220,93 @@
     </div>
   </div>
 
-  <div id="toastContainer"></div>
+    <!-- PROFILE MODAL -->
+    <div class="profile-modal" id="profileModal">
+      <div class="pm-box">
+        <button class="pm-close" onclick="closeProfile()">✕</button>
+        <h3 style="font-family:'Outfit',serif;font-weight:700;font-size:1.5rem;color:var(--bark);margin-bottom:1.25rem">My Profile</h3>
+  
+        <div class="pm-tabs">
+          <button class="pm-tab active" onclick="switchTab('tabInfo',this)"><i class="fa-solid fa-user"></i> Info</button>
+          <button class="pm-tab" onclick="switchTab('tabEmail',this)"><i class="fa-solid fa-envelope"></i> Email</button>
+          <button class="pm-tab" onclick="switchTab('tabHistory',this)"><i class="fa-solid fa-clock-rotate-left"></i> History</button>
+        </div>
+  
+        <div class="pm-panel active" id="tabInfo">
+          <div class="pm-alert" id="infoAlert"></div>
+          <div class="pm-field"><label>Full Name</label><input type="text" id="pmName" placeholder="Your full name"></div>
+          <div class="pm-field"><label>Mobile Number</label><input type="tel" id="pmMobile" placeholder="+91 XXXXXXXXXX"></div>
+          <div class="pm-field"><label>Age</label><input type="number" id="pmAge" min="1" max="120" placeholder="Your age"></div>
+          <div class="pm-field">
+            <label>Gender</label>
+            <select id="pmGender">
+              <option value="">Prefer not to say</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+              <option value="prefer_not_to_say">Prefer not to say</option>
+            </select>
+          </div>
+          <button class="pm-btn" onclick="saveProfile()">💾 Save Changes</button>
+        </div>
+  
+        <div class="pm-panel" id="tabEmail">
+          <div class="pm-alert" id="emailAlert"></div>
+          <div class="email-step active" id="emailStep1">
+            <p style="font-size:13px;color:var(--liq-text-muted);margin-bottom:10px">We'll send an OTP to your <strong>current email</strong> to verify it's you.</p>
+            <p style="font-size:13px;font-weight:500;margin-bottom:14px">Current: <span id="currentEmailDisplay"></span></p>
+            <button class="pm-btn" onclick="requestEmailChange()">📧 Send Verification OTP</button>
+          </div>
+          <div class="email-step" id="emailStep2">
+            <p style="font-size:13px;color:var(--liq-text-muted);margin-bottom:8px">Enter the OTP sent to your current email:</p>
+            <div class="pm-otp-inputs" id="ceOTPBoxes1"></div>
+            <button class="pm-btn" onclick="verifyCurrentOTP()"><i class="fa-solid fa-circle-check"></i> Verify OTP</button>
+            <button class="pm-btn secondary" onclick="goEmailStep(1)">← Back</button>
+          </div>
+          <div class="email-step" id="emailStep3">
+            <p style="font-size:13px;color:var(--liq-text-muted);margin-bottom:10px">Enter your new email address:</p>
+            <div class="pm-field"><label>New Email</label><input type="email" id="newEmailInput" placeholder="new@email.com"></div>
+            <button class="pm-btn" onclick="sendNewEmailOTP()">📧 Send OTP to New Email</button>
+            <button class="pm-btn secondary" onclick="goEmailStep(1)">← Start Over</button>
+          </div>
+          <div class="email-step" id="emailStep4">
+            <p style="font-size:13px;color:var(--liq-text-muted);margin-bottom:8px">Enter the OTP sent to your new email:</p>
+            <div class="pm-otp-inputs" id="ceOTPBoxes2"></div>
+            <button class="pm-btn" onclick="verifyNewEmailOTP()"><i class="fa-solid fa-circle-check"></i> Confirm New Email</button>
+            <button class="pm-btn secondary" onclick="goEmailStep(3)">← Back</button>
+          </div>
+          <div class="email-step" id="emailStep5" style="text-align:center;padding:20px 0">
+            <div style="font-size:46px;margin-bottom:10px"><i class="fa-solid fa-circle-check"></i></div>
+            <p style="font-weight:500;color:var(--moss)">Email updated successfully!</p>
+            <p style="font-size:13px;color:var(--liq-text-muted);margin-top:6px">Please login again with your new email.</p>
+            <button class="pm-btn" style="margin-top:14px" onclick="doLogout()"><i class="fa-solid fa-key"></i> Go to Login</button>
+          </div>
+        </div>
+  
+        <div class="pm-panel" id="tabHistory">
+          <div id="historyList" class="history-list">
+             <div style="text-align:center;padding:40px 20px;color:#bbb">
+               <i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem;margin-bottom:10px"></i>
+               <p style="font-size:13px">Loading your dog history…</p>
+             </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  <script>
-    // Profile handling logic (added for consistency across modules)
-    function toggleDropdown() { document.getElementById('profileDropdown').classList.toggle('open'); }
-    window.addEventListener('click', e => {
-      if (!e.target.closest('#profileBtn') && !e.target.closest('#profileDropdown')) {
-        const dd = document.getElementById('profileDropdown');
-        if (dd) dd.classList.remove('open');
-      }
-    });
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer"></div>
 
-    function openProfile() { window.location.href = 'detect.html?openProfile=1'; }
-    function doLogout() {
-      sessionStorage.clear();
-      fetch('../backend/api/logout.php').finally(() => {
-        window.location.href = 'home_page.html';
-      });
-    }
-
-    // Populate profile instantly
-    const userEmail = sessionStorage.getItem('pawdetect_user_email');
-    const userName = sessionStorage.getItem('pawdetect_user_name');
-    if (userEmail) {
-      document.getElementById('ddName').textContent = userName || 'User';
-      document.getElementById('ddEmail').textContent = userEmail;
-    } else {
-      fetch('../backend/api/login.php?check=1')
-        .then(r => r.json())
-        .then(data => {
-          if (data.logged_in) {
-            document.getElementById('ddName').textContent = data.user.full_name;
-            document.getElementById('ddEmail').textContent = data.user.email;
-            sessionStorage.setItem('pawdetect_user_email', data.user.email);
-            sessionStorage.setItem('pawdetect_user_name', data.user.full_name);
-          }
-        });
-    }
-
+    <script src="../assets/js/main.js"></script>
+    <script>
     // Check for breed in URL
     window.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams(window.location.search);
       const breed = params.get('breed');
       if (breed) {
         loadBreedBehavior(breed);
+      } else {
+        showEmpty();
       }
     });
 
@@ -322,7 +314,7 @@
       document.getElementById('contentArea').innerHTML = `
         <div class="empty-state">
           <div class="empty-icon"><i class="fa-solid fa-dog"></i></div>
-          <p>No breed information selected.</p>
+          <p>Search for a breed on the Detection page or select one from your search history.</p>
         </div>`;
     }
 
@@ -484,17 +476,6 @@
 
       showToast('Behavior profile loaded for ' + breedName, 'success');
     }
-
-    function showToast(msg, type = 'info', ms = 3000) {
-      const t = document.createElement('div');
-      t.className = `toast ${type}`;
-      const icons = { success:'<i class="fa-solid fa-circle-check"></i>', error:'<i class="fa-solid fa-circle-xmark"></i>', info:'<i class="fa-solid fa-circle-info"></i>' };
-      t.innerHTML = `<span>${icons[type]||'<i class="fa-solid fa-circle-info"></i>'}</span><span>${msg}</span>`;
-      document.getElementById('toastContainer').appendChild(t);
-      setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 400); }, ms);
-    }
   </script>
 </body>
 </html>
-
-

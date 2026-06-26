@@ -10,22 +10,20 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Core CSS -->
-    <link rel="stylesheet" href="../assets/css/index.css">
+    <link rel="stylesheet" href="../assets/css/index.css?v=1.3">
 
     <style>
         :root {
             /* Aligning with index.css brand colors */
-            --primary: var(--secondary); /* The darker rust color used in adoption */
-            --primary-light: #fff5f0;
-            --border-color: rgba(0,0,0,0.06);
-            --text-dark: #1a1a1a;
-            --text-muted: #666;
-            --accent: var(--primary); /* The bright orange */
+            --primary-light: rgba(124, 58, 237, 0.1);
+            --border-color: rgba(255,255,255,0.08);
+            --text-dark: #f0f0ff;
+            --text-muted: rgba(255,255,255,0.55);
         }
 
         body {
             padding-top: 100px;
-            background-color: #fafbfc;
+            background-color: #0a0a1a;
         }
 
         /* Form Container */
@@ -34,15 +32,20 @@
             margin: 0 auto;
             padding: 0 1.5rem 5rem;
             animation: fadeUp 0.6s ease-out;
+            position: relative;
+            z-index: 10;
         }
 
         .form-card {
-            background: #ffffff;
+            background: var(--liq-glass);
             border-radius: 32px;
             padding: 2.5rem;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--liq-glass-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: var(--liq-text);
         }
 
         /* Step Indicator */
@@ -58,7 +61,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            color: #94a3b8;
+            color: var(--liq-text-muted);
             font-weight: 600;
             font-size: 0.95rem;
         }
@@ -67,23 +70,25 @@
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background: #f1f5f9;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--liq-glass-border);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.85rem;
             transition: all 0.3s;
+            color: var(--liq-text-muted);
         }
 
-        .step-item.active { color: var(--primary); }
-        .step-item.active .step-circle { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3); }
-        .step-item.done { color: var(--primary); }
-        .step-item.done .step-circle { background: var(--primary-light); color: var(--primary); }
+        .step-item.active { color: var(--liq-accent-2); }
+        .step-item.active .step-circle { background: var(--liq-accent-2); color: white; box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); border-color: transparent; }
+        .step-item.done { color: var(--liq-accent-1); }
+        .step-item.done .step-circle { background: rgba(124, 58, 237, 0.15); color: var(--liq-accent-1); border-color: rgba(124, 58, 237, 0.3); }
 
         .step-line {
             width: 40px;
             height: 2px;
-            background: #f1f5f9;
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 2px;
         }
 
@@ -100,7 +105,7 @@
         .photo-upload-zone {
             width: 100%;
             height: 240px;
-            border: 2px dashed #cbd5e1;
+            border: 2px dashed rgba(255, 255, 255, 0.12);
             border-radius: 24px;
             display: flex;
             flex-direction: column;
@@ -110,71 +115,82 @@
             transition: all 0.2s;
             position: relative;
             overflow: hidden;
-            background: #f8fafc;
+            background: rgba(255, 255, 255, 0.02);
         }
 
-        .photo-upload-zone:hover { border-color: var(--primary); background: var(--primary-light); }
+        .photo-upload-zone:hover { border-color: var(--liq-accent-2); background: rgba(124, 58, 237, 0.08); }
         .photo-preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; }
 
         .upload-badge {
-            background: #f1f5f9;
-            color: #475569;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--liq-text-muted);
             padding: 6px 14px;
             border-radius: 100px;
             font-size: 0.75rem;
             font-weight: 600;
             margin-top: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         /* Input Controls */
         .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; }
         .input-group { margin-bottom: 1.5rem; }
-        .input-group label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.6rem; color: var(--text-dark); }
+        .input-group label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.6rem; color: var(--liq-text); }
         
         .input-control {
             width: 100%;
             padding: 14px 18px;
-            border: 1.5px solid #e2e8f0;
+            border: 1px solid var(--liq-glass-border);
             border-radius: 14px;
             font-family: inherit;
             font-size: 0.95rem;
             transition: all 0.2s;
-            background: #fff;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--liq-text);
         }
 
-        .input-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1); }
-        .char-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem; }
+        .input-control:focus { outline: none; border-color: var(--liq-accent-1); box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15); background: rgba(255, 255, 255, 0.08); }
+        .input-control option {
+            background: #1a1035;
+            color: var(--liq-text);
+        }
+        .char-hint { font-size: 0.75rem; color: var(--liq-text-muted); margin-top: 0.5rem; }
 
         /* Breed Autocomplete */
         .breed-container { position: relative; }
         .autocomplete-list {
             position: absolute; top: 100%; left: 0; right: 0;
-            background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+            background: rgba(26, 16, 53, 0.95);
+            backdrop-filter: blur(24px);
+            border: 1px solid var(--liq-glass-border); border-radius: 16px;
             margin-top: 8px; max-height: 300px; overflow-y: auto; z-index: 2000;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); display: none; padding: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: none; padding: 8px;
         }
         .autocomplete-list.active { display: block; }
-        .autocomplete-item { padding: 10px 16px; cursor: pointer; border-radius: 10px; font-size: 0.9rem; transition: all 0.2s; }
-        .autocomplete-item:hover { background: var(--primary-light); color: var(--primary); }
+        .autocomplete-item { padding: 10px 16px; cursor: pointer; border-radius: 10px; font-size: 0.9rem; transition: all 0.2s; color: var(--liq-text-muted); }
+        .autocomplete-item:hover { background: rgba(124, 58, 237, 0.1); color: var(--liq-text); }
 
         /* Footer Buttons */
         .form-footer { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem; }
         .btn-next, .btn-submit {
-            background: var(--primary); color: white; border: none; padding: 14px 28px;
+            background: linear-gradient(135deg, var(--liq-accent-1), var(--liq-accent-3));
+            color: white; border: none; padding: 14px 28px;
             border-radius: 100px; font-weight: 600; cursor: pointer; transition: all 0.2s;
             display: inline-flex; align-items: center; gap: 8px;
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.35);
         }
-        .btn-next:hover, .btn-submit:hover { background: var(--accent); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(181,90,42,0.2); }
-        .btn-back { background: transparent; color: #64748b; border: 1px solid #e2e8f0; padding: 14px 28px; border-radius: 100px; font-weight: 600; cursor: pointer; }
-        .btn-back:hover { background: #f8fafc; }
+        .btn-next:hover, .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 12px 35px rgba(124, 58, 237, 0.5); }
+        .btn-back { background: rgba(255, 255, 255, 0.06); color: var(--liq-text); border: 1px solid var(--liq-glass-border); padding: 14px 28px; border-radius: 100px; font-weight: 600; cursor: pointer; transition: var(--transition); }
+        .btn-back:hover { background: rgba(255, 255, 255, 0.12); border-color: var(--liq-text); }
 
         /* Success Overlay */
         .success-overlay {
-            position: fixed; inset: 0; background: #fff; z-index: 3000;
+            position: fixed; inset: 0; background: #0a0a1a; z-index: 3000;
             display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center;
             animation: fadeIn 0.4s ease-out;
+            color: var(--liq-text);
         }
-        .success-icon { width: 80px; height: 80px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin-bottom: 2rem; }
+        .success-icon { width: 80px; height: 80px; background: rgba(16, 185, 129, 0.15); color: var(--liq-accent-4); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin-bottom: 2rem; }
 
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(20px); }
@@ -182,10 +198,18 @@
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
         @media (max-width: 640px) {
             .input-grid { grid-template-columns: 1fr; }
             .form-card { padding: 1.5rem; }
             .step-indicator { flex-wrap: wrap; }
+            .checkbox-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -328,7 +352,7 @@
         <div class="form-section" id="section2">
             <div class="form-card">
                 <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 2rem;">
-                    <div style="width: 48px; height: 48px; background: var(--primary-light); color: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                    <div style="width: 48px; height: 48px; background: var(--primary-light); color: var(--liq-accent-2); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
                         <i class="fa-solid fa-notes-medical"></i>
                     </div>
                     <div>
@@ -337,24 +361,24 @@
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
-                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 1rem; border: 1.5px solid #f1f5f9; border-radius: 12px;">
-                        <input type="checkbox" id="chkVaccinated" style="width: 18px; height: 18px; accent-color: var(--primary);"> <span>Vaccinated</span>
+                <div class="checkbox-grid">
+                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255,255,255,0.02);">
+                        <input type="checkbox" id="chkVaccinated" style="width: 18px; height: 18px; accent-color: var(--liq-accent-2);"> <span>Vaccinated</span>
                     </label>
-                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 1rem; border: 1.5px solid #f1f5f9; border-radius: 12px;">
-                        <input type="checkbox" id="chkNeutered" style="width: 18px; height: 18px; accent-color: var(--primary);"> <span>Neutered</span>
+                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255,255,255,0.02);">
+                        <input type="checkbox" id="chkNeutered" style="width: 18px; height: 18px; accent-color: var(--liq-accent-2);"> <span>Neutered</span>
                     </label>
-                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 1rem; border: 1.5px solid #f1f5f9; border-radius: 12px;">
-                        <input type="checkbox" id="chkKids" style="width: 18px; height: 18px; accent-color: var(--primary);"> <span>Good with Kids</span>
+                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255,255,255,0.02);">
+                        <input type="checkbox" id="chkKids" style="width: 18px; height: 18px; accent-color: var(--liq-accent-2);"> <span>Good with Kids</span>
                     </label>
-                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 1rem; border: 1.5px solid #f1f5f9; border-radius: 12px;">
-                        <input type="checkbox" id="chkPets" style="width: 18px; height: 18px; accent-color: var(--primary);"> <span>Good with other Pets</span>
+                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255,255,255,0.02);">
+                        <input type="checkbox" id="chkPets" style="width: 18px; height: 18px; accent-color: var(--liq-accent-2);"> <span>Good with other Pets</span>
                     </label>
                 </div>
 
-                <div class="input-group" style="background: #fff1f2; padding: 1.5rem; border-radius: 16px; border: 1px solid #fecdd3;">
-                    <label style="display: flex; align-items: center; gap: 12px; color: #881337; cursor: pointer; margin-bottom: 0;">
-                        <input type="checkbox" id="chkUrgent" style="width: 20px; height: 20px; accent-color: #e11d48;"> 
+                <div class="input-group" style="background: rgba(239, 68, 68, 0.1); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(239, 68, 68, 0.25);">
+                    <label style="display: flex; align-items: center; gap: 12px; color: #fca5a5; cursor: pointer; margin-bottom: 0;">
+                        <input type="checkbox" id="chkUrgent" style="width: 20px; height: 20px; accent-color: #ef4444;"> 
                         <div>
                             <strong style="display: block;">URGENT PROTECTION NEEDED</strong>
                             <span style="font-size: 0.75rem; font-weight: normal; opacity: 0.8;">Mark if immediate home is required</span>
@@ -372,15 +396,15 @@
         <!-- Section 3: Contact -->
         <div class="form-section" id="section3">
             <div class="form-card" style="text-align: center;">
-                <div style="width: 64px; height: 64px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 1.5rem;">
+                <div style="width: 64px; height: 64px; background: var(--primary-light); color: var(--liq-accent-1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 1.5rem;">
                     <i class="fa-solid fa-paper-plane"></i>
                 </div>
                 <h3 style="font-family: 'Outfit';">Ready to Publish?</h3>
                 <p style="color: var(--text-muted); margin-bottom: 2rem;">Adopters will reach you directly at your registered email.</p>
                 
-                <div style="background: #f8fafc; padding: 1.5rem; border-radius: 16px; text-align: left; margin-bottom: 2rem;">
-                    <p style="font-size: 0.9rem; color: #475569; line-height: 1.6; margin: 0;">
-                        <i class="fa-solid fa-circle-info" style="color: var(--primary); margin-right: 0.5rem;"></i>
+                <div style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.2); padding: 1.5rem; border-radius: 16px; text-align: left; margin-bottom: 2rem;">
+                    <p style="font-size: 0.9rem; color: #67e8f9; line-height: 1.6; margin: 0;">
+                        <i class="fa-solid fa-circle-info" style="color: var(--liq-accent-2); margin-right: 0.5rem;"></i>
                         By listing your dog, you agree to respond to potential adopter inquiries in a timely manner.
                     </p>
                 </div>
@@ -400,85 +424,84 @@
         <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
         <h2 style="font-size: 2rem; font-family: 'Outfit'; margin-bottom: 0.5rem;">Listing Published!</h2>
         <p style="color: var(--text-muted);">Your dog's profile is now live for potential adopters.</p>
-        <div style="width: 200px; height: 4px; background: #f1f5f9; border-radius: 10px; margin: 2rem 0; overflow: hidden;">
-            <div style="height: 100%; background: var(--primary); width: 100%; animation: loader 2.5s ease-in-out;"></div>
+        <div style="width: 200px; height: 4px; background: rgba(255,255,255,0.08); border-radius: 10px; margin: 2rem 0; overflow: hidden;">
+            <div style="height: 100%; background: linear-gradient(90deg, var(--liq-accent-1), var(--liq-accent-2)); width: 100%; animation: loader 2.5s ease-in-out;"></div>
         </div>
-        <p style="font-size: 0.85rem; color: var(--text-muted);">Redirecting to adoption center...</p>
     </div>
     <!-- PROFILE MODAL -->
     <div class="profile-modal" id="profileModal">
-      <div class="pm-box">
-        <button class="pm-close" onclick="closeProfile()">✕</button>
-        <h3 style="font-family:'Outfit',serif;font-weight:700;font-size:1.5rem;color:var(--bark);margin-bottom:1.25rem">My Profile</h3>
-  
-        <div class="pm-tabs">
-          <button class="pm-tab active" onclick="switchTab('tabInfo',this)"><i class="fa-solid fa-user"></i> Info</button>
-          <button class="pm-tab" onclick="switchTab('tabEmail',this)"><i class="fa-solid fa-envelope"></i> Email</button>
-          <button class="pm-tab" onclick="switchTab('tabHistory',this)"><i class="fa-solid fa-clock-rotate-left"></i> History</button>
+        <div class="pm-box">
+            <button class="pm-close" onclick="closeProfile()">✕</button>
+            <h3 style="font-family:'Outfit',sans-serif;font-weight:700;font-size:1.5rem;color:var(--bark);margin-bottom:1.25rem">My Profile</h3>
+
+            <div class="pm-tabs">
+                <button class="pm-tab active" onclick="switchTab('tabInfo',this)"><i class="fa-solid fa-user"></i> Info</button>
+                <button class="pm-tab" onclick="switchTab('tabEmail',this)"><i class="fa-solid fa-envelope"></i> Email</button>
+                <button class="pm-tab" onclick="switchTab('tabHistory',this)"><i class="fa-solid fa-clock-rotate-left"></i> History</button>
+            </div>
+
+            <div class="pm-panel active" id="tabInfo">
+                <div class="pm-alert" id="infoAlert"></div>
+                <div class="pm-field"><label>Full Name</label><input type="text" id="pmName" placeholder="Your full name"></div>
+                <div class="pm-field"><label>Mobile Number</label><input type="tel" id="pmMobile" placeholder="+91 XXXXXXXXXX"></div>
+                <div class="pm-field"><label>Age</label><input type="number" id="pmAge" min="1" max="120" placeholder="Your age"></div>
+                <div class="pm-field">
+                    <label>Gender</label>
+                    <select id="pmGender">
+                        <option value="">Prefer not to say</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                        <option value="prefer_not_to_say">Prefer not to say</option>
+                    </select>
+                </div>
+                <button class="pm-btn" onclick="saveProfile()">💾 Save Changes</button>
+            </div>
+
+            <div class="pm-panel" id="tabEmail">
+                <div class="pm-alert" id="emailAlert"></div>
+                <div class="email-step active" id="emailStep1">
+                    <p style="font-size:13px;color:var(--liq-text-muted);margin-bottom:10px">We'll send an OTP to your <strong>current email</strong> to verify it's you.</p>
+                    <p style="font-size:13px;font-weight:500;margin-bottom:14px">Current: <span id="currentEmailDisplay"></span></p>
+                    <button class="pm-btn" onclick="requestEmailChange()">📧 Send Verification OTP</button>
+                </div>
+                <div class="email-step" id="emailStep2">
+                    <p style="font-size:13px;color:var(--liq-text-muted);margin-bottom:8px">Enter the OTP sent to your current email:</p>
+                    <div class="pm-otp-inputs" id="ceOTPBoxes1"></div>
+                    <button class="pm-btn" onclick="verifyCurrentOTP()"><i class="fa-solid fa-circle-check"></i> Verify OTP</button>
+                    <button class="pm-btn secondary" onclick="goEmailStep(1)">← Back</button>
+                </div>
+                <div class="email-step" id="emailStep3">
+                    <p style="font-size:13px;color:var(--liq-text-muted);margin-bottom:10px">Enter your new email address:</p>
+                    <div class="pm-field"><label>New Email</label><input type="email" id="newEmailInput" placeholder="new@email.com"></div>
+                    <button class="pm-btn" onclick="sendNewEmailOTP()">📧 Send OTP to New Email</button>
+                    <button class="pm-btn secondary" onclick="goEmailStep(1)">← Start Over</button>
+                </div>
+                <div class="email-step" id="emailStep4">
+                    <p style="font-size:13px;color:var(--liq-text-muted);margin-bottom:8px">Enter the OTP sent to your new email:</p>
+                    <div class="pm-otp-inputs" id="ceOTPBoxes2"></div>
+                    <button class="pm-btn" onclick="verifyNewEmailOTP()"><i class="fa-solid fa-circle-check"></i> Confirm New Email</button>
+                    <button class="pm-btn secondary" onclick="goEmailStep(3)">← Back</button>
+                </div>
+                <div class="email-step" id="emailStep5" style="text-align:center;padding:20px 0">
+                    <div style="font-size:46px;margin-bottom:10px"><i class="fa-solid fa-circle-check"></i></div>
+                    <p style="font-weight:500;color:var(--moss)">Email updated successfully!</p>
+                    <p style="font-size:13px;color:var(--liq-text-muted);margin-top:6px">Please login again with your new email.</p>
+                    <button class="pm-btn" style="margin-top:14px" onclick="doLogout()"><i class="fa-solid fa-key"></i> Go to Login</button>
+                </div>
+            </div>
+
+            <div class="pm-panel" id="tabHistory">
+                <div id="historyList" class="history-list">
+                     <div style="text-align:center;padding:40px 20px;color:#bbb">
+                         <i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem;margin-bottom:10px"></i>
+                         <p style="font-size:13px">Loading your dog history…</p>
+                     </div>
+                </div>
+            </div>
         </div>
-  
-        <div class="pm-panel active" id="tabInfo">
-          <div class="pm-alert" id="infoAlert"></div>
-          <div class="pm-field"><label>Full Name</label><input type="text" id="pmName" placeholder="Your full name"></div>
-          <div class="pm-field"><label>Mobile Number</label><input type="tel" id="pmMobile" placeholder="+91 XXXXXXXXXX"></div>
-          <div class="pm-field"><label>Age</label><input type="number" id="pmAge" min="1" max="120" placeholder="Your age"></div>
-          <div class="pm-field">
-            <label>Gender</label>
-            <select id="pmGender">
-              <option value="">Prefer not to say</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-              <option value="prefer_not_to_say">Prefer not to say</option>
-            </select>
-          </div>
-          <button class="pm-btn" onclick="saveProfile()">💾 Save Changes</button>
-        </div>
-  
-        <div class="pm-panel" id="tabEmail">
-          <div class="pm-alert" id="emailAlert"></div>
-          <div class="email-step active" id="emailStep1">
-            <p style="font-size:13px;color:#7a6a58;margin-bottom:10px">We'll send an OTP to your <strong>current email</strong> to verify it's you.</p>
-            <p style="font-size:13px;font-weight:500;margin-bottom:14px">Current: <span id="currentEmailDisplay"></span></p>
-            <button class="pm-btn" onclick="requestEmailChange()">📧 Send Verification OTP</button>
-          </div>
-          <div class="email-step" id="emailStep2">
-            <p style="font-size:13px;color:#7a6a58;margin-bottom:8px">Enter the OTP sent to your current email:</p>
-            <div class="pm-otp-inputs" id="ceOTPBoxes1"></div>
-            <button class="pm-btn" onclick="verifyCurrentOTP()"><i class="fa-solid fa-circle-check"></i> Verify OTP</button>
-            <button class="pm-btn secondary" onclick="goEmailStep(1)">← Back</button>
-          </div>
-          <div class="email-step" id="emailStep3">
-            <p style="font-size:13px;color:#7a6a58;margin-bottom:10px">Enter your new email address:</p>
-            <div class="pm-field"><label>New Email</label><input type="email" id="newEmailInput" placeholder="new@email.com"></div>
-            <button class="pm-btn" onclick="sendNewEmailOTP()">📧 Send OTP to New Email</button>
-            <button class="pm-btn secondary" onclick="goEmailStep(1)">← Start Over</button>
-          </div>
-          <div class="email-step" id="emailStep4">
-            <p style="font-size:13px;color:#7a6a58;margin-bottom:8px">Enter the OTP sent to your new email:</p>
-            <div class="pm-otp-inputs" id="ceOTPBoxes2"></div>
-            <button class="pm-btn" onclick="verifyNewEmailOTP()"><i class="fa-solid fa-circle-check"></i> Confirm New Email</button>
-            <button class="pm-btn secondary" onclick="goEmailStep(3)">← Back</button>
-          </div>
-          <div class="email-step" id="emailStep5" style="text-align:center;padding:20px 0">
-            <div style="font-size:46px;margin-bottom:10px"><i class="fa-solid fa-circle-check"></i></div>
-            <p style="font-weight:500;color:var(--moss)">Email updated successfully!</p>
-            <p style="font-size:13px;color:#8a7a6a;margin-top:6px">Please login again with your new email.</p>
-            <button class="pm-btn" style="margin-top:14px" onclick="doLogout()"><i class="fa-solid fa-key"></i> Go to Login</button>
-          </div>
-        </div>
-  
-        <div class="pm-panel" id="tabHistory">
-          <div id="historyList" class="history-list">
-             <div style="text-align:center;padding:40px 20px;color:#bbb">
-               <i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem;margin-bottom:10px"></i>
-               <p style="font-size:13px">Loading your dog history…</p>
-             </div>
-          </div>
-        </div>
-      </div>
     </div>
-  
+
     <!-- TOAST CONTAINER -->
     <div id="toastContainer"></div>
 
